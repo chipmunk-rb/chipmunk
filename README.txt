@@ -1,3 +1,8 @@
+IMPORTANT NNOTICE:
+
+This is the original makefile. I, Beoran, didn't write Cipmunk. 
+I just patched it for Ruby1.9
+
 BUILDING:
 
   OS X: There is an included XCode project file for building the
