@@ -2,8 +2,10 @@ CHIPMUNK VERSION 4.1.0 For Ruby
 (C) Scott Lembcke
 
 IMPORTANT NOTICE:
-This is a fork of Chipmunk 4.1.0 for use with Ruby 1.9.x only. 
-The standard version is only compatible with 1.8.x. 
+This is a fork of Chipmunk 4.1.0 for use with Ruby 1.8.x and 1.9.x. 
+The standard version of Chipmunk is only compatible with 1.8.x.
+The standalone library of Chipmunk will not be not maintained in 
+this branch, at least not for now. 
 
 (1) 1/10/09 Cross-Platform Gem built by John Mair (banisterfiend)
     * Just go: gem install chipmunk  
