@@ -1,12 +1,14 @@
-CHIPMUNK VERSION 4.1.0
+CHIPMUNK VERSION 4.1.0 For Ruby
 (C) Scott Lembcke
 
 IMPORTANT NOTICE:
+This is a fork of Chipmunk 4.1.0 for use with Ruby 1.9.x only. 
+The standard version is only compatible with 1.8.x. 
 
 (1) 1/10/09 Cross-Platform Gem built by John Mair (banisterfiend)
     * Just go: gem install chipmunk  
 
-(2) Patched for 1.9.1 by Beoran
+(2) Patched for 1.9.1 by Beoran (beoran@rubyforge.org)
 
 (3) How to build the gems? (maintainers only)
     * Install rake-compiler (http://github.com/luislavena/rake-compiler)
