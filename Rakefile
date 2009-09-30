@@ -1,3 +1,5 @@
+# Rakefile added by John Mair (banisterfiend)
+
 require 'rake/clean'
 require 'rake/extensiontask'
 require 'rake/gempackagetask'

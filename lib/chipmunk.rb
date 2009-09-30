@@ -1,3 +1,5 @@
+# this redirection script by John Mair (banisterfiend)
+
 require 'rbconfig'
 
 direc = File.dirname(__FILE__)
