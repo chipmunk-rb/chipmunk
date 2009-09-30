@@ -6,8 +6,10 @@ require 'rake/gempackagetask'
 
 CHIPMUNK_VERSION = "4.1.0"
 
-CLEAN.include("ext/**/*.#{$dlext}", "ext/**/.log", "ext/**/.o", "ext/**/*~", "ext/**/*#*", "ext/**/.obj", "ext/**/.def", "ext/**/.pdb")
-CLOBBER.include("**/*.#{$dlext}", "**/*~", "**/*#*", "**/*.log", "**/*.o", "doc/**")
+dlext = Config::CONFIG['DLEXT']
+
+CLEAN.include("ext/**/*.#{dlext}", "ext/**/.log", "ext/**/.o", "ext/**/*~", "ext/**/*#*", "ext/**/.obj", "ext/**/.def", "ext/**/.pdb")
+CLOBBER.include("**/*.#{dlext}", "**/*~", "**/*#*", "**/*.log", "**/*.o", "doc/**")
 
 Rake::ExtensionTask.new('chipmunk')
 
