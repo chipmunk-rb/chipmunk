@@ -4,9 +4,9 @@ SHELL = /bin/sh
 #### Start of system configuration section. ####
 
 srcdir = .
-topdir = /usr/local/include/ruby1.9-1.9.1
-hdrdir = /usr/local/include/ruby1.9-1.9.1
-arch_hdrdir = /usr/local/include/ruby1.9-1.9.1/$(arch)
+topdir = /usr/local/include/ruby19-1.9.1
+hdrdir = /usr/local/include/ruby19-1.9.1
+arch_hdrdir = /usr/local/include/ruby19-1.9.1/$(arch)
 VPATH = $(srcdir):$(arch_hdrdir)/ruby:$(hdrdir)/ruby
 prefix = $(DESTDIR)/usr/local
 exec_prefix = $(prefix)
@@ -43,7 +43,7 @@ vendorarchdir = $(vendorlibdir)/$(sitearch)
 
 CC = gcc
 CXX = g++
-LIBRUBY = $(LIBRUBY_SO)
+LIBRUBY = $(LIBRUBY_A)
 LIBRUBY_A = lib$(RUBY_SO_NAME)-static.a
 LIBRUBYARG_SHARED = -Wl,-R -Wl,$(libdir) -L$(libdir) -l$(RUBY_SO_NAME)
 LIBRUBYARG_STATIC = -Wl,-R -Wl,$(libdir) -L$(libdir) -l$(RUBY_SO_NAME)-static
@@ -55,7 +55,7 @@ cflags   = $(optflags) $(debugflags) $(warnflags)
 optflags = -O2
 debugflags = -g
 warnflags = -Wall -Wno-parentheses
-CFLAGS   =  -fPIC  $(cflags)  -fPIC -std=gnu99 -ffast-math 
+CFLAGS   =  -fPIC  $(cflags) -std=gnu99 -ffast-math 
 INCFLAGS = -I. -I$(arch_hdrdir) -I$(hdrdir)/ruby/backward -I$(hdrdir) -I$(srcdir)
 DEFS     = -D_FILE_OFFSET_BITS=64
 CPPFLAGS =   $(DEFS) $(cppflags)
@@ -69,12 +69,12 @@ LDSHAREDXX = $(CXX) -shared
 AR = ar
 EXEEXT = 
 
-RUBY_INSTALL_NAME = ruby1.9
-RUBY_SO_NAME = ruby1.9
+RUBY_INSTALL_NAME = ruby19
+RUBY_SO_NAME = ruby19
 arch = i686-linux
 sitearch = i686-linux
 ruby_version = 1.9.1
-ruby = /usr/local/bin/ruby1.9
+ruby = /usr/local/bin/ruby19
 RUBY = $(ruby)
 RM = rm -f
 RM_RF = $(RUBY) -run -e rm -- -rf
@@ -101,9 +101,9 @@ extout =
 extout_prefix = 
 target_prefix = 
 LOCAL_LIBS = 
-LIBS = $(LIBRUBYARG_SHARED)  -lpthread -lrt -ldl -lcrypt -lm   -lc
-SRCS = cpBody.c rb_cpBB.c rb_cpShape.c cpSpace.c rb_cpSpace.c rb_chipmunk.c cpShape.c cpSpaceHash.c rb_cpJoint.c chipmunk.c cpVect.c cpBB.c cpPolyShape.c cpHashSet.c rb_cpBody.c cpArray.c cpCollision.c cpJoint.c cpArbiter.c rb_cpVect.c
-OBJS = cpBody.o rb_cpBB.o rb_cpShape.o cpSpace.o rb_cpSpace.o rb_chipmunk.o cpShape.o cpSpaceHash.o rb_cpJoint.o chipmunk.o cpVect.o cpBB.o cpPolyShape.o cpHashSet.o rb_cpBody.o cpArray.o cpCollision.o cpJoint.o cpArbiter.o rb_cpVect.o
+LIBS =   -lpthread -lrt -ldl -lcrypt -lm   -lc
+SRCS = cpBB.c cpCollision.c rb_cpBody.c cpArbiter.c cpJoint.c chipmunk.c cpHashSet.c cpSpace.c cpShape.c cpBody.c rb_cpBB.c cpArray.c rb_cpJoint.c rb_cpVect.c rb_cpSpace.c cpSpaceHash.c cpVect.c rb_cpShape.c rb_chipmunk.c cpPolyShape.c
+OBJS = cpBB.o cpCollision.o rb_cpBody.o cpArbiter.o cpJoint.o chipmunk.o cpHashSet.o cpSpace.o cpShape.o cpBody.o rb_cpBB.o cpArray.o rb_cpJoint.o rb_cpVect.o rb_cpSpace.o cpSpaceHash.o cpVect.o rb_cpShape.o rb_chipmunk.o cpPolyShape.o
 TARGET = chipmunk
 DLLIB = $(TARGET).so
 EXTSTATIC = 
