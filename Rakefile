@@ -23,8 +23,8 @@ spec = Gem::Specification.new do |s|
     s.homepage = "http://code.google.com/p/chipmunk-physics/"
     s.platform = Gem::Platform::RUBY
     s.extensions = FileList["ext/**/extconf.rb"]
-    s.files = ["Rakefile", "lib/chipmunk.rb"] + FileList["ext/**/extconf.rb", "ext/**/*.h",
-               "ext/**/*.c"].to_a
+    s.files = ["Rakefile", "README", "LICENSE", "lib/chipmunk.rb"] +
+        FileList["ext/**/extconf.rb", "ext/**/*.h", "ext/**/*.c"].to_a
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
