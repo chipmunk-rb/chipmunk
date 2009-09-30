@@ -11,8 +11,6 @@ dlext = Config::CONFIG['DLEXT']
 CLEAN.include("ext/**/*.#{dlext}", "ext/**/.log", "ext/**/.o", "ext/**/*~", "ext/**/*#*", "ext/**/.obj", "ext/**/.def", "ext/**/.pdb")
 CLOBBER.include("**/*.#{dlext}", "**/*~", "**/*#*", "**/*.log", "**/*.o", "doc/**")
 
-Rake::ExtensionTask.new('chipmunk')
-
 spec = Gem::Specification.new do |s|
     s.name = "chipmunk"
     s.summary = "ruby bindings for the chipmunk physics engine"
