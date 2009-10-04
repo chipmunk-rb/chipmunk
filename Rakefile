@@ -42,9 +42,7 @@ if RUBY_PLATFORM =~ /darwin/
     spec = Gem::Specification.new do |s|
         apply_spec_defaults(s)
         s.platform = Gem::Platform::CURRENT
-        s.extensions = FileList["ext/**/extconf.rb"]
-        s.files = ["Rakefile", "README", "LICENSE", "lib/chipmunk.rb", "lib/1.8/chipmunk.#{dlext}", "lib/1.9/chipmunk.#{dlext}"] +
-            FileList["ext/**/*extconf.rb", "ext/**/*.h", "ext/**/*.c"].to_a
+        s.files = ["Rakefile", "README", "LICENSE", "lib/chipmunk.rb", "lib/1.8/chipmunk.#{dlext}", "lib/1.9/chipmunk.#{dlext}"] 
 
     end
 
