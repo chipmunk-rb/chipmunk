@@ -37,10 +37,21 @@ module CP
   end
   ZERO_VEC_2 = Vec2.new(0,0).freeze
 
+  func :fficpv, [:double, :double], Vect.by_value
+#  CPV = FFI::create_invoker 'chipmunk', '_cpv', [:double, :double], Vect
+#  func :cpv, [:double,:double], Vect
+  attach_variable '_cpv', :pointer
+  CPV = FFI::Function.new(Vect.by_value, [:double,:double], FFI::Pointer.new(CP._cpv), :convention => :default )
+  def self.cpv(x,y)
+    CPV.call(x,y)
+  end
   func :cpvlength, [Vect.by_value], :double
 end
 
 p CP::Vec2.new(5,7).length
-p CP::ZERO_VEC_2
-p CP::ZERO_VEC_2.length
+p CP.fficpv(6.0,78.0)
+puts "mark"
+p CP.cpv(73,79)
+#p CP::ZERO_VEC_2
+#p CP::ZERO_VEC_2.length
 
