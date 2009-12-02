@@ -217,6 +217,3 @@ end
 def vec2(x,y)
   CP::Vec2.new x, y
 end
-
-v = vec2 5, 6
-p -v
