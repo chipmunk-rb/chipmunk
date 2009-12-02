@@ -2,7 +2,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "chipmunk-ffi"
-#    gem.rubyforge_project = "gamebox"
+    gem.rubyforge_project = "chipmunk-ffi"
     gem.summary = %Q{FFI bindings for chipmunk physics lib.}
     gem.description = %Q{FFI bindings for chipmunk physics lib.}
     gem.email = "shawn42@gmail.com"

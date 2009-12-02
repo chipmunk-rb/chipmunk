@@ -13,12 +13,15 @@ Gem::Specification.new do |s|
   s.description = %q{FFI bindings for chipmunk physics lib.}
   s.email = %q{shawn42@gmail.com}
   s.files = [
-    "VERSION",
+    "Rakefile",
+     "VERSION",
+     "chipmunk-ffi.gemspec",
      "lib/chipmunk-ffi.rb"
   ]
   s.homepage = %q{http://shawn42.github.com/chipmunk-ffi}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
+  s.rubyforge_project = %q{chipmunk-ffi}
   s.rubygems_version = %q{1.3.3}
   s.summary = %q{FFI bindings for chipmunk physics lib.}
 
