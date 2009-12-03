@@ -11,8 +11,9 @@ module CP
   cp_static_inline :cpBBintersects, [BBStruct.by_value,BBStruct.by_value], :int
   cp_static_inline :cpBBcontainsBB, [BBStruct.by_value,BBStruct.by_value], :int
   cp_static_inline :cpBBcontainsVect, [BBStruct.by_value,Vect.by_value], :int
-  cp_static_inline :cpBBClampVect, [BBStruct.by_value,Vect.by_value], Vect.by_value
-  cp_static_inline :cpBBWrapVect, [BBStruct.by_value,Vect.by_value], Vect.by_value
+
+  func :cpBBClampVect, [BBStruct.by_value,Vect.by_value], Vect.by_value
+  func :cpBBWrapVect, [BBStruct.by_value,Vect.by_value], Vect.by_value
 
   class BB
     attr_reader :struct
