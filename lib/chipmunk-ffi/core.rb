@@ -28,7 +28,16 @@ module CP
   end
 
   func :cpMomentForPoly, [CP_FLOAT,:int,:pointer,Vect.by_value], CP_FLOAT
-  def self.moment_for_poly(m,numVerts,verts,offset)
-    cpMomentForPoly(m, numVerts, verts.struct, offset.struct)
+  def self.moment_for_poly(m,verts,offset)
+    mem_pointer = FFI::MemoryPointer.new Vect, verts.size
+    vert_structs = verts.collect{|s|s.struct}
+
+    size = Vect.size
+    tmp = mem_pointer
+    vert_structs.each_with_index {|i, j|
+      tmp.send(:put_bytes, 0, i.to_bytes, 0, size)
+      tmp += size unless j == vert_structs.length-1 # avoid OOB
+    }
+    cpMomentForPoly(m, verts.size, mem_pointer, offset.struct)
   end
 end
