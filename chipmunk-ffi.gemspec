@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{chipmunk-ffi}
-  s.version = "0.0.0"
+  s.version = "0.0.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Shawn Anderson"]
@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{chipmunk-ffi}
-  s.rubygems_version = %q{1.3.3}
+  s.rubygems_version = %q{1.3.5}
   s.summary = %q{FFI bindings for chipmunk physics lib.}
 
   if s.respond_to? :specification_version then
