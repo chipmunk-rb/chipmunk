@@ -2,36 +2,35 @@ module CP
   class Vect < NiceFFI::Struct
     layout( :x, CP_FLOAT,
            :y, CP_FLOAT )
-
   end
 
-  cp_static_inline :cpv, Vect.by_value, [CP_FLOAT,CP_FLOAT]
-  cp_static_inline :cpvneg, Vect.by_value, [Vect.by_value]
-  cp_static_inline :cpvadd, Vect.by_value, [Vect.by_value,Vect.by_value]
-  cp_static_inline :cpvsub, Vect.by_value, [Vect.by_value,Vect.by_value]
-  cp_static_inline :cpvmult, Vect.by_value, [Vect.by_value,Vect.by_value]
-  cp_static_inline :cpvdot, Vect.by_value, [Vect.by_value,Vect.by_value]
-  cp_static_inline :cpvcross, Vect.by_value, [Vect.by_value,Vect.by_value]
+  cp_static_inline :cpv, [CP_FLOAT,CP_FLOAT], Vect.by_value
+  cp_static_inline :cpvneg, [Vect.by_value], Vect.by_value
+  cp_static_inline :cpvadd, [Vect.by_value,Vect.by_value], Vect.by_value
+  cp_static_inline :cpvsub, [Vect.by_value,Vect.by_value], Vect.by_value
+  cp_static_inline :cpvmult, [Vect.by_value,CP_FLOAT], Vect.by_value
+  cp_static_inline :cpvdot, [Vect.by_value,Vect.by_value], Vect.by_value
+  cp_static_inline :cpvcross, [Vect.by_value,Vect.by_value], Vect.by_value
 
-  cp_static_inline :cpvperp, Vect.by_value, [Vect.by_value]
-  cp_static_inline :cpvrperp, Vect.by_value, [Vect.by_value]
-  cp_static_inline :cpvproject, Vect.by_value, [Vect.by_value,Vect.by_value]
-  cp_static_inline :cpvrotate, Vect.by_value, [Vect.by_value,Vect.by_value]
-  cp_static_inline :cpvunrotate, Vect.by_value, [Vect.by_value,Vect.by_value]
+  cp_static_inline :cpvperp, [Vect.by_value], Vect.by_value
+  cp_static_inline :cpvrperp, [Vect.by_value], Vect.by_value
+  cp_static_inline :cpvproject, [Vect.by_value,Vect.by_value], Vect.by_value
+  cp_static_inline :cpvrotate, [Vect.by_value,Vect.by_value], Vect.by_value
+  cp_static_inline :cpvunrotate, [Vect.by_value,Vect.by_value], Vect.by_value
 
-  cp_static_inline :cpvlengthsq, CP_FLOAT, [Vect.by_value]
+  cp_static_inline :cpvlengthsq, [Vect.by_value], CP_FLOAT
 
-  cp_static_inline :cpvlerp, Vect.by_value, [Vect.by_value,Vect.by_value]
+  cp_static_inline :cpvlerp, [Vect.by_value,Vect.by_value], Vect.by_value
 
-  cp_static_inline :cpvnormalize, Vect.by_value, [Vect.by_value]
-  cp_static_inline :cpvnormalize_safe, Vect.by_value, [Vect.by_value]
+  cp_static_inline :cpvnormalize, [Vect.by_value], Vect.by_value
+  cp_static_inline :cpvnormalize_safe, [Vect.by_value], Vect.by_value
 
-  cp_static_inline :cpvclamp, Vect.by_value, [Vect.by_value,Vect.by_value]
-  cp_static_inline :cpvlerpconst, Vect.by_value, [Vect.by_value,Vect.by_value]
-  cp_static_inline :cpvdist, CP_FLOAT, [Vect.by_value,Vect.by_value]
-  cp_static_inline :cpvdistsq, CP_FLOAT, [Vect.by_value,Vect.by_value]
+  cp_static_inline :cpvclamp, [Vect.by_value,Vect.by_value], Vect.by_value
+  cp_static_inline :cpvlerpconst, [Vect.by_value,Vect.by_value], Vect.by_value
+  cp_static_inline :cpvdist, [Vect.by_value,Vect.by_value], CP_FLOAT
+  cp_static_inline :cpvdistsq, [Vect.by_value,Vect.by_value], CP_FLOAT
 
-  cp_static_inline :cpvnear, :int, [Vect.by_value,Vect.by_value, CP_FLOAT]
+  cp_static_inline :cpvnear, [Vect.by_value,Vect.by_value, CP_FLOAT], :int
 
   func :cpvlength, [Vect.by_value], CP_FLOAT
   func :cpvforangle, [CP_FLOAT], Vect.by_value
@@ -54,12 +53,14 @@ module CP
       @struct.x
     end
     def x=(new_x)
+      raise TypeError "cant't modify frozen object" if frozen?
       @struct.x = new_x
     end
     def y
       @struct.y
     end
     def y=(new_y)
+      raise TypeError "cant't modify frozen object" if frozen?
       @struct.y = new_y
     end
 
@@ -97,7 +98,7 @@ module CP
 
     def /(s)
       factor = 1.0/s
-      Vec2.new CP.cpvmult(@struct, s)
+      Vec2.new CP.cpvmult(@struct, factor)
     end
 
     def dot(other_vec)
@@ -133,6 +134,7 @@ module CP
     end
 
     def lerp(other_vec)
+      Vec2.new CP.cpvlerp(@struct, other_vec.struct)
     end
 
     def normalize
@@ -141,6 +143,7 @@ module CP
 
     def normalize!
       @struct = CP.cpvnormalize(@struct)
+      self
     end
 
     def normalize_safe

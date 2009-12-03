@@ -16,7 +16,7 @@ module CP
 
   end
   load_library "chipmunk", CP::LOAD_PATHS
-  def self.cp_static_inline(func_sym, ret, args)
+  def self.cp_static_inline(func_sym, args, ret)
     func_name = "_#{func_sym}"
     attach_variable func_name, :pointer
     const_func_name = func_sym.to_s.upcase
