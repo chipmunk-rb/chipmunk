@@ -111,8 +111,8 @@ module CP
       data = block
       a_id = a.object_id
       b_id = b.object_id
-      CP.cpSpaceAddCollisionHandler(@struct.pointer, a_id, b_id,
-                                    beg,pre,post,sep,data)
+#      CP.cpSpaceAddCollisionHandler(@struct.pointer, a_id, b_id,
+#                                    beg,pre,post,sep,data)
       @blocks[[a_id,b_id]] = block
       nil
     end
@@ -120,7 +120,7 @@ module CP
     def remove_collision_func(a,b)
       a_id = a.object_id
       b_id = b.object_id
-      CP.cpSpaceRemoveCollisionHandler(@struct.pointer, a_id, b_id)
+#      CP.cpSpaceRemoveCollisionHandler(@struct.pointer, a_id, b_id)
       @blocks.delete [a_id,b_id]
       nil
     end
@@ -190,7 +190,7 @@ module CP
     end
 
     def step(dt)
-      CP.cpStep @struct.pointer, dt
+#      CP.cpSpaceStep @struct.pointer, dt
     end
 
     def shape_point_query(*args)
