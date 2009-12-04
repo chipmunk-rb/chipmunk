@@ -5,7 +5,11 @@ describe 'A new Body' do
     b.i.should == 7
   end
 
-  it 'can set its mass'
+  it 'can set its mass' do
+    b = CP::Body.new(5, 7)
+    b.m = 900
+    b.m.should == 900
+  end
   it 'can set its moment'
   it 'can set its pos'
   it 'can set its vel'

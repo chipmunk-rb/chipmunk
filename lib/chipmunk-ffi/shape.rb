@@ -1,13 +1,17 @@
 module CP
 
-  ShapeType = enum :circle_shape,
+  ShapeType = enum(
+    :circle_shape,
     :segment_shape,
     :poly_shape,
     :num_shapes
+  )
+
   callback :cacheData, [:pointer,Vect.by_value,Vect.by_value], BBStruct.by_value
   callback :destroy, [:pointer], :void
   callback :pointQuery, [:pointer,Vect.by_value], :int
   callback :segmentQuery, [:pointer,Vect.by_value,Vect.by_value,:pointer], :void
+
   class ShapeClassStruct < NiceFFI::Struct
     layout( :type, ShapeType,
            :cacheData, :pointer,
@@ -17,9 +21,9 @@ module CP
   end
 
   class ShapeStruct < NiceFFI::Struct
-    layout( :klass, ShapeClassStruct,
-           :body, BodyStruct,
-           :bb, BBStruct,
+    layout( :klass, :pointer,
+           :body, :pointer,
+           :bb, :pointer,
            :sensor, :int,
            :e, CP_FLOAT,
            :u, CP_FLOAT,
@@ -46,10 +50,10 @@ module CP
     attr_reader :struct
 
     def body
-      Body.new @struct.body
+      Body.new BodyStruct.new(@struct.body)
     end
     def body=(new_body)
-      @struct.body = new_body.struct
+      @struct.body = new_body.struct.pointer
       new_body
     end
 
@@ -78,10 +82,15 @@ module CP
 
     def bb
       our_bb = @struct.bb
-      size = BBStruct.size
-      bb_ptr = FFI::MemoryPointer.new size
-      bb_ptr.send(:put_bytes, 0, our_bb.to_bytes, 0, size)
-      BB.new(BBStruct.new(bb_ptr))
+      if our_bb.null?
+        nil
+      else
+        size = BBStruct.size
+        bb_ptr = FFI::MemoryPointer.new size
+        bb_ptr.send(:put_bytes, 0, our_bb.get_bytes(0, size), 0, size)
+        BB.new(BBStruct.new(bb_ptr))
+      end
+
     end
 
     def cache_bb
@@ -141,4 +150,3 @@ module CP
 
 
 end
-
