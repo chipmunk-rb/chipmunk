@@ -99,7 +99,7 @@ module CP
     def e
       @struct.e
     end
-    def e(new_e)
+    def e=(new_e)
       @struct.e = new_e
     end
 

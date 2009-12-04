@@ -12,6 +12,14 @@ describe 'ShapeStruct in chipmunk' do
       s.body.should == bod
     end
 
+    it 'can get its elasticity' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
+      s.e.should == 0
+      s.e = 0.5
+      s.e.should == 0.5
+    end
+
     it 'can build a BB' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
