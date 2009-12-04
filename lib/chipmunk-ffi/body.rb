@@ -1,7 +1,7 @@
 module CP
 
   callback :cpBodyVelocityFunc, [:pointer, Vect.by_value, CP_FLOAT, CP_FLOAT], :void
-  callback :cpBodyPostitionFunc, [:pointer, CP_FLOAT], :void
+  callback :cpBodyPositionFunc, [:pointer, CP_FLOAT], :void
 
   class BodyStruct < NiceFFI::Struct
     layout(
