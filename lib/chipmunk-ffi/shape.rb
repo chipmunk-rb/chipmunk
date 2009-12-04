@@ -15,6 +15,7 @@ module CP
   class ShapeClassStruct < NiceFFI::Struct
     layout( :type, ShapeType,
            :cacheData, :pointer,
+           :destroy, :pointer,
            :pointQuery, :pointer,
            :segmentQuery, :pointer
           )
@@ -23,7 +24,7 @@ module CP
   class ShapeStruct < NiceFFI::Struct
     layout( :klass, :pointer,
            :body, :pointer,
-           :bb, :pointer,
+           :bb, BBStruct.by_value,
            :sensor, :int,
            :e, CP_FLOAT,
            :u, CP_FLOAT,
@@ -31,7 +32,7 @@ module CP
            :data, :pointer,
            :collision_type, :uint,
            :group, :uint,
-           :layers, :size_t
+           :layers, :int
           )
   end
   class SegmentQueryInfoStruct < NiceFFI::Struct
@@ -82,15 +83,10 @@ module CP
 
     def bb
       our_bb = @struct.bb
-      if our_bb.null?
-        nil
-      else
-        size = BBStruct.size
-        bb_ptr = FFI::MemoryPointer.new size
-        bb_ptr.send(:put_bytes, 0, our_bb.get_bytes(0, size), 0, size)
-        BB.new(BBStruct.new(bb_ptr))
-      end
-
+      size = BBStruct.size
+      bb_ptr = FFI::MemoryPointer.new size
+      bb_ptr.send(:put_bytes, 0, our_bb.to_bytes, 0, size)
+      BB.new(BBStruct.new(bb_ptr))
     end
 
     def cache_bb
