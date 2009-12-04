@@ -33,7 +33,10 @@ module CP
   CP_FLOAT = :double
 
 end
-libs = %w{vec2 core bb}
+libs = %w{vec2 core bb body}
+#	Init_cpShape();
+#	Init_cpConstraint();
+#	Init_cpSpace();
 libs.each do |lib|
   require "chipmunk-ffi/#{lib}"
 end
