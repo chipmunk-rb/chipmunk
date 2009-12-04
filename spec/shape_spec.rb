@@ -9,8 +9,7 @@ describe 'ShapeStruct in chipmunk' do
     it 'can get its body' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
-      # EEK, TODO .. how to do proper equals? <=>
-      s.body.struct.pointer.get_pointer(0).should == bod.struct.pointer.get_pointer(0)
+      s.body.should == bod
     end
 
     it 'can build a BB' do

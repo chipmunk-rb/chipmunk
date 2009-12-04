@@ -46,16 +46,18 @@ module CP
   func :cpSegmentShapeNew, [BodyStruct,Vect.by_value,Vect.by_value,CP_FLOAT], ShapeStruct
   func :cpPolyShapeNew, [BodyStruct,:int,:pointer,Vect.by_value], ShapeStruct
   func :cpShapeCacheBB, [ShapeStruct], :void
+  func :cpResetShapeIdCounter, [], :void
 
   module Shape
     attr_reader :struct
 
     def body
-      Body.new BodyStruct.new(@struct.body)
+#      Body.new BodyStruct.new(@struct.body)
+      @body
     end
     def body=(new_body)
       @struct.body = new_body.struct.pointer
-      new_body
+      @body = new_body
     end
 
     def collision_type
@@ -95,26 +97,34 @@ module CP
     end
 
     def e
+      @struct.e
     end
     def e(new_e)
+      @struct.e = new_e
     end
 
     def u
+      @struct.u
     end
     def u=(new_u)
+      @struct.u = new_u
     end
 
     def surface_v
+      Vec2.new @struct.surface_v
     end
     def surface_v=(new_sv)
+      @struct.surface_v = new_sv.struct
     end
 
     def self.reset_id_counter
+      CP.cpResetShapeIdCounter
     end
 
     class Circle
       include Shape
       def initialize(body, rad, offset_vec)
+        @body = body
         ptr = CP.cpCircleShapeNew body.struct.pointer, rad, offset_vec.struct
         @struct = ShapeStruct.new ptr
       end
@@ -122,6 +132,7 @@ module CP
     class Segment
       include Shape
       def initialize(body, v1, v2, r)
+        @body = body
         ptr = CP.cpSegmentShapeNew body.struct.pointer, v1.struct, v2.struct, r
         @struct = ShapeStruct.new ptr
       end
@@ -129,6 +140,7 @@ module CP
     class Poly
       include Shape
       def initialize(body, verts, offset_vec)
+        @body = body
         mem_pointer = FFI::MemoryPointer.new Vect, verts.size
         vert_structs = verts.collect{|s|s.struct}
 
