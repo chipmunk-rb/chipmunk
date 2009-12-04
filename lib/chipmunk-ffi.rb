@@ -33,8 +33,7 @@ module CP
   CP_FLOAT = :double
 
 end
-libs = %w{vec2 core bb body}
-#	Init_cpShape();
+libs = %w{vec2 core bb body shape}
 #	Init_cpConstraint();
 #	Init_cpSpace();
 libs.each do |lib|

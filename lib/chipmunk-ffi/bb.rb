@@ -17,8 +17,15 @@ module CP
 
   class BB
     attr_reader :struct
-    def initialize(l,b,r,t)
-      @struct = CP.cpBBNew(l,b,r,t)
+    def initialize(*args)
+      case args.size
+      when 1
+        @struct = args.first
+      when 4
+        @struct = CP.cpBBNew(*args)
+      else
+        raise "wrong number of args for BB, got #{args.size}, but expected 4"
+      end
     end
     def l;@struct.l;end
     def b;@struct.b;end

@@ -41,11 +41,14 @@ module CP
 
   class Vec2
     attr_accessor :struct
-    def initialize(x_or_struct,y=nil)
-      if y.nil?
-        @struct = x_or_struct
+    def initialize(*args)
+      case args.size
+      when 1
+        @struct = args.first
+      when 2
+        @struct = CP.cpv(*args)
       else
-        @struct = CP.cpv(x_or_struct,y)
+        raise "wrong number of args for Vec, got #{args.size}, but expected 2"
       end
     end
 
