@@ -14,9 +14,9 @@ module CP
       :m_inv, CP_FLOAT,
       :i, CP_FLOAT,
       :i_inv, CP_FLOAT,
-      :p, CP_FLOAT,
-      :v, CP_FLOAT,
-      :f, CP_FLOAT,
+      :p, Vect,
+      :v, Vect,
+      :f, Vect,
       :a, CP_FLOAT,
       :w, CP_FLOAT,
       :t, CP_FLOAT,
@@ -25,6 +25,7 @@ module CP
       :v_bias, Vect,
       :w_bias, CP_FLOAT
     )
+
     def self.release(me)
       # TODO is this right?
       CP.cpBodyDestroy me
@@ -64,63 +65,70 @@ module CP
     alias :mass :m
     alias :mass= :m=
 
-      def i
-        @struct.i
-      end
+    def i
+      @struct.i
+    end
     def i=(pi)
       @struct.i = pi
     end
     alias :moment :i
     alias :moment= :i=
 
-      def p
-        @struct.p
-      end
-    def p=(pp)
-      @struct.p = pp
+    def p
+      Vec2.new @struct.p
+    end
+    def p=(new_p)
+      @struct.p.pointer.put_bytes 0, new_p.struct.to_bytes, 0,Vect.size
+      # TODO XXX this probably leaks?
+#      @struct.p.send :pointer=, new_p.struct.pointer
+      self
     end
     alias :pos :p
     alias :pos= :p=
 
-      def v
-        @struct.v
-      end
+    def v
+      Vec2.new @struct.v
+    end
     def v=(pv)
-      @struct.v = pv
+      @struct.v = pv.struct
+      @struct.v.pointer.put_bytes 0, pv.struct.to_bytes, 0,Vect.size
+      self
     end
     alias :vel :v
     alias :vel= :v=
 
-      def f
-        @struct.f
-      end
+    def f
+      Vec2.new @struct.f
+    end
     def f=(pf)
-      @struct.f = pf
+      @struct.f.pointer.put_bytes 0, pf.struct.to_bytes, 0,Vect.size
+      @struct.f = pf.struct
+      self
     end
     alias :force :f
     alias :force= :f=
 
-      def a
-        @struct.a
-      end
+    def a
+      @struct.a
+    end
     def a=(pa)
       @struct.a = pa
     end
     alias :angle :a
     alias :angle= :a=
 
-      def w
-        @struct.w
-      end
+    def w
+      @struct.w
+    end
     def w=(pw)
       @struct.w = pw
     end
     alias :ang_vel :w
     alias :ang_vel= :w=
 
-      def t
-        @struct.t
-      end
+    def t
+      @struct.t
+    end
     def t=(pt)
       @struct.t = pt
     end
@@ -128,7 +136,7 @@ module CP
     alias :torque= :t=
 
     def rot
-      @struct.rot
+      Vec2.new @struct.rot
     end
 
     def local2world(v)

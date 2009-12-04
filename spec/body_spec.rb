@@ -10,8 +10,18 @@ describe 'A new Body' do
     b.m = 900
     b.m.should == 900
   end
+
+  it 'can set its pos' do
+    b = CP::Body.new(5, 7)
+    b.p.x.should == 0
+    b.p.y.should == 0
+
+    b.pos = vec2(4,6)
+#    b.pos.x.should == 4
+#    b.pos.y.should == 6
+  end
+
   it 'can set its moment'
-  it 'can set its pos'
   it 'can set its vel'
   it 'can set its force'
   it 'can set its angle'

@@ -1,5 +1,11 @@
 module CP
   INFINITY = 1.0/0.0
+  
+  attach_variable :cpVersionString, :string
+  def self.version
+    cpVersionString
+  end
+  VERSION = version.freeze
 
   attach_variable :cp_bias_coef, CP_FLOAT
   def self.bias_coef
