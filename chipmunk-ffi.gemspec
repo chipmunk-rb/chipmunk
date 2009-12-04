@@ -25,9 +25,9 @@ Gem::Specification.new do |s|
      "lib/chipmunk-ffi/vec2.rb",
      "spec/bb_spec.rb",
      "spec/body_spec.rb",
-     "spec/chipmunk_spec.rb",
      "spec/core_spec.rb",
      "spec/shape_spec.rb",
+     "spec/space_spec.rb",
      "spec/spec_helper.rb",
      "spec/vec2_spec.rb"
   ]
@@ -40,9 +40,9 @@ Gem::Specification.new do |s|
   s.test_files = [
     "spec/bb_spec.rb",
      "spec/body_spec.rb",
-     "spec/chipmunk_spec.rb",
      "spec/core_spec.rb",
      "spec/shape_spec.rb",
+     "spec/space_spec.rb",
      "spec/spec_helper.rb",
      "spec/vec2_spec.rb"
   ]
