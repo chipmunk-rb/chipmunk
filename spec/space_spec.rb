@@ -8,4 +8,10 @@ describe 'Shape in chipmunk' do
     s.iterations = 9
     s.iterations.should == 9
   end
+  it 'can set its gravity' do
+    s = CP::Space.new
+    s.gravity = vec2(4,5)
+    s.gravity.x.should == 4
+    s.gravity.y.should == 5
+  end
 end

@@ -14,7 +14,7 @@ module CP
   class SpaceStruct < NiceFFI::Struct
     layout( :iterations, :int,
       :elastic_iterations, :int,
-      :gravity, Vect.by_value,
+      :gravity, Vect,
       :damping, CP_FLOAT,
       :stamp, :int,
       :static_shapes, :pointer,
@@ -99,7 +99,7 @@ module CP
       Vec2.new @struct.gravity
     end
     def gravity=(v)
-      @struct.gravity = v.struct
+      @struct.gravity.pointer.put_bytes 0, v.struct.to_bytes, 0,Vect.size
     end
 
     def add_collision_func(a,b,&block)
@@ -190,7 +190,7 @@ module CP
     end
 
     def step(dt)
-#      CP.cpSpaceStep @struct.pointer, dt
+      CP.cpSpaceStep @struct.pointer, dt
     end
 
     def shape_point_query(*args)

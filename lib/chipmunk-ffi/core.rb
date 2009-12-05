@@ -46,4 +46,8 @@ module CP
     }
     cpMomentForPoly(m, verts.size, mem_pointer, offset.struct)
   end
+
+  func :cpInitChipmunk, [], :void
+  cpInitChipmunk
+
 end
