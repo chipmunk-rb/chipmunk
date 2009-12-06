@@ -122,13 +122,15 @@ module CP
         arb = ArbiterStruct.new(arb_ptr)
         rb_a = nil
         rb_b = nil
-        unless arb.a.data.null?
-          a_id = arb.a.data.read_int
+        a_it = arb[:a][:data]
+        unless a_it.null?
+          a_id = a_it.read_long
           rb_a = ObjectSpace._id2ref a_id
         end
 
-        unless arb.b.data.null?
-          b_id = arb.b.data.read_int
+        b_it = arb[:b][:data]
+        unless b_it.null?
+          b_id = b_it.read_long
           rb_b = ObjectSpace._id2ref b_id
         end
 

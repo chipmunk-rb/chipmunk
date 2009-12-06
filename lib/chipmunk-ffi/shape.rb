@@ -110,11 +110,18 @@ module CP
       @struct.u = new_u
     end
 
+    def data
+      @struct.data
+    end
+    def data=(new_data)
+      @struct.data = new_data
+    end
+
     def surface_v
       Vec2.new @struct.surface_v
     end
     def surface_v=(new_sv)
-      @struct.surface_v = new_sv.struct
+      @struct.surface_v.pointer.put_bytes 0, new_sv.struct.to_bytes, 0,Vect.size
     end
 
     def self.reset_id_counter
@@ -127,9 +134,9 @@ module CP
         @body = body
         ptr = CP.cpCircleShapeNew body.struct.pointer, rad, offset_vec.struct
         @struct = ShapeStruct.new ptr
-        mem = FFI::MemoryPointer.new(object_id.size)
-        mem.write_int object_id
-        puts "#{self.inspect} => id[#{object_id}]"
+        mem = FFI::MemoryPointer.new(:long)
+        mem.write_long object_id
+#        puts "#{self.inspect} => id[#{object_id}]"
         @struct.data = mem
       end
     end

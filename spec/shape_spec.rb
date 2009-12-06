@@ -45,6 +45,23 @@ describe 'ShapeStruct in chipmunk' do
       s.collision_type.should == :foo
       s.struct.collision_type.should == :foo.object_id
     end
+
+    it 'can get its sensor'
+    it 'can get its u'
+    it 'can get its surf vec'
+    it 'can get its data' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+      mem = FFI::MemoryPointer.new(:long)
+      s.data = mem
+      s.data.should == mem
+    end
+
+    it 'can get its klass' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+      ShapeClassStruct.new(s.struct.klass).type.should == :circle_shape
+    end
   end
   describe 'Segment class' do
     it 'can be created' do
