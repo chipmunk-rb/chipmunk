@@ -127,6 +127,10 @@ module CP
         @body = body
         ptr = CP.cpCircleShapeNew body.struct.pointer, rad, offset_vec.struct
         @struct = ShapeStruct.new ptr
+        mem = FFI::MemoryPointer.new(object_id.size)
+        mem.write_int object_id
+        puts "#{self.inspect} => id[#{object_id}]"
+        @struct.data = mem
       end
     end
     class Segment
@@ -135,6 +139,7 @@ module CP
         @body = body
         ptr = CP.cpSegmentShapeNew body.struct.pointer, v1.struct, v2.struct, r
         @struct = ShapeStruct.new ptr
+        @struct.data = self.object_id
       end
     end
     class Poly
@@ -152,6 +157,7 @@ module CP
         }
         ptr = CP.cpPolyShapeNew body.struct.pointer, verts.size, mem_pointer, offset_vec.struct
         @struct = ShapeStruct.new ptr
+        @struct.data = self.object_id
       end
     end
   end

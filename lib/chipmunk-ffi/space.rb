@@ -11,6 +11,21 @@ module CP
     )
   end
 
+  class ArbiterStruct < NiceFFI::Struct
+    layout(
+      :num_contacts, :int,
+      :a, ShapeStruct,
+      :b, ShapeStruct,
+      :e, CP_FLOAT,
+      :u, CP_FLOAT,
+      :surf_vr, Vect,
+      :stamp, :int,
+      :handler, CollisionHandlerStruct,
+      :swapped_col, :char,
+      :first_col, :char
+    )
+  end
+
   class SpaceStruct < NiceFFI::Struct
     layout( :iterations, :int,
       :elastic_iterations, :int,
@@ -57,11 +72,10 @@ module CP
   func :cpSpaceResizeStaticHash, [:pointer,CP_FLOAT,:int], :void
 
 
-  # TODO seems like a broken name here 
-  func :cpSpaceSetDefaultCollisionPairFunc, [:pointer, :uint, :uint,
+  func :cpSpaceSetDefaultCollisionHandler, [:pointer, :uint, :uint,
    :pointer, :pointer, :pointer, :pointer, :pointer], :void
   func :cpSpaceAddCollisionHandler, [:pointer, :uint, :uint,
-   :pointer, :pointer, :pointer, :pointer, :pointer], :void
+   :cpCollisionBeginFunc, :cpCollisionPreSolveFunc, :cpCollisionPostSolveFunc, :cpCollisionSeparateFunc, :pointer], :void
   func :cpSpaceRemoveCollisionHandler, [:pointer, :uint, :uint], :void
   class Space
     attr_reader :struct
@@ -103,16 +117,38 @@ module CP
     end
 
     def add_collision_func(a,b,&block)
-      # TODO huh?
-      beg = nil
+      # TODO huh? jacius ..
+      beg = Proc.new do |arb_ptr,space_ptr,data_ptr|
+        arb = ArbiterStruct.new(arb_ptr)
+        rb_a = nil
+        rb_b = nil
+        unless arb.a.data.null?
+          a_id = arb.a.data.read_int
+          rb_a = ObjectSpace._id2ref a_id
+        end
+
+        unless arb.b.data.null?
+          b_id = arb.b.data.read_int
+          rb_b = ObjectSpace._id2ref b_id
+        end
+
+        STDERR.puts "WTF?"
+
+        block.call rb_a, rb_b
+      end
+      #making sure GC is't messin w/ me..
+      $saved_procs ||= []
+      $saved_blocks ||= []
+      $saved_procs << beg
+      $saved_blocks << block
       pre = nil
       post = nil
       sep = nil
-      data = block
+      data = nil
       a_id = a.object_id
       b_id = b.object_id
-#      CP.cpSpaceAddCollisionHandler(@struct.pointer, a_id, b_id,
-#                                    beg,pre,post,sep,data)
+      CP.cpSpaceAddCollisionHandler(@struct.pointer, a_id, b_id,
+          beg,pre,post,sep,data)
       @blocks[[a_id,b_id]] = block
       nil
     end
