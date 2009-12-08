@@ -37,6 +37,12 @@ describe 'ShapeStruct in chipmunk' do
       s.layers.should == -1
     end
 
+    it 'can get its group' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+      s.struct.group.should == 0
+    end
+
     it 'can get its col type' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
@@ -47,11 +53,17 @@ describe 'ShapeStruct in chipmunk' do
     end
 
     it 'can get its sensor'
-    it 'can get its u'
+    it 'can get its u' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+      s.u.should be_close(0,0.001)
+    end
     it 'can get its surf vec'
     it 'can get its data' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+      s.data.should be_nil
+
       mem = FFI::MemoryPointer.new(:long)
       s.data = mem
       s.data.should == mem

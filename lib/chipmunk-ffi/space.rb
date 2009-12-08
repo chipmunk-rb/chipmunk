@@ -3,6 +3,10 @@ module CP
     layout(
       :a, :uint,
       :b, :uint,
+#      :begin, :cpCollisionBeginFunc,
+#      :pre_solve, :cpCollisionPreSolveFunc,
+#      :post_solve, :cpCollisionPostSolveFunc,
+#      :separate, :cpCollisionSeparateFunc,
       :begin, :pointer,
       :pre_solve, :pointer,
       :post_solve, :pointer,
@@ -14,13 +18,14 @@ module CP
   class ArbiterStruct < NiceFFI::Struct
     layout(
       :num_contacts, :int,
-      :a, ShapeStruct,
-      :b, ShapeStruct,
+      :contacts, :pointer,
+      :a, :pointer,
+      :b, :pointer,
       :e, CP_FLOAT,
       :u, CP_FLOAT,
-      :surf_vr, Vect,
+      :surf_vr, Vect.by_value,
       :stamp, :int,
-      :handler, CollisionHandlerStruct,
+      :handler, :pointer,
       :swapped_col, :char,
       :first_col, :char
     )
@@ -29,7 +34,7 @@ module CP
   class SpaceStruct < NiceFFI::Struct
     layout( :iterations, :int,
       :elastic_iterations, :int,
-      :gravity, Vect,
+      :gravity, Vect.by_value,
       :damping, CP_FLOAT,
       :stamp, :int,
       :static_shapes, :pointer,
@@ -39,7 +44,7 @@ module CP
       :contact_set, :pointer,
       :constraints, :pointer,
       :coll_func_set, :pointer,
-      :default_handler, :pointer,
+      :default_handler, CollisionHandlerStruct.by_value,
       :post_step_callbacks, :pointer
     )
     def self.release(ptr)
@@ -123,19 +128,34 @@ module CP
         rb_a = nil
         rb_b = nil
         a_it = arb[:a][:data]
+        STDERR.puts "A: #{a_it.inspect}"
         unless a_it.null?
-          a_id = a_it.read_long
+          a_id = a_it.read_int
+          STDERR.puts "A int: #{a_id.inspect}"
           rb_a = ObjectSpace._id2ref a_id
+          STDERR.puts "A obj: #{rb_a.inspect}"
         end
 
         b_it = arb[:b][:data]
         unless b_it.null?
-          b_id = b_it.read_long
+          b_id = b_it.read_int
           rb_b = ObjectSpace._id2ref b_id
         end
 
         STDERR.puts "WTF?"
 
+#        a_id = arb.a.data
+#        b_id = arb.b.data
+#        p "HERE"
+#        p a_id, b_id
+#        p a_id.class
+#        p a_id.methods.sort-nil.methods
+#
+#        rb_a = ObjectSpace._id2ref a_id
+#        p rb_a.inspect
+#        p rb_a.class
+#        rb_b = ObjectSpace._id2ref b_id
+#        p rb_a, rb_b
         block.call rb_a, rb_b
       end
       #making sure GC is't messin w/ me..

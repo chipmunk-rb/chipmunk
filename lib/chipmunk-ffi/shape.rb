@@ -32,7 +32,8 @@ module CP
            :data, :pointer,
            :collision_type, :uint,
            :group, :uint,
-           :layers, :int
+           :layers, :int,
+           :hash_value, :size_t
           )
   end
   class SegmentQueryInfoStruct < NiceFFI::Struct
@@ -134,10 +135,11 @@ module CP
         @body = body
         ptr = CP.cpCircleShapeNew body.struct.pointer, rad, offset_vec.struct
         @struct = ShapeStruct.new ptr
-        mem = FFI::MemoryPointer.new(:long)
-        mem.write_long object_id
-#        puts "#{self.inspect} => id[#{object_id}]"
+        mem = FFI::MemoryPointer.new(:int)
+        mem.write_int object_id
         @struct.data = mem
+        p @struct.data
+        p @struct.data.read_int
       end
     end
     class Segment
@@ -146,7 +148,9 @@ module CP
         @body = body
         ptr = CP.cpSegmentShapeNew body.struct.pointer, v1.struct, v2.struct, r
         @struct = ShapeStruct.new ptr
-        @struct.data = self.object_id
+        mem = FFI::MemoryPointer.new(:int)
+        mem.write_int object_id
+        @struct.data = mem
       end
     end
     class Poly
@@ -164,7 +168,9 @@ module CP
         }
         ptr = CP.cpPolyShapeNew body.struct.pointer, verts.size, mem_pointer, offset_vec.struct
         @struct = ShapeStruct.new ptr
-        @struct.data = self.object_id
+        mem = FFI::MemoryPointer.new(:int)
+        mem.write_int object_id
+        @struct.data = mem
       end
     end
   end
