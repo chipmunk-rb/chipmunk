@@ -1,16 +1,17 @@
 module CP
+  callback :cpCollisionBeginFunc, [:pointer,:pointer,:pointer], :int
+  callback :cpCollisionPreSolveFunc, [:pointer,:pointer,:pointer], :int
+  callback :cpCollisionPostSolveFunc, [:pointer,:pointer,:pointer], :int
+  callback :cpCollisionSeparateFunc, [:pointer,:pointer,:pointer], :int
+
   class CollisionHandlerStruct < NiceFFI::Struct
     layout(
       :a, :uint,
       :b, :uint,
-#      :begin, :cpCollisionBeginFunc,
-#      :pre_solve, :cpCollisionPreSolveFunc,
-#      :post_solve, :cpCollisionPostSolveFunc,
-#      :separate, :cpCollisionSeparateFunc,
-      :begin, :pointer,
-      :pre_solve, :pointer,
-      :post_solve, :pointer,
-      :separate, :pointer,
+      :begin, :cpCollisionBeginFunc,
+      :pre_solve, :cpCollisionPreSolveFunc,
+      :post_solve, :cpCollisionPostSolveFunc,
+      :separate, :cpCollisionSeparateFunc,
       :data, :pointer
     )
   end
@@ -51,11 +52,6 @@ module CP
       CP.cpSpaceFreeChildren(ptr)
     end
   end
-
-  callback :cpCollisionBeginFunc, [:pointer,:pointer,:pointer], :int
-  callback :cpCollisionPreSolveFunc, [:pointer,:pointer,:pointer], :int
-  callback :cpCollisionPostSolveFunc, [:pointer,:pointer,:pointer], :int
-  callback :cpCollisionSeparateFunc, [:pointer,:pointer,:pointer], :int
 
 
   func :cpSpaceNew, [], :pointer
@@ -122,41 +118,23 @@ module CP
     end
 
     def add_collision_func(a,b,&block)
-      # TODO huh? jacius ..
       beg = Proc.new do |arb_ptr,space_ptr,data_ptr|
-        arb = ArbiterStruct.new(arb_ptr)
-        rb_a = nil
-        rb_b = nil
-        a_it = arb[:a][:data]
-        STDERR.puts "A: #{a_it.inspect}"
-        unless a_it.null?
-          a_id = a_it.read_int
-          STDERR.puts "A int: #{a_id.inspect}"
-          rb_a = ObjectSpace._id2ref a_id
-          STDERR.puts "A obj: #{rb_a.inspect}"
+        begin
+          arb = ArbiterStruct.new(arb_ptr)
+
+          as = ShapeStruct.new(arb.a)
+          a_obj_id = as.data.read_int
+          rb_a = ObjectSpace._id2ref a_obj_id
+
+          bs = ShapeStruct.new(arb.b)
+          b_obj_id = bs.data.read_int
+          rb_b = ObjectSpace._id2ref b_obj_id
+
+          block.call rb_a, rb_b
+          1 #always return true for now
+        rescue
+          0
         end
-
-        b_it = arb[:b][:data]
-        unless b_it.null?
-          b_id = b_it.read_int
-          rb_b = ObjectSpace._id2ref b_id
-        end
-
-        STDERR.puts "WTF?"
-
-#        a_id = arb.a.data
-#        b_id = arb.b.data
-#        p "HERE"
-#        p a_id, b_id
-#        p a_id.class
-#        p a_id.methods.sort-nil.methods
-#
-#        rb_a = ObjectSpace._id2ref a_id
-#        p rb_a.inspect
-#        p rb_a.class
-#        rb_b = ObjectSpace._id2ref b_id
-#        p rb_a, rb_b
-        block.call rb_a, rb_b
       end
       #making sure GC is't messin w/ me..
       $saved_procs ||= []

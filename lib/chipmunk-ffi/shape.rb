@@ -53,7 +53,6 @@ module CP
     attr_reader :struct
 
     def body
-#      Body.new BodyStruct.new(@struct.body)
       @body
     end
     def body=(new_body)
@@ -138,8 +137,6 @@ module CP
         mem = FFI::MemoryPointer.new(:int)
         mem.write_int object_id
         @struct.data = mem
-        p @struct.data
-        p @struct.data.read_int
       end
     end
     class Segment

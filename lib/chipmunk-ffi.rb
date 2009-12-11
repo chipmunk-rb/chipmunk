@@ -39,3 +39,9 @@ $: << File.dirname(__FILE__)
 libs.each do |lib|
   require "chipmunk-ffi/#{lib}"
 end
+include CP
+puts "Vect: #{Vect.size}"
+puts "BBStruct: #{BBStruct.size}"
+puts "BodyStruct: #{BodyStruct.size}"
+puts "ShapeStruct: #{ShapeStruct.size}"
+puts "SpaceStruct: #{SpaceStruct.size}"

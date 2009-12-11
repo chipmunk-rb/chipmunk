@@ -59,14 +59,11 @@ describe 'ShapeStruct in chipmunk' do
       s.u.should be_close(0,0.001)
     end
     it 'can get its surf vec'
+
     it 'can get its data' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
-      s.data.should be_nil
-
-      mem = FFI::MemoryPointer.new(:long)
-      s.data = mem
-      s.data.should == mem
+      s.data.read_int.should == s.object_id
     end
 
     it 'can get its klass' do

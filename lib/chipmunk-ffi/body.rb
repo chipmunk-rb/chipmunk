@@ -79,8 +79,6 @@ module CP
     end
     def p=(new_p)
       @struct.p.pointer.put_bytes 0, new_p.struct.to_bytes, 0,Vect.size
-      # TODO XXX this probably leaks?
-#      @struct.p.send :pointer=, new_p.struct.pointer
       self
     end
     alias :pos :p
