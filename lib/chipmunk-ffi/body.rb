@@ -5,11 +5,8 @@ module CP
 
   class BodyStruct < NiceFFI::Struct
     layout(
-      #      :bodyVelocityFunc, :cpBodyVelocityFunc,
-      #      :bodyPositionFunc, :cpBodyPositionFunc,
-      # TODO not sure if :pointer is right here...
-      :bodyVelocityFunc, :pointer,
-      :bodyPositionFunc, :pointer,
+      :bodyVelocityFunc, :cpBodyVelocityFunc,
+      :bodyPositionFunc, :cpBodyPositionFunc,
       :m, CP_FLOAT,
       :m_inv, CP_FLOAT,
       :i, CP_FLOAT,
@@ -22,6 +19,8 @@ module CP
       :t, CP_FLOAT,
       :rot, Vect,
       :data, :pointer,
+      :v_limit, CP_FLOAT,
+      :w_limit, CP_FLOAT,
       :v_bias, Vect,
       :w_bias, CP_FLOAT
     )
