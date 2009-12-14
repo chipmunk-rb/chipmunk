@@ -34,7 +34,8 @@ describe 'ShapeStruct in chipmunk' do
     it 'can get its layers' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
-      s.layers.should == -1
+      # he sets layers to -1 on an unsigned int
+      s.layers.should == 2**32-1
     end
 
     it 'can get its group' do

@@ -197,7 +197,6 @@ module CP
     end
 
     def remove_shape(shape)
-      puts "FFI removing shape: #{shape.object_id} #{shape.struct.data.get_ulong(0)}"
       CP.cpSpaceRemoveShape(@struct.pointer, shape.struct.pointer)
       @active_shapes.delete shape
       shape
@@ -234,13 +233,6 @@ module CP
     end
 
     def step(dt)
-      @step ||= 0
-      @step += 1
-      puts "================= STEP #{@step} =================="
-      @active_shapes.each do |shape|
-        puts "AS: #{shape.object_id} #{shape.struct.data.get_ulong(0)}"
-        raise "CORRUPT" unless shape.object_id == shape.struct.data.get_ulong(0)
-      end
       CP.cpSpaceStep @struct.pointer, dt
     end
 

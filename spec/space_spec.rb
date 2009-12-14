@@ -19,8 +19,6 @@ describe 'Shape in chipmunk' do
     s = CP::Space.new
     bod = CP::Body.new 90, 76
     shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
-    p shapy.struct.hash_value
-    p shapy.struct.data.read_int
     s.add_shape shapy
 
   end
@@ -37,31 +35,32 @@ describe 'Shape in chipmunk' do
     space.add_shape shapy
     space.add_shape shapy_one
 
-    @shapes = []
-    @@procs ||= []
-    beg = Proc.new do |arb_ptr,space_ptr,data_ptr|
-#      puts "HERE"
-      arb = ArbiterStruct.new(arb_ptr)
-      sh = ShapeStruct.new(arb.b)
-      b_obj_id = sh.data.get_ulong 0
-      rb_b = ObjectSpace._id2ref b_obj_id
-      @shapes << rb_b
-#      p rb_b
-      # return 1 or 0 (true to continue)
+    space.add_collision_func :foo, :bar do |a,b|
+      a.should_not be_nil
+      b.should_not be_nil
+      @called = true
       1
     end
-    pre = nil
-    post = nil
-    sep = nil
-    data = nil
-
-    @@procs << beg
-
-    CP.cpSpaceAddCollisionHandler(space.struct.pointer, :foo.object_id, :bar.object_id, beg,pre,post,sep,data)
 
     space.step 1
+    @called.should be_true
+  end
 
-    p @shapes
+  it 'can have lots of shapes no GC corruption' do
+    space = CP::Space.new
 
+    bods = []
+    shapes = []
+    50.times do |i|
+      bods[i] = CP::Body.new(90, 76)
+      shapes[i] = CP::Shape::Circle.new(bods[i], 40, CP::ZERO_VEC_2)
+      shapes[i].collision_type = "bar#{i}".to_sym
+      space.add_shape(shapes[i])
+      space.add_body(bods[i])
+    end
+
+    4000.times do
+      space.step 1
+    end
   end
 end
