@@ -37,13 +37,15 @@ describe 'Shape in chipmunk' do
     space.add_shape shapy
     space.add_shape shapy_one
 
+    @shapes = []
     @@procs ||= []
     beg = Proc.new do |arb_ptr,space_ptr,data_ptr|
 #      puts "HERE"
       arb = ArbiterStruct.new(arb_ptr)
       sh = ShapeStruct.new(arb.b)
-      b_obj_id = sh.data.read_int
+      b_obj_id = sh.data.get_ulong 0
       rb_b = ObjectSpace._id2ref b_obj_id
+      @shapes << rb_b
 #      p rb_b
       # return 1 or 0 (true to continue)
       1
@@ -58,6 +60,8 @@ describe 'Shape in chipmunk' do
     CP.cpSpaceAddCollisionHandler(space.struct.pointer, :foo.object_id, :bar.object_id, beg,pre,post,sep,data)
 
     space.step 1
+
+    p @shapes
 
   end
 end

@@ -122,17 +122,24 @@ module CP
         begin
           arb = ArbiterStruct.new(arb_ptr)
 
-          as = ShapeStruct.new(arb.a)
-          a_obj_id = as.data.read_int
+          swapped = arb.swapped_col == 0 ? false : true
+          arba = swapped ? arb.b : arb.a
+          arbb = swapped ? arb.a : arb.b
+
+          as = ShapeStruct.new(arba)
+          a_obj_id = as.data.get_ulong 0
           rb_a = ObjectSpace._id2ref a_obj_id
 
-          bs = ShapeStruct.new(arb.b)
-          b_obj_id = bs.data.read_int
+          bs = ShapeStruct.new(arbb)
+          b_obj_id = bs.data.get_ulong 0
           rb_b = ObjectSpace._id2ref b_obj_id
 
           block.call rb_a, rb_b
-          1 #always return true for now
-        rescue
+#          1 #always return true for now
+          0
+        rescue Exception => ex
+          puts ex.message
+          puts ex.backtrace
           0
         end
       end
@@ -190,6 +197,7 @@ module CP
     end
 
     def remove_shape(shape)
+      puts "FFI removing shape: #{shape.object_id} #{shape.struct.data.get_ulong(0)}"
       CP.cpSpaceRemoveShape(@struct.pointer, shape.struct.pointer)
       @active_shapes.delete shape
       shape
@@ -226,6 +234,13 @@ module CP
     end
 
     def step(dt)
+      @step ||= 0
+      @step += 1
+      puts "================= STEP #{@step} =================="
+      @active_shapes.each do |shape|
+        puts "AS: #{shape.object_id} #{shape.struct.data.get_ulong(0)}"
+        raise "CORRUPT" unless shape.object_id == shape.struct.data.get_ulong(0)
+      end
       CP.cpSpaceStep @struct.pointer, dt
     end
 

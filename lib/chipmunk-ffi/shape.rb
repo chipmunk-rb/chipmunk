@@ -32,7 +32,7 @@ module CP
            :data, :pointer,
            :collision_type, :uint,
            :group, :uint,
-           :layers, :int,
+           :layers, :uint,
            :hash_value, :size_t
           )
   end
@@ -124,6 +124,12 @@ module CP
       @struct.surface_v.pointer.put_bytes 0, new_sv.struct.to_bytes, 0,Vect.size
     end
 
+    def set_data_pointer
+      mem = FFI::MemoryPointer.new(:ulong)
+      mem.put_ulong 0, object_id
+      @struct.data = mem
+    end
+
     def self.reset_id_counter
       CP.cpResetShapeIdCounter
     end
@@ -134,9 +140,7 @@ module CP
         @body = body
         ptr = CP.cpCircleShapeNew body.struct.pointer, rad, offset_vec.struct
         @struct = ShapeStruct.new ptr
-        mem = FFI::MemoryPointer.new(:int)
-        mem.write_int object_id
-        @struct.data = mem
+        set_data_pointer
       end
     end
     class Segment
@@ -145,9 +149,7 @@ module CP
         @body = body
         ptr = CP.cpSegmentShapeNew body.struct.pointer, v1.struct, v2.struct, r
         @struct = ShapeStruct.new ptr
-        mem = FFI::MemoryPointer.new(:int)
-        mem.write_int object_id
-        @struct.data = mem
+        set_data_pointer
       end
     end
     class Poly
@@ -165,9 +167,7 @@ module CP
         }
         ptr = CP.cpPolyShapeNew body.struct.pointer, verts.size, mem_pointer, offset_vec.struct
         @struct = ShapeStruct.new ptr
-        mem = FFI::MemoryPointer.new(:int)
-        mem.write_int object_id
-        @struct.data = mem
+        set_data_pointer
       end
     end
   end
