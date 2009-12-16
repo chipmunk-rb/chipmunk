@@ -15,4 +15,12 @@ describe 'Constraints in chipmunk' do
       sj = CP::SlideJoint.new(boda,bodb,ZERO_VEC_2,ZERO_VEC_2,4,6)
     end
   end
+
+  describe 'PivotJoint class' do
+    it 'can be created' do
+      boda = Body.new 90, 46
+      bodb = Body.new 9, 6
+      pj = CP::PivotJoint.new(boda,bodb,ZERO_VEC_2,ZERO_VEC_2)
+    end
+  end
 end

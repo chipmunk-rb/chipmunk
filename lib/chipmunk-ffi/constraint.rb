@@ -20,7 +20,7 @@ module CP
 
   require 'chipmunk-ffi/constraints/pin_joint'
   require 'chipmunk-ffi/constraints/slide_joint'
-#  require 'chipmunk-ffi/constraints/pivot_joint'
+  require 'chipmunk-ffi/constraints/pivot_joint'
 #  require 'chipmunk-ffi/constraints/groove_joint'
 #  require 'chipmunk-ffi/constraints/damped_spring'
 #  require 'chipmunk-ffi/constraints/rotary_limit_joint'
