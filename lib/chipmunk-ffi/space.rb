@@ -78,6 +78,8 @@ module CP
   func :cpSpaceAddCollisionHandler, [:pointer, :uint, :uint,
    :cpCollisionBeginFunc, :cpCollisionPreSolveFunc, :cpCollisionPostSolveFunc, :cpCollisionSeparateFunc, :pointer], :void
   func :cpSpaceRemoveCollisionHandler, [:pointer, :uint, :uint], :void
+
+
   class Space
     attr_reader :struct
     def initialize
@@ -87,6 +89,7 @@ module CP
       @bodies = []
       @constraints = []
       @blocks = {}
+      @callbacks = {}
     end
     
     def iterations
@@ -118,7 +121,8 @@ module CP
     end
 
     def add_collision_func(a,b,&block)
-      beg = Proc.new do |arb_ptr,space_ptr,data_ptr|
+      beg = nil
+      pre = Proc.new do |arb_ptr,space_ptr,data_ptr|
         begin
           arb = ArbiterStruct.new(arb_ptr)
 
@@ -135,20 +139,13 @@ module CP
           rb_b = ObjectSpace._id2ref b_obj_id
 
           block.call rb_a, rb_b
-#          1 #always return true for now
-          0
+          1
         rescue Exception => ex
           puts ex.message
           puts ex.backtrace
           0
         end
       end
-      #making sure GC is't messin w/ me..
-      $saved_procs ||= []
-      $saved_blocks ||= []
-      $saved_procs << beg
-      $saved_blocks << block
-      pre = nil
       post = nil
       sep = nil
       data = nil
@@ -156,20 +153,63 @@ module CP
       b_id = b.object_id
       CP.cpSpaceAddCollisionHandler(@struct.pointer, a_id, b_id,
           beg,pre,post,sep,data)
-      @blocks[[a_id,b_id]] = block
+      @blocks[[a_id,b_id]] = pre
       nil
     end
 
     def remove_collision_func(a,b)
       a_id = a.object_id
       b_id = b.object_id
-#      CP.cpSpaceRemoveCollisionHandler(@struct.pointer, a_id, b_id)
+      CP.cpSpaceRemoveCollisionHandler(@struct.pointer, a_id, b_id)
       @blocks.delete [a_id,b_id]
       nil
     end
 
     def set_default_collision_func(&block)
+      raise "Not Implmented yet"
       @blocks[:default] = block 
+    end
+
+    def wrap_collision_callback(a,b,type,handler)
+      callback = Proc.new do |arb_ptr,space_ptr,data_ptr|
+        arb = ArbiterStruct.new(arb_ptr)
+
+        swapped = arb.swapped_col == 0 ? false : true
+        arba = swapped ? arb.b : arb.a
+        arbb = swapped ? arb.a : arb.b
+
+        as = ShapeStruct.new(arba)
+        a_obj_id = as.data.get_ulong 0
+        rb_a = ObjectSpace._id2ref a_obj_id
+
+        bs = ShapeStruct.new(arbb)
+        b_obj_id = bs.data.get_ulong 0
+        rb_b = ObjectSpace._id2ref b_obj_id
+
+        ret = handler.send type, rb_a, rb_b
+        if ret
+          1
+        else
+          0
+        end
+      end
+      @callbacks[[a,b,type]] = [handler,callback]
+      callback
+    end
+
+    # handler should have methods [beg,pre,post,sep] defined
+    def add_collision_handler(a,b,handler)
+      a_id = a.object_id
+      b_id = b.object_id
+
+      beg = handler.respond_to?(:begin) ? wrap_collision_callback(a, b, :begin, handler) : nil
+      pre = handler.respond_to?(:pre) ? wrap_collision_callback(a, b, :pre, handler) : nil
+      post = handler.respond_to?(:post) ? wrap_collision_callback(a, b, :post, handler) : nil
+      sep = handler.respond_to?(:sep) ? wrap_collision_callback(a, b, :sep, handler) : nil
+      data = nil
+
+      CP.cpSpaceAddCollisionHandler(@struct.pointer, 
+        a_id, b_id, beg,pre,post,sep,data)
     end
 
     def add_shape(shape)
