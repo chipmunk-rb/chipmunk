@@ -18,7 +18,7 @@ module CP
   class PinJoint
     attr_reader :struct
     def initialize(a_body, b_body, anchr_one, anchr_two)
-      @struct = ConstraintStruct.new(CP.cpPinJointNew(
+      @struct = PinJointStruct.new(CP.cpPinJointNew(
         a_body.struct.pointer,b_body.struct.pointer,anchr_one.struct,anchr_two.struct))
     end
   end

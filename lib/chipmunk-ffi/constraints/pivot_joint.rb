@@ -18,11 +18,11 @@ module CP
   class PivotJoint
     attr_reader :struct
     def initialize(a_body, b_body, anchr_one, anchr_two=nil)
-      if anchr_two.nil?
-        @struct = ConstraintStruct.new(CP.cpPivotJointNew(
+      @struct = if anchr_two.nil?
+        PivotJointStruct.new(CP.cpPivotJointNew(
           a_body.struct.pointer,b_body.struct.pointer,anchr_one.struct))
       else
-        @struct = ConstraintStruct.new(CP.cpPivotJointNew2(
+        PivotJointStruct.new(CP.cpPivotJointNew2(
           a_body.struct.pointer,b_body.struct.pointer,anchr_one.struct,anchr_two.struct))
       end
     end

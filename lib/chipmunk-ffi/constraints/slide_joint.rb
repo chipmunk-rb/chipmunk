@@ -20,7 +20,7 @@ module CP
   class SlideJoint
     attr_reader :struct
     def initialize(a_body, b_body, anchr_one, anchr_two, min, max)
-      @struct = ConstraintStruct.new(CP.cpSlideJointNew(
+      @struct = SlideJointStruct.new(CP.cpSlideJointNew(
         a_body.struct.pointer,b_body.struct.pointer,anchr_one.struct,anchr_two.struct,min,max))
     end
   end
