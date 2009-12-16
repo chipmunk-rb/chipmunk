@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{chipmunk-ffi}
-  s.version = "0.1.1"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Shawn Anderson"]
-  s.date = %q{2009-12-05}
+  s.date = %q{2009-12-16}
   s.description = %q{FFI bindings for chipmunk physics lib.}
   s.email = %q{shawn42@gmail.com}
   s.files = [
@@ -19,12 +19,23 @@ Gem::Specification.new do |s|
      "lib/chipmunk-ffi.rb",
      "lib/chipmunk-ffi/bb.rb",
      "lib/chipmunk-ffi/body.rb",
+     "lib/chipmunk-ffi/constraint.rb",
+     "lib/chipmunk-ffi/constraints/damped_spring.rb",
+     "lib/chipmunk-ffi/constraints/gear_joint.rb",
+     "lib/chipmunk-ffi/constraints/groove_joint.rb",
+     "lib/chipmunk-ffi/constraints/pin_joint.rb",
+     "lib/chipmunk-ffi/constraints/pivot_joint.rb",
+     "lib/chipmunk-ffi/constraints/ratchet_joint.rb",
+     "lib/chipmunk-ffi/constraints/rotary_limit_joint.rb",
+     "lib/chipmunk-ffi/constraints/simple_motor.rb",
+     "lib/chipmunk-ffi/constraints/slide_joint.rb",
      "lib/chipmunk-ffi/core.rb",
      "lib/chipmunk-ffi/shape.rb",
      "lib/chipmunk-ffi/space.rb",
      "lib/chipmunk-ffi/vec2.rb",
      "spec/bb_spec.rb",
      "spec/body_spec.rb",
+     "spec/constraint_spec.rb",
      "spec/core_spec.rb",
      "spec/shape_spec.rb",
      "spec/space_spec.rb",
@@ -40,6 +51,7 @@ Gem::Specification.new do |s|
   s.test_files = [
     "spec/bb_spec.rb",
      "spec/body_spec.rb",
+     "spec/constraint_spec.rb",
      "spec/core_spec.rb",
      "spec/shape_spec.rb",
      "spec/space_spec.rb",
