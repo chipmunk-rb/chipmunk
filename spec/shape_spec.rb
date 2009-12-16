@@ -72,7 +72,14 @@ describe 'ShapeStruct in chipmunk' do
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
       ShapeClassStruct.new(s.struct.klass).type.should == :circle_shape
     end
+
+    it 'can set its bodys v' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
+      s.body.v = vec2(4,5)
+    end
   end
+
   describe 'Segment class' do
     it 'can be created' do
       bod = CP::Body.new 90, 76

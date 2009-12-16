@@ -87,7 +87,6 @@ module CP
       Vec2.new @struct.v
     end
     def v=(pv)
-      @struct.v = pv.struct
       @struct.v.pointer.put_bytes 0, pv.struct.to_bytes, 0,Vect.size
       self
     end
@@ -99,7 +98,6 @@ module CP
     end
     def f=(pf)
       @struct.f.pointer.put_bytes 0, pf.struct.to_bytes, 0,Vect.size
-      @struct.f = pf.struct
       self
     end
     alias :force :f

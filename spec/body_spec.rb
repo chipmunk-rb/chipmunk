@@ -17,12 +17,21 @@ describe 'A new Body' do
     b.p.y.should == 0
 
     b.pos = vec2(4,6)
-#    b.pos.x.should == 4
-#    b.pos.y.should == 6
+    b.pos.x.should == 4
+    b.pos.y.should == 6
+  end
+
+  it 'can set its vel' do
+    b = CP::Body.new(5, 7)
+    b.p.x.should == 0
+    b.p.y.should == 0
+
+    b.v = vec2(4,6)
+    b.v.x.should == 4
+    b.v.y.should == 6
   end
 
   it 'can set its moment'
-  it 'can set its vel'
   it 'can set its force'
   it 'can set its angle'
   it 'can set its angle_vel'
