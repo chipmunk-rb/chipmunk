@@ -122,27 +122,35 @@ module CP
 
     def add_collision_func(a,b,&block)
       beg = nil
-      pre = Proc.new do |arb_ptr,space_ptr,data_ptr|
-        begin
-          arb = ArbiterStruct.new(arb_ptr)
+      pre = nil
+      unless block.nil?
+        pre = Proc.new do |arb_ptr,space_ptr,data_ptr|
+          begin
+            arb = ArbiterStruct.new(arb_ptr)
 
-          swapped = arb.swapped_col == 0 ? false : true
-          arba = swapped ? arb.b : arb.a
-          arbb = swapped ? arb.a : arb.b
+            swapped = arb.swapped_col == 0 ? false : true
+            arba = swapped ? arb.b : arb.a
+            arbb = swapped ? arb.a : arb.b
 
-          as = ShapeStruct.new(arba)
-          a_obj_id = as.data.get_ulong 0
-          rb_a = ObjectSpace._id2ref a_obj_id
+            as = ShapeStruct.new(arba)
+            a_obj_id = as.data.get_ulong 0
+            rb_a = ObjectSpace._id2ref a_obj_id
 
-          bs = ShapeStruct.new(arbb)
-          b_obj_id = bs.data.get_ulong 0
-          rb_b = ObjectSpace._id2ref b_obj_id
+            bs = ShapeStruct.new(arbb)
+            b_obj_id = bs.data.get_ulong 0
+            rb_b = ObjectSpace._id2ref b_obj_id
 
-          block.call rb_a, rb_b
-          1
-        rescue Exception => ex
-          puts ex.message
-          puts ex.backtrace
+            block.call rb_a, rb_b
+            1
+          rescue Exception => ex
+            puts ex.message
+            puts ex.backtrace
+            0
+          end
+        end
+      else
+        # needed for old chipmunk style 
+        pre = Proc.new do |arb_ptr,space_ptr,data_ptr|
           0
         end
       end
