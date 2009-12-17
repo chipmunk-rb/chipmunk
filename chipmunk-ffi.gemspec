@@ -12,6 +12,9 @@ Gem::Specification.new do |s|
   s.date = %q{2009-12-17}
   s.description = %q{FFI bindings for chipmunk physics lib.}
   s.email = %q{shawn42@gmail.com}
+  s.extra_rdoc_files = [
+    "README.markdown"
+  ]
   s.files = [
     "Rakefile",
      "VERSION",
