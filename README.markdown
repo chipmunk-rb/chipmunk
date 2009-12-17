@@ -27,7 +27,7 @@ License
 -------
 
 MIT
-Copyright 2009 John Croisant
+Copyright 2009 Shawn Anderson
 
 
 Author
