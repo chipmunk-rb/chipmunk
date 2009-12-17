@@ -8,6 +8,8 @@ begin
     gem.email = "shawn42@gmail.com"
     gem.homepage = "http://shawn42.github.com/chipmunk-ffi"
     gem.authors = ["Shawn Anderson"]
+    gem.add_dependency "ffi", ">= 0.6.0"
+    gem.add_dependency "nice-ffi"
     gem.add_development_dependency "rspec"
     gem.add_development_dependency "jeweler"
     gem.test_files = FileList['{spec,test}/**/*.rb']
