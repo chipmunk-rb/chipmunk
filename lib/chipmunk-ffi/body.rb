@@ -135,11 +135,11 @@ module CP
     end
 
     def local2world(v)
-      CP.cpBodyLocal2World(@struct.pointer,v.struct)
+      Vec2.new CP.cpBodyLocal2World(@struct.pointer,v.struct)
     end
 
     def world2local(v)
-      CP.cpBodyWorld2Local(@struct.pointer,v.struct)
+      Vec2.new CP.cpBodyWorld2Local(@struct.pointer,v.struct)
     end
 
     def reset_forces

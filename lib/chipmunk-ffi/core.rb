@@ -24,17 +24,17 @@ module CP
   end
 
   func :cpMomentForCircle, [CP_FLOAT,CP_FLOAT,CP_FLOAT,Vect.by_value], CP_FLOAT
-  def moment_for_circle(m,r1,r2,offset)
+  def self.moment_for_circle(m,r1,r2,offset)
     cpMomentForCircle(m, r1, r2, offset.struct);
   end
 
   func :cpMomentForSegment, [CP_FLOAT,Vect.by_value,Vect.by_value], CP_FLOAT
-  def moment_for_segment(m,v1,v2)
+  def self.moment_for_segment(m,v1,v2)
     cpMomentForCircle(m, v1.struct, v2.struct)
   end
 
   func :cpMomentForPoly, [CP_FLOAT,:int,:pointer,Vect.by_value], CP_FLOAT
-  def moment_for_poly(m,verts,offset)
+  def self.moment_for_poly(m,verts,offset)
     mem_pointer = FFI::MemoryPointer.new Vect, verts.size
     vert_structs = verts.collect{|s|s.struct}
 
@@ -47,6 +47,9 @@ module CP
     cpMomentForPoly(m, verts.size, mem_pointer, offset.struct)
   end
 
+  def moment_for_circle(*args);CP.moment_for_circle(*args);end
+  def moment_for_poly(*args);CP.moment_for_poly(*args);end
+  def moment_for_segment(*args);CP.moment_for_segment(*args);end
   func :cpInitChipmunk, [], :void
   cpInitChipmunk
 

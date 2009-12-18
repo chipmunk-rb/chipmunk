@@ -105,11 +105,11 @@ module CP
     end
 
     def dot(other_vec)
-      CP.cpvdot(@struct, other_vec.struct)
+      Vec2.new CP.cpvdot(@struct, other_vec.struct)
     end
 
     def cross(other_vec)
-      CP.cpvcross(@struct, other_vec.struct)
+      Vec2.new CP.cpvcross(@struct, other_vec.struct)
     end
 
     def perp
