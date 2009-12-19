@@ -20,11 +20,15 @@ rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
 
-require 'spec/rake/spectask'
-desc "Run all rspecs"
-Spec::Rake::SpecTask.new(:spec) do |t|
-  t.spec_files = FileList['spec/*_spec.rb']
-end
-task :default => :spec
+begin
+  require 'spec/rake/spectask'
+  desc "Run all rspecs"
+  Spec::Rake::SpecTask.new(:spec) do |t|
+    t.spec_files = FileList['spec/*_spec.rb']
+  end
+  task :default => :spec
 
+rescue LoadError
+  puts "Rspec (or a dependency) not available. Install it with: sudo gem install rspec"
+end
 # vim: syntax=Ruby

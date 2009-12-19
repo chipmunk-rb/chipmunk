@@ -125,8 +125,8 @@ module CP
     end
 
     def set_data_pointer
-      mem = FFI::MemoryPointer.new(:ulong)
-      mem.put_ulong 0, object_id
+      mem = FFI::MemoryPointer.new(:long)
+      mem.put_long 0, object_id
       # this is needed to prevent data corruption by GC
       @shape_pointer = mem
       @struct.data = mem

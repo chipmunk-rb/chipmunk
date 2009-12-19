@@ -133,11 +133,11 @@ module CP
             arbb = swapped ? arb.a : arb.b
 
             as = ShapeStruct.new(arba)
-            a_obj_id = as.data.get_ulong 0
+            a_obj_id = as.data.get_long 0
             rb_a = ObjectSpace._id2ref a_obj_id
 
             bs = ShapeStruct.new(arbb)
-            b_obj_id = bs.data.get_ulong 0
+            b_obj_id = bs.data.get_long 0
             rb_b = ObjectSpace._id2ref b_obj_id
 
             block.call rb_a, rb_b
@@ -187,11 +187,11 @@ module CP
         arbb = swapped ? arb.a : arb.b
 
         as = ShapeStruct.new(arba)
-        a_obj_id = as.data.get_ulong 0
+        a_obj_id = as.data.get_long 0
         rb_a = ObjectSpace._id2ref a_obj_id
 
         bs = ShapeStruct.new(arbb)
-        b_obj_id = bs.data.get_ulong 0
+        b_obj_id = bs.data.get_long 0
         rb_b = ObjectSpace._id2ref b_obj_id
 
         ret = handler.send type, rb_a, rb_b
