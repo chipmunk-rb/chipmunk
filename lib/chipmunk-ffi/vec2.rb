@@ -9,8 +9,8 @@ module CP
   cp_static_inline :cpvadd, [Vect.by_value,Vect.by_value], Vect.by_value
   cp_static_inline :cpvsub, [Vect.by_value,Vect.by_value], Vect.by_value
   cp_static_inline :cpvmult, [Vect.by_value,CP_FLOAT], Vect.by_value
-  cp_static_inline :cpvdot, [Vect.by_value,Vect.by_value], Vect.by_value
-  cp_static_inline :cpvcross, [Vect.by_value,Vect.by_value], Vect.by_value
+  cp_static_inline :cpvdot, [Vect.by_value,Vect.by_value], CP_FLOAT
+  cp_static_inline :cpvcross, [Vect.by_value,Vect.by_value], CP_FLOAT
 
   cp_static_inline :cpvperp, [Vect.by_value], Vect.by_value
   cp_static_inline :cpvrperp, [Vect.by_value], Vect.by_value
@@ -26,7 +26,7 @@ module CP
   cp_static_inline :cpvnormalize_safe, [Vect.by_value], Vect.by_value
 
   cp_static_inline :cpvclamp, [Vect.by_value,Vect.by_value], Vect.by_value
-  cp_static_inline :cpvlerpconst, [Vect.by_value,Vect.by_value], Vect.by_value
+  cp_static_inline :cpvlerpconst, [Vect.by_value,Vect.by_value, CP_FLOAT], Vect.by_value
   cp_static_inline :cpvdist, [Vect.by_value,Vect.by_value], CP_FLOAT
   cp_static_inline :cpvdistsq, [Vect.by_value,Vect.by_value], CP_FLOAT
 
@@ -105,11 +105,11 @@ module CP
     end
 
     def dot(other_vec)
-      Vec2.new CP.cpvdot(@struct, other_vec.struct)
+      CP.cpvdot(@struct, other_vec.struct)
     end
 
     def cross(other_vec)
-      Vec2.new CP.cpvcross(@struct, other_vec.struct)
+      CP.cpvcross(@struct, other_vec.struct)
     end
 
     def perp
@@ -117,7 +117,7 @@ module CP
     end
 
     def rperp
-      Vec2.new CP.cpvperp(@struct)
+      Vec2.new CP.cpvrperp(@struct)
     end
 
     def project(other_vec)
@@ -157,16 +157,16 @@ module CP
       Vec2.new CP.cpvclamp(@struct)
     end
 
-    def lerpconst(other_vec)
-      Vec2.new CP.cpvlerpconst(@struct)
+    def lerpconst(other_vec, d)
+      Vec2.new CP.cpvlerpconst(@struct, other_vec.struct, d)
     end
 
     def dist(other_vec)
-      CP.cpvdist(@struct)
+      CP.cpvdist(@struct, other_vec.struct)
     end
 
     def distsq(other_vec)
-      CP.cpvdistsq(@struct)
+      CP.cpvdistsq(@struct, other_vec.struct)
     end
 
     def near?(other_vec, dist)

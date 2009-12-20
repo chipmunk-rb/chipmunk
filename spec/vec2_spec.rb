@@ -114,6 +114,18 @@ describe 'Vect in chipmunk' do
       v.y.should be_close(0.894,0.001)
     end
 
+    it 'can normalize_safe' do
+      v = CP::Vec2.new(10,20).normalize_safe
+      v.x.should be_close(0.447,0.001)
+      v.y.should be_close(0.894,0.001)
+    end
+
+    it 'can normalize_safe on zero vec' do
+      v = CP::Vec2.new(0,0).normalize_safe
+      v.x.should be_close(0,0.001)
+      v.y.should be_close(0,0.001)
+    end
+
     it 'can be normalized! (with a bang)' do
       v = CP::Vec2.new(10,20)
       v2 = v.normalize!
@@ -134,19 +146,94 @@ describe 'Vect in chipmunk' do
       v.lengthsq.should be_close(500, 0.001)
     end
 
-    it 'can dot'
-    it 'can cross'
-    it 'can get dist from other vec2'
-    it 'can get dist squared from other vec2'
-    it 'can tell if its near? another vec2'
-    it 'can perp'
-    it 'can rperp'
-    it 'can rotate'
-    it 'can unrotate'
-    it 'can lerp'
-    it 'can lerpconst'
-    it 'can normalize_safe'
-    it 'can project'
+    it 'can dot' do
+      v = CP::Vec2.new(2,3)
+      other_v = CP::Vec2.new(4,5)
+
+      v.dot(other_v).should be_close(23.0, 0.001)
+    end
+
+    it 'can cross' do
+      v = CP::Vec2.new(2,3)
+      other_v = CP::Vec2.new(4,5)
+
+      v.cross(other_v).should be_close(-2.0, 0.001)
+    end
+
+    it 'can get dist from other vec2' do
+      v = CP::Vec2.new(1,1)
+      other_v = CP::Vec2.new(2,2)
+
+      v.dist(other_v).should be_close(Math.sqrt(2), 0.001)
+    end
+
+    it 'can get dist squared from other vec2' do
+      v = CP::Vec2.new(1,1)
+      other_v = CP::Vec2.new(2,2)
+
+      v.distsq(other_v).should be_close(2, 0.001)
+    end
+
+    it 'can tell if its near? another vec2' do
+      v = CP::Vec2.new(1,1)
+      other_v = CP::Vec2.new(2,2)
+      v.near?(other_v, 1).should be_false
+      v.near?(other_v, 2).should be_true
+    end
+
+    it 'can rotate' do 
+      v = CP::Vec2.new(2,3)
+      other_v = CP::Vec2.new(4,5)
+      rv = v.rotate(other_v)
+      rv.x.should be_close(-7,0.001)
+      rv.y.should be_close(22,0.001)
+    end
+
+    it 'can unrotate' do 
+      v = CP::Vec2.new(2,3)
+      other_v = CP::Vec2.new(4,5)
+      rv = v.unrotate(other_v)
+      rv.x.should be_close(23,0.001)
+      rv.y.should be_close(2,0.001)
+    end
+
+    it 'can perp' do
+      v = CP::Vec2.new(0,1)
+      pv = v.perp
+      pv.x.should be_close(-1,0.001)
+      pv.y.should be_close(0,0.001)
+    end
+
+    it 'can rperp' do
+      v = CP::Vec2.new(0,1)
+      pv = v.rperp
+      pv.x.should be_close(1,0.001)
+      pv.y.should be_close(0,0.001)
+    end
+
+    it 'can lerp' do
+      v = CP::Vec2.new(2,3)
+      other_v = CP::Vec2.new(4,5)
+      rv = v.lerp(other_v)
+      rv.x.should be_close(-1.925,0.001)
+      rv.y.should be_close(-0.925,0.001)
+    end
+
+    it 'can lerpconst' do
+      v = CP::Vec2.new(2,3)
+      other_v = CP::Vec2.new(4,5)
+      rv = v.lerpconst(other_v, 6)
+      rv.x.should be_close(4,0.001)
+      rv.y.should be_close(5,0.001)
+    end
+    
+    it 'can project' do
+      v = CP::Vec2.new(2,3)
+      other_v = CP::Vec2.new(4,5)
+      rv = v.project(other_v)
+      rv.x.should be_close(2.244,0.001)
+      rv.y.should be_close(2.804,0.001)
+    end
 
   end
 end
