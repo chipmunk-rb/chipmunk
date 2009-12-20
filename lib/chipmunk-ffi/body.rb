@@ -155,7 +155,7 @@ module CP
     end
 
     def update_velocity(g,dmp,dt)
-      CP.cpBodyUpdateVelocity(@struct.pointer,g,dmp,dt)
+      CP.cpBodyUpdateVelocity(@struct.pointer,g.struct,dmp,dt)
     end
 
     def update_position(dt)
