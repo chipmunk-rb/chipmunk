@@ -9,6 +9,7 @@ describe 'A new Body' do
     b = CP::Body.new(5, 7)
     b.m = 900
     b.m.should == 900
+    b.m_inv.should be_close(1.0/900, 0.001)
   end
 
   it 'can set its pos' do
@@ -35,6 +36,7 @@ describe 'A new Body' do
     b = CP::Body.new(5, 7)
     b.moment = 37
     b.moment.should == 37
+    b.moment_inv.should be_close(1.0/37, 0.001)
   end
 
   it 'can set its force' do
