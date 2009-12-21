@@ -43,6 +43,7 @@ module CP
 
   func :cpBodySetMass, [:pointer, CP_FLOAT], :void
   func :cpBodySetMoment, [:pointer, CP_FLOAT], :void
+  func :cpBodySetAngle, [:pointer, CP_FLOAT], :void
 
   class Body
     attr_reader :struct
@@ -120,7 +121,7 @@ module CP
       @struct.a
     end
     def a=(pa)
-      @struct.a = pa
+      CP.cpBodySetAngle(@struct.pointer, pa)
     end
     alias :angle :a
     alias :angle= :a=
