@@ -148,6 +148,24 @@ module CP
       Vec2.new @struct.rot
     end
 
+    def v_limit
+      @struct.v_limit
+    end
+    def v_limit=(new_v_limit)
+      @struct.v_limit = new_v_limit
+    end
+    alias :vel_limit  :v_limit
+    alias :vel_limit= :v_limit=
+
+    def w_limit
+      @struct.w_limit
+    end
+    def w_limit=(new_w_limit)
+      @struct.w_limit = new_w_limit
+    end
+    alias :ang_vel_limit  :w_limit
+    alias :ang_vel_limit= :w_limit=
+
     def local2world(v)
       Vec2.new CP.cpBodyLocal2World(@struct.pointer,v.struct)
     end
