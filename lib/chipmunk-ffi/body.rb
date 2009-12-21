@@ -41,6 +41,9 @@ module CP
   cp_static_inline :cpBodyWorld2Local, [:pointer, Vect.by_value], Vect.by_value
   cp_static_inline :cpBodyApplyImpulse, [:pointer, Vect.by_value, Vect.by_value], :void
 
+  func :cpBodySetMass, [:pointer, CP_FLOAT], :void
+  func :cpBodySetMoment, [:pointer, CP_FLOAT], :void
+
   class Body
     attr_reader :struct
     def initialize(*args)
@@ -59,19 +62,29 @@ module CP
       @struct.m
     end
     def m=(pm)
-      @struct.m = pm
+      CP.cpBodySetMass(@struct.pointer, pm)
     end
     alias :mass :m
     alias :mass= :m=
+
+    def m_inv
+      @struct.m_inv
+    end
+    alias :mass_inv :m_inv
 
     def i
       @struct.i
     end
     def i=(pi)
-      @struct.i = pi
+      CP.cpBodySetMoment(@struct.pointer, pi)
     end
     alias :moment :i
     alias :moment= :i=
+
+    def i_inv
+      @struct.i_inv
+    end
+    alias :moment_inv :i_inv
 
     def p
       Vec2.new @struct.p
