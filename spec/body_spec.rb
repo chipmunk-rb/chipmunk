@@ -73,6 +73,28 @@ describe 'A new Body' do
     b.rot.y.should == 0
   end
 
+  it 'can set its v_limit' do
+    b = CP::Body.new(5, 7)
+    b.v_limit = 37
+    b.v_limit.should == 37
+  end
+
+  it 'can get its v_limit' do
+    b = CP::Body.new(5, 7)
+    b.v_limit.should === CP::INFINITY
+  end
+
+  it 'can set its w_limit' do
+    b = CP::Body.new(5, 7)
+    b.w_limit = 37
+    b.w_limit.should == 37
+  end
+
+  it 'can get its w_limit' do
+    b = CP::Body.new(5, 7)
+    b.w_limit.should === CP::INFINITY
+  end
+
   it 'can get local2world' do
     b = CP::Body.new(5, 7)
     b.pos = vec2(4,6)
