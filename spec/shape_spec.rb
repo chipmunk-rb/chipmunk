@@ -78,6 +78,13 @@ describe 'ShapeStruct in chipmunk' do
       s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
       s.body.v = vec2(4,5)
     end
+
+    it 'can query if a point hits it' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
+      s.point_query(vec2(0,10)).should be_true
+      s.point_query(vec2(0,100)).should be_false
+    end
   end
 
   describe 'Segment class' do
@@ -92,4 +99,6 @@ describe 'ShapeStruct in chipmunk' do
       s = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], CP::ZERO_VEC_2
     end
   end
+
+
 end

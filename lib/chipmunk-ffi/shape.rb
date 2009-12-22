@@ -48,6 +48,7 @@ module CP
   func :cpPolyShapeNew, [BodyStruct,:int,:pointer,Vect.by_value], ShapeStruct
   func :cpShapeCacheBB, [ShapeStruct], :void
   func :cpResetShapeIdCounter, [], :void
+  func :cpShapePointQuery, [:pointer, Vect.by_value], :int
 
   module Shape
     attr_reader :struct
@@ -122,6 +123,11 @@ module CP
     end
     def surface_v=(new_sv)
       @struct.surface_v.pointer.put_bytes 0, new_sv.struct.to_bytes, 0,Vect.size
+    end
+
+    def point_query(point)
+      bool_int = CP.cpShapePointQuery(@struct.pointer, point.struct)
+      bool_int == 0 ? false : true
     end
 
     def set_data_pointer

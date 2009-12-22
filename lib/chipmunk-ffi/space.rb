@@ -79,6 +79,7 @@ module CP
    :cpCollisionBeginFunc, :cpCollisionPreSolveFunc, :cpCollisionPostSolveFunc, :cpCollisionSeparateFunc, :pointer], :void
   func :cpSpaceRemoveCollisionHandler, [:pointer, :uint, :uint], :void
 
+  func :cpSpacePointQueryFirst, [:pointer, Vect.by_value, :uint, :uint], :pointer
 
   class Space
     attr_reader :struct
@@ -298,6 +299,16 @@ module CP
 #      void cpSpaceEachBody(cpSpace *space, cpSpaceBodyIterator func, void *data);
     end
 
+    def point_query_first(point, layers, group)
+      shape_ptr = CP.cpSpacePointQueryFirst(@struct.pointer, point.struct, layers, group)
+      if shape_ptr.null?
+        nil
+      else
+        shape = ShapeStruct.new(shape_ptr)
+        obj_id = shape.data.get_long 0
+        ObjectSpace._id2ref obj_id
+      end
+    end
 
   end
 end
