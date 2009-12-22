@@ -213,10 +213,10 @@ describe 'Vect in chipmunk' do
 
     it 'can lerp' do
       v = CP::Vec2.new(2,3)
-      other_v = CP::Vec2.new(4,5)
-      rv = v.lerp(other_v)
-      rv.x.should be_close(-1.925,0.001)
-      rv.y.should be_close(-0.925,0.001)
+      other_v = CP::Vec2.new(3,4)
+      rv = v.lerp(other_v,0.5)
+      rv.x.should be_close(2.5,0.001)
+      rv.y.should be_close(3.5,0.001)
     end
 
     it 'can lerpconst' do
