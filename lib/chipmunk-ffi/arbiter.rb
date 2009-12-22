@@ -38,11 +38,19 @@ module CP
     
     def point(index = 0)
       raise IndexError unless (0...@struct.num_contacts).include? index
+      
+      # FIXME I think this shouldn't happen but it does:
+      raise FFI::NullPointerError if @struct.contacts.null?
+      
       Vec2.new CP.cpArbiterGetPoint(@struct.pointer, index)
     end
     
     def normal(index = 0)
       raise IndexError unless (0...@struct.num_contacts).include? index
+      
+      # FIXME I think this shouldn't happen but it does:
+      raise FFI::NullPointerError if @struct.contacts.null?
+      
       Vec2.new CP.cpArbiterGetNormal(@struct.pointer, index)
     end
     
