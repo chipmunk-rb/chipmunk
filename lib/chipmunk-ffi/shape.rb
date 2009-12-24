@@ -37,11 +37,12 @@ module CP
           )
   end
   class SegmentQueryInfoStruct < NiceFFI::Struct
-    layout(:shape, ShapeStruct,
+    layout(:shape, :pointer,
            :t, CP_FLOAT,
            :n, Vect
           )
   end
+
 
   func :cpCircleShapeNew, [BodyStruct,CP_FLOAT,Vect.by_value], ShapeStruct
   func :cpSegmentShapeNew, [BodyStruct,Vect.by_value,Vect.by_value,CP_FLOAT], ShapeStruct
@@ -49,8 +50,20 @@ module CP
   func :cpShapeCacheBB, [ShapeStruct], :void
   func :cpResetShapeIdCounter, [], :void
   func :cpShapePointQuery, [:pointer, Vect.by_value], :int
+	func :cpShapeSegmentQuery, [:pointer, Vect.by_value, Vect.by_value, :pointer], :int
 
   module Shape
+    class SegmentQueryInfo
+      attr_reader :hit, :t, :n
+			def initialize(hit,t=nil,n=nil,info=nil,ptr=nil)
+				@hit = hit
+				@t = t
+				@n = n
+				@info = info
+				@ptr = ptr
+      end
+    end
+
     attr_reader :struct
 
     def body
@@ -93,10 +106,9 @@ module CP
     end
 
     def cache_bb
-      CP.cpShapeCacheBB(@struct.bb)
+      CP.cpShapeCacheBB(@struct.bb) 
       bb
     end
-
     def e
       @struct.e
     end
@@ -120,7 +132,7 @@ module CP
 
     def surface_v
       Vec2.new @struct.surface_v
-    end
+    end 
     def surface_v=(new_sv)
       @struct.surface_v.pointer.put_bytes 0, new_sv.struct.to_bytes, 0,Vect.size
     end
@@ -142,6 +154,22 @@ module CP
       CP.cpResetShapeIdCounter
     end
 
+		def segment_query(a,b)
+			ptr = FFI::MemoryPointer.new(SegmentQueryInfoStruct.size)
+			info = SegmentQueryInfoStruct.new ptr
+	
+      bool_int = CP.cpShapeSegmentQuery(@struct.pointer, a.struct,b.struct,ptr)
+      hit = bool_int == 0 ? false : true
+			if hit
+        #obj_id = info.shape.data.get_long 0
+        #shape = ObjectSpace._id2ref obj_id
+				# TODO prob need to dup these things
+				n = Vec2.new(Vect.new(info.n))
+				SegmentQueryInfo.new hit, info.t, n, info, ptr
+			else
+				SegmentQueryInfo.new hit
+			end
+		end
     class Circle
       include Shape
       def initialize(body, rad, offset_vec)

@@ -85,6 +85,16 @@ describe 'ShapeStruct in chipmunk' do
       s.point_query(vec2(0,10)).should be_true
       s.point_query(vec2(0,100)).should be_false
     end
+
+    it 'can query if a segment hits it' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
+      info = s.segment_query(vec2(-100,10),vec2(0,10))
+			info.hit.should be_true
+			info.t.should be_close(0.827,0.001)
+			info.n.x.should be_close(-0.866, 0.001)
+			info.n.y.should be_close(0.5, 0.001)
+    end
   end
 
   describe 'Segment class' do
