@@ -3,6 +3,7 @@ module CP
   callback :cpCollisionPreSolveFunc, [:pointer,:pointer,:pointer], :int
   callback :cpCollisionPostSolveFunc, [:pointer,:pointer,:pointer], :int
   callback :cpCollisionSeparateFunc, [:pointer,:pointer,:pointer], :int
+	callback :cpSpacePointQueryFunc, [:pointer,:pointer], :void
 
   class CollisionHandlerStruct < NiceFFI::Struct
     layout(
@@ -79,6 +80,7 @@ module CP
    :cpCollisionBeginFunc, :cpCollisionPreSolveFunc, :cpCollisionPostSolveFunc, :cpCollisionSeparateFunc, :pointer], :void
   func :cpSpaceRemoveCollisionHandler, [:pointer, :uint, :uint], :void
 
+  func :cpSpacePointQuery, [:pointer, Vect.by_value, :uint, :uint, :cpSpacePointQueryFunc, :pointer], :pointer
   func :cpSpacePointQueryFirst, [:pointer, Vect.by_value, :uint, :uint], :pointer
 
   class Space
@@ -308,6 +310,19 @@ module CP
         obj_id = shape.data.get_long 0
         ObjectSpace._id2ref obj_id
       end
+    end
+
+    def point_query(point, layers, group, &block)
+			return nil unless block_given?
+
+			query_proc = Proc.new do |shape_ptr,data|
+        shape = ShapeStruct.new(shape_ptr)
+        obj_id = shape.data.get_long 0
+        shape = ObjectSpace._id2ref obj_id
+				block.call shape
+      end
+
+      CP.cpSpacePointQuery(@struct.pointer, point.struct, layers, group,query_proc,nil)
     end
 
   end

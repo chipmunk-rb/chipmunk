@@ -132,4 +132,23 @@ describe 'Shape in chipmunk' do
 
   end
 
+  it 'can do a point query' do
+    space = CP::Space.new
+    bod = CP::Body.new 90, 76
+    shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+    shapy.collision_type = :foo
+
+    space.add_shape shapy
+    
+    all_ones = 2**32-1
+		
+		shapes = []
+		space.point_query vec2(20,20), all_ones,0 do |shape|
+			shapes << shape
+		end
+		
+		shapes.size.should == 1
+		shapes.first.should == shapy
+  end
+
 end
