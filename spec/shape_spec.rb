@@ -90,10 +90,11 @@ describe 'ShapeStruct in chipmunk' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
       info = s.segment_query(vec2(-100,10),vec2(0,10))
-			info.hit.should be_true
-			info.t.should be_close(0.827,0.001)
-			info.n.x.should be_close(-0.866, 0.001)
-			info.n.y.should be_close(0.5, 0.001)
+      GC.start
+      info.hit.should be_true
+      info.t.should be_close(0.827,0.001)
+      info.n.x.should be_close(-0.866, 0.001)
+      info.n.y.should be_close(0.5, 0.001)
     end
   end
 
