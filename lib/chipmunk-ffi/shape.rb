@@ -137,6 +137,13 @@ module CP
       @struct.surface_v.pointer.put_bytes 0, new_sv.struct.to_bytes, 0,Vect.size
     end
 
+    def sensor?
+      @struct.sensor == 0 ? false : true
+    end
+    def sensor=(new_sensor)
+      @struct.sensor = new_sensor ? 1 : 0
+    end
+
     def point_query(point)
       bool_int = CP.cpShapePointQuery(@struct.pointer, point.struct)
       bool_int == 0 ? false : true

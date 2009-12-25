@@ -79,6 +79,14 @@ describe 'ShapeStruct in chipmunk' do
       s.body.v = vec2(4,5)
     end
 
+    it 'can set its sensory-ness' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
+      s.sensor?.should be_false
+      s.sensor = true
+      s.sensor?.should be_true
+    end
+
     it 'can query if a point hits it' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
