@@ -312,14 +312,18 @@ module CP
       end
     end
 
-    def point_query(point, layers, group, &block)
-			return nil unless block_given?
+    def active_shapes_hash
+      SpaceHash.new(SpaceHashStruct.new(@struct.active_shapes))
+    end
 
-			query_proc = Proc.new do |shape_ptr,data|
+    def point_query(point, layers, group, &block)
+      return nil unless block_given?
+
+      query_proc = Proc.new do |shape_ptr,data|
         shape = ShapeStruct.new(shape_ptr)
         obj_id = shape.data.get_long 0
         shape = ObjectSpace._id2ref obj_id
-				block.call shape
+        block.call shape
       end
 
       CP.cpSpacePointQuery(@struct.pointer, point.struct, layers, group,query_proc,nil)

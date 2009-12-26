@@ -55,12 +55,12 @@ module CP
   module Shape
     class SegmentQueryInfo
       attr_reader :hit, :t, :n
-			def initialize(hit,t=nil,n=nil,info=nil,ptr=nil)
-				@hit = hit
-				@t = t
-				@n = n
-				@info = info
-				@ptr = ptr
+      def initialize(hit,t=nil,n=nil,info=nil,ptr=nil)
+        @hit = hit
+        @t = t
+        @n = n
+        @info = info
+        @ptr = ptr
       end
     end
 
@@ -161,22 +161,23 @@ module CP
       CP.cpResetShapeIdCounter
     end
 
-		def segment_query(a,b)
-			ptr = FFI::MemoryPointer.new(SegmentQueryInfoStruct.size)
-			info = SegmentQueryInfoStruct.new ptr
+    def segment_query(a,b)
+      ptr = FFI::MemoryPointer.new(SegmentQueryInfoStruct.size)
+      info = SegmentQueryInfoStruct.new ptr
 	
       bool_int = CP.cpShapeSegmentQuery(@struct.pointer, a.struct,b.struct,ptr)
       hit = bool_int == 0 ? false : true
-			if hit
+      if hit
         #obj_id = info.shape.data.get_long 0
         #shape = ObjectSpace._id2ref obj_id
-				# TODO prob need to dup these things
-				n = Vec2.new(Vect.new(info.n))
-				SegmentQueryInfo.new hit, info.t, n, info, ptr
-			else
-				SegmentQueryInfo.new hit
-			end
-		end
+        # TODO prob need to dup these things
+        n = Vec2.new(Vect.new(info.n))
+        SegmentQueryInfo.new hit, info.t, n, info, ptr
+      else
+        SegmentQueryInfo.new hit
+      end
+    end
+   
     class Circle
       include Shape
       def initialize(body, rad, offset_vec)
