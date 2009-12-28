@@ -1,4 +1,8 @@
 module CP
+  # used for layers; will only work on 32 bit values 
+  # (chipmunk cheats and sets these to -1)
+  ALL_ONES = 2**32-1
+
   callback :cpCollisionBeginFunc, [:pointer,:pointer,:pointer], :int
   callback :cpCollisionPreSolveFunc, [:pointer,:pointer,:pointer], :int
   callback :cpCollisionPostSolveFunc, [:pointer,:pointer,:pointer], :int
@@ -287,18 +291,18 @@ module CP
       CP.cpSpaceStep @struct.pointer, dt
     end
 
-    def shape_point_query(*args)
-      raise "Not Implmented yet"
-    end
-
-    def static_shape_point_query(*args)
-      raise "Not Implmented yet"
-    end
-
     def each_body(&block)
       @bodies.each &block
 #      typedef void (*cpSpaceBodyIterator)(cpBody *body, void *data);
 #      void cpSpaceEachBody(cpSpace *space, cpSpaceBodyIterator func, void *data);
+    end
+
+    def shape_point_query(pt)
+      point_query_first pt, ALL_ONES, 0
+    end
+
+    def static_shape_point_query(pt)
+      raise "Not Implmented yet"
     end
 
     def point_query_first(point, layers, group)

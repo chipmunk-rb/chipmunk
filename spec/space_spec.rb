@@ -112,8 +112,7 @@ describe 'Shape in chipmunk' do
 
     space.add_shape shapy
 
-    all_ones = 2**32-1
-    obj = space.point_query_first(vec2(20,20),all_ones,0)
+    obj = space.point_query_first(vec2(20,20),CP::ALL_ONES,0)
     obj.should == shapy
 
   end
@@ -149,6 +148,19 @@ describe 'Shape in chipmunk' do
     
     shapes.size.should == 1
     shapes.first.should == shapy
+  end
+
+  it 'can do a point query finds the shape' do
+    space = CP::Space.new
+    bod = CP::Body.new 90, 76
+    shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+    shapy.collision_type = :foo
+
+    space.add_shape shapy
+
+    obj = space.shape_point_query(vec2(20,20))
+    obj.should == shapy
+
   end
 
   it 'can do a bb query' do
