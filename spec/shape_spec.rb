@@ -78,6 +78,32 @@ describe 'ShapeStruct in chipmunk' do
       s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
       s.body.v = vec2(4,5)
     end
+
+    it 'can set its sensory-ness' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
+      s.sensor?.should be_false
+      s.sensor = true
+      s.sensor?.should be_true
+    end
+
+    it 'can query if a point hits it' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
+      s.point_query(vec2(0,10)).should be_true
+      s.point_query(vec2(0,100)).should be_false
+    end
+
+    it 'can query if a segment hits it' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
+      info = s.segment_query(vec2(-100,10),vec2(0,10))
+      GC.start
+      info.hit.should be_true
+      info.t.should be_close(0.827,0.001)
+      info.n.x.should be_close(-0.866, 0.001)
+      info.n.y.should be_close(0.5, 0.001)
+    end
   end
 
   describe 'Segment class' do
@@ -92,4 +118,6 @@ describe 'ShapeStruct in chipmunk' do
       s = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], CP::ZERO_VEC_2
     end
   end
+
+
 end

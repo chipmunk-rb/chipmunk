@@ -1,8 +1,13 @@
 module CP
+  # used for layers; will only work on 32 bit values 
+  # (chipmunk cheats and sets these to -1)
+  ALL_ONES = 2**32-1
+
   callback :cpCollisionBeginFunc, [:pointer,:pointer,:pointer], :int
   callback :cpCollisionPreSolveFunc, [:pointer,:pointer,:pointer], :int
   callback :cpCollisionPostSolveFunc, [:pointer,:pointer,:pointer], :int
   callback :cpCollisionSeparateFunc, [:pointer,:pointer,:pointer], :int
+	callback :cpSpacePointQueryFunc, [:pointer,:pointer], :void
 
   class CollisionHandlerStruct < NiceFFI::Struct
     layout(
@@ -63,6 +68,8 @@ module CP
    :cpCollisionBeginFunc, :cpCollisionPreSolveFunc, :cpCollisionPostSolveFunc, :cpCollisionSeparateFunc, :pointer], :void
   func :cpSpaceRemoveCollisionHandler, [:pointer, :uint, :uint], :void
 
+  func :cpSpacePointQuery, [:pointer, Vect.by_value, :uint, :uint, :cpSpacePointQueryFunc, :pointer], :pointer
+  func :cpSpacePointQueryFirst, [:pointer, Vect.by_value, :uint, :uint], :pointer
 
   class Space
     attr_reader :struct
@@ -258,20 +265,47 @@ module CP
       CP.cpSpaceStep @struct.pointer, dt
     end
 
-    def shape_point_query(*args)
-      raise "Not Implmented yet"
-    end
-
-    def static_shape_point_query(*args)
-      raise "Not Implmented yet"
-    end
-
     def each_body(&block)
       @bodies.each &block
 #      typedef void (*cpSpaceBodyIterator)(cpBody *body, void *data);
 #      void cpSpaceEachBody(cpSpace *space, cpSpaceBodyIterator func, void *data);
     end
 
+    def shape_point_query(pt)
+      point_query_first pt, ALL_ONES, 0
+    end
+
+    def static_shape_point_query(pt)
+      raise "Not Implmented yet"
+    end
+
+    def point_query_first(point, layers, group)
+      shape_ptr = CP.cpSpacePointQueryFirst(@struct.pointer, point.struct, layers, group)
+      if shape_ptr.null?
+        nil
+      else
+        shape = ShapeStruct.new(shape_ptr)
+        obj_id = shape.data.get_long 0
+        ObjectSpace._id2ref obj_id
+      end
+    end
+
+    def active_shapes_hash
+      SpaceHash.new(SpaceHashStruct.new(@struct.active_shapes))
+    end
+
+    def point_query(point, layers, group, &block)
+      return nil unless block_given?
+
+      query_proc = Proc.new do |shape_ptr,data|
+        shape = ShapeStruct.new(shape_ptr)
+        obj_id = shape.data.get_long 0
+        shape = ObjectSpace._id2ref obj_id
+        block.call shape
+      end
+
+      CP.cpSpacePointQuery(@struct.pointer, point.struct, layers, group,query_proc,nil)
+    end
 
   end
 end

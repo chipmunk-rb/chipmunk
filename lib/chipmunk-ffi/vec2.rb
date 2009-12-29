@@ -20,7 +20,7 @@ module CP
 
   cp_static_inline :cpvlengthsq, [Vect.by_value], CP_FLOAT
 
-  cp_static_inline :cpvlerp, [Vect.by_value,Vect.by_value], Vect.by_value
+  cp_static_inline :cpvlerp, [Vect.by_value,Vect.by_value,CP_FLOAT], Vect.by_value
 
   cp_static_inline :cpvnormalize, [Vect.by_value], Vect.by_value
   cp_static_inline :cpvnormalize_safe, [Vect.by_value], Vect.by_value
@@ -136,8 +136,8 @@ module CP
       CP.cpvlengthsq(@struct)
     end
 
-    def lerp(other_vec)
-      Vec2.new CP.cpvlerp(@struct, other_vec.struct)
+    def lerp(other_vec, t)
+      Vec2.new CP.cpvlerp(@struct, other_vec.struct, t)
     end
 
     def normalize

@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Shawn Anderson"]
-  s.date = %q{2009-12-21}
+  s.date = %q{2009-12-28}
   s.description = %q{FFI bindings for chipmunk physics lib.}
   s.email = %q{shawn42@gmail.com}
   s.extra_rdoc_files = [
@@ -37,12 +37,14 @@ Gem::Specification.new do |s|
      "lib/chipmunk-ffi/core.rb",
      "lib/chipmunk-ffi/shape.rb",
      "lib/chipmunk-ffi/space.rb",
+     "lib/chipmunk-ffi/space_hash.rb",
      "lib/chipmunk-ffi/vec2.rb",
      "spec/bb_spec.rb",
      "spec/body_spec.rb",
      "spec/constraint_spec.rb",
      "spec/core_spec.rb",
      "spec/shape_spec.rb",
+     "spec/space_hash_spec.rb",
      "spec/space_spec.rb",
      "spec/spec_helper.rb",
      "spec/vec2_spec.rb"
@@ -59,6 +61,7 @@ Gem::Specification.new do |s|
      "spec/constraint_spec.rb",
      "spec/core_spec.rb",
      "spec/shape_spec.rb",
+     "spec/space_hash_spec.rb",
      "spec/space_spec.rb",
      "spec/spec_helper.rb",
      "spec/vec2_spec.rb"

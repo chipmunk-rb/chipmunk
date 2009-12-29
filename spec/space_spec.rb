@@ -104,5 +104,78 @@ describe 'Shape in chipmunk' do
     space.add_constraint pj
   end
 
+  it 'can do a first point query finds the shape' do
+    space = CP::Space.new
+    bod = CP::Body.new 90, 76
+    shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+    shapy.collision_type = :foo
+
+    space.add_shape shapy
+
+    obj = space.point_query_first(vec2(20,20),CP::ALL_ONES,0)
+    obj.should == shapy
+
+  end
+
+  it 'can do a first point query does not find anything' do
+    space = CP::Space.new
+    bod = CP::Body.new 90, 76
+    shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+    shapy.collision_type = :foo
+
+    space.add_shape shapy
+
+    all_ones = 2**32-1
+    obj = space.point_query_first(vec2(20,50),all_ones,0)
+    obj.should be_nil
+
+  end
+
+  it 'can do a point query' do
+    space = CP::Space.new
+    bod = CP::Body.new 90, 76
+    shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+    shapy.collision_type = :foo
+
+    space.add_shape shapy
+    
+    all_ones = 2**32-1
+		
+    shapes = []
+    space.point_query vec2(20,20), all_ones,0 do |shape|
+      shapes << shape
+    end
+    
+    shapes.size.should == 1
+    shapes.first.should == shapy
+  end
+
+  it 'can do a point query finds the shape' do
+    space = CP::Space.new
+    bod = CP::Body.new 90, 76
+    shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+    shapy.collision_type = :foo
+
+    space.add_shape shapy
+
+    obj = space.shape_point_query(vec2(20,20))
+    obj.should == shapy
+
+  end
+
+  it 'can do a bb query' do
+    space = CP::Space.new
+    bod = CP::Body.new 90, 76
+    shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+    shapy.collision_type = :foo
+
+    space.add_shape shapy
+    
+    hash = space.active_shapes_hash
+    shapes = hash.query_by_bb BB.new(0,0,5,5)
+    
+    shapes.size.should == 1
+    shapes.first.should == shapy
+  end
 
 end
