@@ -53,18 +53,32 @@ describe 'ShapeStruct in chipmunk' do
       s.struct.collision_type.should == :foo.object_id
     end
 
-    it 'can get its sensor'
+    it 'can get its sensor' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+      s.sensor?.should be_false
+      s.sensor = true
+      s.sensor?.should be_true
+    end
+
     it 'can get its u' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
       s.u.should be_close(0,0.001)
     end
-    it 'can get its surf vec'
+
+    it 'can get its surf vec' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+      s.surface_v = vec2(4,5)
+      s.surface_v.x.should be_close(4,0.001)
+      s.surface_v.y.should be_close(5,0.001)
+    end
 
     it 'can get its data' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
-      s.data.read_int.should == s.object_id
+      s.data.read_long.should == s.object_id
     end
 
     it 'can get its klass' do
