@@ -29,6 +29,9 @@ module CP
     def initialize(ptr)
       @struct = ArbiterStruct.new(ptr)
       @shapes = nil
+      
+      # temporary workaround for a bug in chipmunk
+      @struct.num_contacts = 0 if @truct.contancts.null?
     end
     
     def first_contact?
@@ -38,21 +41,11 @@ module CP
     
     def point(index = 0)
       raise IndexError unless (0...@struct.num_contacts).include? index
-      
-      # FIXME I think this shouldn't happen but it does:
-      raise FFI::NullPointerError, "Arbiter structure returned a null pointer; this is probably a bug" \
-        if @struct.contacts.null?
-      
       Vec2.new CP.cpArbiterGetPoint(@struct.pointer, index)
     end
     
     def normal(index = 0)
       raise IndexError unless (0...@struct.num_contacts).include? index
-      
-      # FIXME I think this shouldn't happen but it does:
-      raise FFI::NullPointerError, "Arbiter structure returned a null pointer; this is probably a bug" \
-        if @struct.contacts.null?
-      
       Vec2.new CP.cpArbiterGetNormal(@struct.pointer, index)
     end
     
