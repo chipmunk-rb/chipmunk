@@ -40,7 +40,8 @@ module CP
       raise IndexError unless (0...@struct.num_contacts).include? index
       
       # FIXME I think this shouldn't happen but it does:
-      raise FFI::NullPointerError if @struct.contacts.null?
+      raise FFI::NullPointerError, "Arbiter structure returned a null pointer; this is probably a bug" \
+        if @struct.contacts.null?
       
       Vec2.new CP.cpArbiterGetPoint(@struct.pointer, index)
     end
@@ -49,7 +50,8 @@ module CP
       raise IndexError unless (0...@struct.num_contacts).include? index
       
       # FIXME I think this shouldn't happen but it does:
-      raise FFI::NullPointerError if @struct.contacts.null?
+      raise FFI::NullPointerError, "Arbiter structure returned a null pointer; this is probably a bug" \
+        if @struct.contacts.null?
       
       Vec2.new CP.cpArbiterGetNormal(@struct.pointer, index)
     end
