@@ -30,7 +30,7 @@ module CP
       @struct = ArbiterStruct.new(ptr)
       @shapes = nil
       
-      # temporary workaround for a bug in chipmunk
+      # Temporary workaround for a bug in chipmunk, fixed in r342.
       @struct.num_contacts = 0 if @truct.contancts.null?
     end
     
@@ -97,9 +97,10 @@ module CP
       @struct.u = new_u
     end
     
-    def each_contact &block
-      # TODO figure out FFI pointers and implement this (low priority)
-      raise NotImplementedError, "Not implemented yet"
+    def each_contact
+      (0...@struct.num_contacts).each do |index|
+        yield CP.cpArbiterGetPoint(@struct, index), CP.cpArbiterGetNormal(@struct, index)
+      end
     end
   end
   
