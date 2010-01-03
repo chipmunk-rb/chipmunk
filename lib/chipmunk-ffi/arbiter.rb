@@ -31,7 +31,7 @@ module CP
       @shapes = nil
       
       # Temporary workaround for a bug in chipmunk, fixed in r342.
-      @struct.num_contacts = 0 if @truct.contancts.null?
+      @struct.num_contacts = 0 if @struct.contacts.null?
     end
     
     def first_contact?
