@@ -1,7 +1,20 @@
 module CP
-  class Vect < NiceFFI::Struct
+  class Vect < FFI::Struct
     layout( :x, CP_FLOAT,
-           :y, CP_FLOAT )
+            :y, CP_FLOAT )
+
+    def self.release( ptr )
+      free ptr
+    end
+
+    def initialize( ptr )
+      case ptr
+      when FFI::MemoryPointer, FFI::Buffer, FFI::AutoPointer
+        super ptr
+      else
+        super FFI::AutoPointer.new(ptr, self.class.method(:release))
+      end
+    end
   end
 
   cp_static_inline :cpv, [CP_FLOAT,CP_FLOAT], Vect.by_value
@@ -53,18 +66,18 @@ module CP
     end
 
     def x
-      @struct.x
+      @struct[:x]
     end
     def x=(new_x)
       raise TypeError "cant't modify frozen object" if frozen?
-      @struct.x = new_x
+      @struct[:x] = new_x
     end
     def y
-      @struct.y
+      @struct[:x]
     end
     def y=(new_y)
       raise TypeError "cant't modify frozen object" if frozen?
-      @struct.y = new_y
+      @struct[:y] = new_y
     end
 
     def self.for_angle(angle)
@@ -80,7 +93,7 @@ module CP
     end
 
     def to_a
-      [@struct.x,@struct.y]
+      [@struct[:x],@struct[:y]]
     end
 
     def -@
