@@ -15,6 +15,10 @@ module CP
         super FFI::AutoPointer.new(ptr, self.class.method(:release))
       end
     end
+
+    def to_bytes
+      return self.pointer.get_bytes(0, self.size)
+    end
   end
 
   cp_static_inline :cpv, [CP_FLOAT,CP_FLOAT], Vect.by_value
@@ -61,7 +65,7 @@ module CP
       when 2
         @struct = CP.cpv(*args)
       else
-        raise "wrong number of args for Vec, got #{args.size}, but expected 2"
+        raise "wrong number of arguments (#{args.size} for 2)"
       end
     end
 
@@ -69,14 +73,14 @@ module CP
       @struct[:x]
     end
     def x=(new_x)
-      raise TypeError "cant't modify frozen object" if frozen?
+      raise TypeError, "can't modify frozen vec2" if frozen?
       @struct[:x] = new_x
     end
     def y
-      @struct[:x]
+      @struct[:y]
     end
     def y=(new_y)
-      raise TypeError "cant't modify frozen object" if frozen?
+      raise TypeError, "can't modify frozen vec2" if frozen?
       @struct[:y] = new_y
     end
 
