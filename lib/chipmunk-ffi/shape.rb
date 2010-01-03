@@ -165,13 +165,13 @@ module CP
       ptr = FFI::MemoryPointer.new(SegmentQueryInfoStruct.size)
       info = SegmentQueryInfoStruct.new ptr
 	
-      bool_int = CP.cpShapeSegmentQuery(@struct.pointer, a.struct,b.struct,ptr)
+      bool_int = CP.cpShapeSegmentQuery(@struct.pointer, a.struct.pointer, b.struct.pointer, ptr)
       hit = bool_int == 0 ? false : true
       if hit
         #obj_id = info.shape.data.get_long 0
         #shape = ObjectSpace._id2ref obj_id
         # TODO prob need to dup these things
-        n = Vec2.new(Vect.new(info.n))
+        n = Vec2.new(info.n)
         SegmentQueryInfo.new hit, info.t, n, info, ptr
       else
         SegmentQueryInfo.new hit
