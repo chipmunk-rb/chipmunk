@@ -21,22 +21,6 @@ module CP
     )
   end
 
-  class ArbiterStruct < NiceFFI::Struct
-    layout(
-      :num_contacts, :int,
-      :contacts, :pointer,
-      :a, :pointer,
-      :b, :pointer,
-      :e, CP_FLOAT,
-      :u, CP_FLOAT,
-      :surf_vr, Vect.by_value,
-      :stamp, :int,
-      :handler, :pointer,
-      :swapped_col, :char,
-      :first_col, :char
-    )
-  end
-
   class SpaceStruct < NiceFFI::Struct
     layout( :iterations, :int,
       :elastic_iterations, :int,
@@ -186,27 +170,17 @@ module CP
     end
 
     def wrap_collision_callback(a,b,type,handler)
+      arity = handler.method(type).arity
       callback = Proc.new do |arb_ptr,space_ptr,data_ptr|
-        arb = ArbiterStruct.new(arb_ptr)
-
-        swapped = arb.swapped_col == 0 ? false : true
-        arba = swapped ? arb.b : arb.a
-        arbb = swapped ? arb.a : arb.b
-
-        as = ShapeStruct.new(arba)
-        a_obj_id = as.data.get_long 0
-        rb_a = ObjectSpace._id2ref a_obj_id
-
-        bs = ShapeStruct.new(arbb)
-        b_obj_id = bs.data.get_long 0
-        rb_b = ObjectSpace._id2ref b_obj_id
-
-        ret = handler.send type, rb_a, rb_b
-        if ret
-          1
-        else
-          0
+        arbiter = Arbiter.new(arb_ptr)
+        
+        ret = case arity
+        when 1 then handler.send type, arbiter
+        when 2 then handler.send type, *arbiter.shapes
+        when 3 then handler.send type, arbiter, *arbiter.shapes
+        else raise ArgumentError
         end
+        ret ? 1 : 0
       end
       @callbacks[[a,b,type]] = [handler,callback]
       callback

@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
      "VERSION",
      "chipmunk-ffi.gemspec",
      "lib/chipmunk-ffi.rb",
+     "lib/chipmunk-ffi/arbiter.rb",
      "lib/chipmunk-ffi/bb.rb",
      "lib/chipmunk-ffi/body.rb",
      "lib/chipmunk-ffi/constraint.rb",
