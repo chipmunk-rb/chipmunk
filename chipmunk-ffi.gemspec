@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Shawn Anderson"]
-  s.date = %q{2010-01-03}
+  s.date = %q{2010-01-04}
   s.description = %q{FFI bindings for chipmunk physics lib.}
   s.email = %q{shawn42@gmail.com}
   s.extra_rdoc_files = [
@@ -62,6 +62,7 @@ Gem::Specification.new do |s|
      "spec/body_spec.rb",
      "spec/constraint_spec.rb",
      "spec/core_spec.rb",
+     "spec/perf.rb",
      "spec/shape_spec.rb",
      "spec/space_hash_spec.rb",
      "spec/space_spec.rb",
