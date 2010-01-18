@@ -6,10 +6,10 @@ require 'rake/clean'
 begin
     require 'rake/extensiontask'
 rescue LoadError
-    puts "rake-compiler not found...installing the rake-compiler gem..."
-    `/bin/bash -l -c "gem install rake-compiler"`
-    require 'rake/extensiontask'
-    puts "...done!"
+#    puts "rake-compiler not found...installing the rake-compiler gem..."
+#    `/bin/bash -l -c "gem1.9 install rake-compiler"`
+#    require 'rake/extensiontask'
+#    puts "...done!"
 end
 
 CHIPMUNK_VERSION = "4.1.0"
