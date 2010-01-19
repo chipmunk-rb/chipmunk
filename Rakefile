@@ -3,6 +3,27 @@
 require 'rake/gempackagetask'
 require 'rake/clean'
 
+begin 
+  require 'jeweler'
+
+  Jeweler::Tasks.new do |gem|
+    gem.name = "chipmunk"
+    gem.rubyforge_project = "chipmunk"
+    gem.summary = %Q{Bindings for chipmunk physics lib.}
+    gem.description = %Q{Bindings for chipmunk physics lib.}
+    gem.email = "beoran@rubyforge.org"
+    gem.homepage = "http://beoran.github.com/chipmunk"
+    gem.authors = ["Beoran", "Banisterfiend"]
+    gem.add_development_dependency "rspec"
+    gem.add_development_dependency "jeweler"
+    gem.test_files = FileList['{spec,test}/**/*.rb']
+    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+  end
+  Jeweler::GemcutterTasks.new  
+rescue LoadError
+  puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
+end  
+
 begin
     require 'rake/extensiontask'
 rescue LoadError
@@ -12,9 +33,7 @@ rescue LoadError
     puts "...done!"
 end
 
-CHIPMUNK_VERSION = "4.1.0"
-
-dlext = Config::CONFIG['DLEXT']
+CHIPMUNK_VERSION = "5.0.0"
 
 CLEAN.include("ext/**/*.#{dlext}", "ext/**/.log", "ext/**/.o", "ext/**/*~", "ext/**/*#*", "ext/**/.obj", "ext/**/.def", "ext/**/.pdb")
 CLOBBER.include("**/*.#{dlext}", "**/*~", "**/*#*", "**/*.log", "**/*.o", "doc/**")
@@ -78,9 +97,20 @@ else
         ext.cross_compile = true                
         ext.cross_platform = 'i386-mswin32'
     end
+end
 
-    Rake::GemPackageTask.new(spec) do |pkg|
+begin
+  require 'spec/rake/spectask'
+  desc "Run all rspecs"
+  Spec::Rake::SpecTask.new(:spec) do |t|
+    t.spec_files = FileList['spec/*_spec.rb']
+  end
+  task :default => :spec
+
+  Rake::GemPackageTask.new(spec) do |pkg|
         pkg.need_zip = false
         pkg.need_tar = false
-    end
+  end
+  rescue LoadError
+  puts "Rspec (or a dependency) not available. Install it with: sudo gem install rspec"
 end
