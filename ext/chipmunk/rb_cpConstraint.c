@@ -223,7 +223,38 @@ rb_cpGrooveJoint_init(VALUE self, VALUE a, VALUE b, VALUE grv_a, VALUE grv_b, VA
 }
 
 MAKE_VEC_ACCESSORS(cpGrooveJoint, Anchr2)
-// TODO more accessors
+
+/*
+These are for later, when Chipmunk C supports them. 
+MAKE_VEC_ACCESSORS(cpGrooveJoint, Grv_a)
+MAKE_VEC_ACCESSORS(cpGrooveJoint, Grv_b)
+MAKE_VEC_ACCESSORS(cpGrooveJoint, Grv_n)
+MAKE_VEC_ACCESSORS(cpGrooveJoint, R1)
+MAKE_VEC_ACCESSORS(cpGrooveJoint, R2)
+MAKE_VEC_ACCESSORS(cpGrooveJoint, K1)
+MAKE_VEC_ACCESSORS(cpGrooveJoint, K2)
+MAKE_VEC_ACCESSORS(cpGrooveJoint, Bias)
+MAKE_VEC_ACCESSORS(cpGrooveJoint, JAcc)
+MAKE_FLT_ACCESSORS(cpGrooveJoint, Clamp)
+MAKE_FLT_ACCESSORS(cpGrooveJoint, JMaxLen)
+*/
+
+ALLOC_TEMPLATE(cpRatchetJoint, cpRatchetJointAlloc())
+
+static VALUE
+rb_cpRatchetJoint_init(VALUE self, VALUE a, VALUE b, VALUE phase, VALUE ratchet)
+{
+  cpRatchetJoint *joint = (cpRatchetJoint *)CONSTRAINT(self);
+  cpRatchetJointInit(joint, BODY(a), BODY(b), NUM2DBL(phase), NUM2DBL(ratchet));
+  rb_iv_set(self, "@body_a", a);
+  rb_iv_set(self, "@body_b", b);  
+  
+  return self;
+}
+
+MAKE_FLT_ACCESSORS(cpRatchetJoint, Angle)
+MAKE_FLT_ACCESSORS(cpRatchetJoint, Phase)
+MAKE_FLT_ACCESSORS(cpRatchetJoint, Ratchet)
 
 
 #define STRINGIFY(v) #v
@@ -295,6 +326,20 @@ Init_cpConstraint(void)
 	
 	VALUE c_cpGrooveJoint = make_class("GrooveJoint", rb_cpGrooveJoint_alloc, rb_cpGrooveJoint_init, 5);
 	ACCESSOR_METHODS(cpGrooveJoint, Anchr2, anchr2)
+  
+ /* 
+  ACCESSOR_METHODS(cpGrooveJoint, Clamp, clamp)
+  ACCESSOR_METHODS(cpGrooveJoint, JMaxLen, max) 
+ */
+  
+  VALUE c_cpRatchetJoint = 
+  make_class("RatchetJoint", rb_cpRatchetJoint_alloc, rb_cpRatchetJoint_init, 4);
+  ACCESSOR_METHODS(cpRatchetJoint, Angle, angle)
+  ACCESSOR_METHODS(cpRatchetJoint, Phase, phase)
+  ACCESSOR_METHODS(cpRatchetJoint, Ratchet, ratchet) 
+  
+  
+  
 // TODO groove joint accessors
 	
 	// TODO breakable joint

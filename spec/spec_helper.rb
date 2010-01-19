@@ -1,6 +1,6 @@
 require 'spec'
 $: << File.dirname(__FILE__)+'/../lib'
 
-require 'chipmunk-ffi'
-require 'chipmunk-ffi/unsafe'
+require 'chipmunk'
+require 'chipmunk/unsafe'
 include CP

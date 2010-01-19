@@ -170,8 +170,8 @@ rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self)
 	obj = 0;
 	rb_scan_args(argc, argv, "21&", &a, &b, &obj, &block);
 
-	VALUE id_a = rb_obj_id(a);
-	VALUE id_b = rb_obj_id(b);
+	VALUE id_a   = rb_obj_id(a);
+	VALUE id_b   = rb_obj_id(b);
 	VALUE blocks = rb_iv_get(self, "blocks");
 	
 	if(RTEST(obj) && RTEST(block)){
@@ -188,7 +188,7 @@ rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self)
 		
 		rb_hash_aset(blocks, rb_ary_new3(2, id_a, id_b), block);
 	} else if(RTEST(obj)) {
-		rb_notimplement(); // need to make it pass arbiters and crap
+		// Do we need to make it pass arbiters??? FFI bindings also don't bother.
 		cpSpaceAddCollisionHandler(
 			SPACE(self), NUM2UINT(id_a), NUM2UINT(id_b),
 			(respondsTo(obj, id_begin)      ? beginCallback     : NULL),
@@ -196,8 +196,7 @@ rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self)
 			(respondsTo(obj, id_post_solve) ? postSolveCallback : NULL),
 			(respondsTo(obj, id_separate)   ? separateCallback  : NULL),
 			(void *)obj
-		);
-		
+		);		
 		rb_hash_aset(blocks, rb_ary_new3(2, id_a, id_b), obj);
 	} else {
 		cpSpaceAddCollisionHandler(
@@ -225,26 +224,28 @@ rb_cpSpaceRemoveCollisionHandler(VALUE self, VALUE a, VALUE b)
 static VALUE
 rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self)
 {
-	VALUE obj, block;
+	VALUE obj, block; 
 	rb_scan_args(argc, argv, "01&", &obj, &block);
-	
+  
 	if(RTEST(obj) && RTEST(block)){
 		rb_raise(rb_eArgError, "Cannot specify both a handler object and a block.");
 	} else if(RTEST(block)){
-		rb_notimplement(); // need to make it pass arbiters and crap
+		// Do we need need to make it pass arbiters? FFI bindings don't do it.
 		cpSpaceSetDefaultCollisionHandler(
 			SPACE(self),
+      0, 0,
 			NULL,
 			compatibilityCallback,
 			NULL,
 			NULL,
 			(void *)block
 		);
-		
+    		
 		rb_hash_aset(rb_iv_get(self, "blocks"), ID2SYM(rb_intern("default")), block);
 	} else if(RTEST(obj)) {
 		cpSpaceSetDefaultCollisionHandler(
 			SPACE(self),
+      0, 0,   
 			(respondsTo(obj, id_begin)      ? beginCallback     : NULL),
 			(respondsTo(obj, id_pre_solve)  ? preSolveCallback  : NULL),
 			(respondsTo(obj, id_post_solve) ? postSolveCallback : NULL),
@@ -255,8 +256,8 @@ rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self)
 		rb_hash_aset(rb_iv_get(self, "blocks"), ID2SYM(rb_intern("default")), obj);
 	} else {
 		cpSpaceSetDefaultCollisionHandler(
-			SPACE(self), NULL, doNothingCallback, NULL, NULL, NULL
-		);
+			SPACE(self), 0, 0, NULL, doNothingCallback, NULL, NULL, NULL
+		);    
 	}
 	
 	return Qnil;
@@ -436,11 +437,11 @@ rb_cpSpaceStep(VALUE self, VALUE dt)
 void
 Init_cpSpace(void)
 {
-	id_call = rb_intern("call");
-	id_begin = rb_intern("begin");
-	id_pre_solve = rb_intern("pre_solve");
-	id_post_solve = rb_intern("post_solve");
-	id_separate = rb_intern("separate");
+	id_call        = rb_intern("call");
+	id_begin       = rb_intern("begin");
+	id_pre_solve   = rb_intern("pre_solve");
+	id_post_solve  = rb_intern("post_solve");
+	id_separate    = rb_intern("separate");
 	
 	c_cpSpace = rb_define_class_under(m_Chipmunk, "Space", rb_cObject);
 	rb_define_alloc_func(c_cpSpace, rb_cpSpaceAlloc);
