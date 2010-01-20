@@ -78,6 +78,14 @@ rb_momentForPoly(VALUE self, VALUE m, VALUE arr, VALUE offset)
 	return rb_float_new(inertia);
 }
 
+static VALUE
+rb_momentForSegment(VALUE self, VALUE m, VALUE a, VALUE b)
+{
+  cpFloat i = cpMomentForSegment(NUM2DBL(m), *VGET(a), *VGET(b));
+  return rb_float_new(i);
+}
+
+
 void
 Init_chipmunk(void)
 {
@@ -88,14 +96,22 @@ Init_chipmunk(void)
 	rb_eval_string("Float::INFINITY = 1.0/0.0");
 	
 	m_Chipmunk = rb_define_module("CP");
-	rb_define_module_function(m_Chipmunk, "bias_coef", rb_get_cp_bias_coef, 0);
-	rb_define_module_function(m_Chipmunk, "bias_coef=", rb_set_cp_bias_coef, 1);
-	rb_define_module_function(m_Chipmunk, "collision_slop", rb_get_cp_collision_slop, 0);
-	rb_define_module_function(m_Chipmunk, "collision_slop=", rb_set_cp_collision_slop, 1);
-	
-	rb_define_module_function(m_Chipmunk, "moment_for_circle", rb_momentForCircle, 4);
-	rb_define_module_function(m_Chipmunk, "moment_for_poly", rb_momentForPoly, 3);
-	// TODO add seg moment function
+	rb_define_module_function(m_Chipmunk, "bias_coef", 
+    rb_get_cp_bias_coef, 0);
+	rb_define_module_function(m_Chipmunk, "bias_coef=", 
+    rb_set_cp_bias_coef, 1);
+	rb_define_module_function(m_Chipmunk, "collision_slop",
+    rb_get_cp_collision_slop, 0);  
+	rb_define_module_function(m_Chipmunk, "collision_slop=",
+    rb_set_cp_collision_slop, 1);	
+	rb_define_module_function(m_Chipmunk, "moment_for_circle", 
+    rb_momentForCircle, 4);
+	rb_define_module_function(m_Chipmunk, "moment_for_poly", 
+    rb_momentForPoly, 3);
+  rb_define_module_function(m_Chipmunk, "moment_for_segment",
+    rb_momentForSegment, 3);
+  rb_define_const(m_Chipmunk, "INFINITY", rb_float_new(INFINITY)); 
+  
 	
 	Init_cpVect();
   Init_cpArbiter(); 

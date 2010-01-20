@@ -72,6 +72,7 @@ GETTER_TEMPLATE(CONSTRAINT, m_cpConstraint, cpConstraint)
 GETTER_TEMPLATE(SPACE, c_cpSpace, cpSpace)
 GETTER_TEMPLATE(ARBITER, c_cpArbiter, cpArbiter)
 
+
 void Init_chipmunk(void);
 void Init_cpVect();
 void Init_cpArbiter();

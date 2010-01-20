@@ -118,6 +118,21 @@ rb_cpBBSetT(VALUE self, VALUE val)
 }
 
 static VALUE
+rb_cpBBcontainsBB(VALUE self, VALUE other) 
+{
+  int bool = cpBBcontainsBB(*BBGET(self), *BBGET(other));
+  return bool ? Qtrue : Qfalse;
+}  
+  
+static VALUE
+rb_cpBBcontainsVect(VALUE self, VALUE vector) 
+{ 
+  int bool = cpBBcontainsVect(*BBGET(self), *VGET(vector));
+  return bool ? Qtrue : Qfalse;
+}
+
+
+static VALUE
 rb_cpBBToString(VALUE self)
 {
 	char str[256];
@@ -145,7 +160,11 @@ Init_cpBB(void)
 	rb_define_method(c_cpBB, "r=", rb_cpBBSetR, 1);
 	rb_define_method(c_cpBB, "t=", rb_cpBBSetT, 1);
 
-	rb_define_method(c_cpBB, "intersect?", rb_cpBBintersects, 1);
+	rb_define_method(c_cpBB, "intersect?"     , rb_cpBBintersects, 1);
+  rb_define_method(c_cpBB, "contains_bb?"   , rb_cpBBcontainsBB, 1);
+  rb_define_method(c_cpBB, "contains_vect?" , rb_cpBBcontainsVect, 1); 
+  
+  
 	//containsBB
 	//containsVect
 	rb_define_method(c_cpBB, "clamp_vect", rb_cpBBClampVect, 1);
