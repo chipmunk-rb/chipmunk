@@ -12,7 +12,7 @@ rescue LoadError
     puts "...done!"
 end
  
-CHIPMUNK_VERSION = "2.0.0"
+CHIPMUNK_VERSION = "2.1.0"
  
 dlext = Config::CONFIG['DLEXT']
  
@@ -22,7 +22,7 @@ CLOBBER.include("**/*.#{dlext}", "**/*~", "**/*#*", "**/*.log", "**/*.o", "doc/*
  
 def apply_spec_defaults(s)
     s.name = "chipmunk"
-    s.summary = "ruby bindings for the chipmunk 5.0.0 physics engine"
+    s.summary = "ruby bindings for the chipmunk 5.1.0 physics engine"
     s.description = s.summary
     s.version = CHIPMUNK_VERSION
     s.author = "Scott Lembcke, Beoran, John Mair (banisterfiend)"

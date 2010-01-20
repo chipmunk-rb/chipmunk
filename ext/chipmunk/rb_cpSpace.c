@@ -233,7 +233,6 @@ rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self)
 		// Do we need need to make it pass arbiters? FFI bindings don't do it.
 		cpSpaceSetDefaultCollisionHandler(
 			SPACE(self),
-      0, 0,
 			NULL,
 			compatibilityCallback,
 			NULL,
@@ -244,8 +243,7 @@ rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self)
 		rb_hash_aset(rb_iv_get(self, "blocks"), ID2SYM(rb_intern("default")), block);
 	} else if(RTEST(obj)) {
 		cpSpaceSetDefaultCollisionHandler(
-			SPACE(self),
-      0, 0,   
+			SPACE(self),   
 			(respondsTo(obj, id_begin)      ? beginCallback     : NULL),
 			(respondsTo(obj, id_pre_solve)  ? preSolveCallback  : NULL),
 			(respondsTo(obj, id_post_solve) ? postSolveCallback : NULL),
@@ -256,7 +254,7 @@ rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self)
 		rb_hash_aset(rb_iv_get(self, "blocks"), ID2SYM(rb_intern("default")), obj);
 	} else {
 		cpSpaceSetDefaultCollisionHandler(
-			SPACE(self), 0, 0, NULL, doNothingCallback, NULL, NULL, NULL
+			SPACE(self), NULL, doNothingCallback, NULL, NULL, NULL
 		);    
 	}
 	

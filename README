@@ -1,4 +1,4 @@
-Ruby Bindings to Chipmunk Physics Version 5.0.0
+Ruby Bindings to Chipmunk Physics Version 5.1.0
 
 (C) Scott Lembcke, Beoran and John Mair (banisterfiend)
 
@@ -25,28 +25,17 @@ CONTACT:
 
 ABOUT:
   Chipmunk is a simple, lightweight and fast 2D rigid body physics library 
-  written in C. It's licensed under the unrestrictive, OSI approved MIT license. 
-  My aim is to give 2D developers access the same quality of physics you find in newer 3D games. I hope you enjoy using Chipmunk, and please consider donating 
-  to help make it worth our time to continue to support Chipmunk with great 
-  new features.
+  written in C. It's licensed under the unrestrictive, OSI approved MIT license. My aim is to give 2D developers access the same quality of physics you find in newer 3D games. I hope you enjoy using Chipmunk, and please consider donating to help make it worth our time to continue to support Chipmunk with great new features.
   
-  These bindings are intened to as an alternative for the chipmunk-ffi bindings 
-  when performance is of the utmost importance, as it may be for games. The 
-  intent is for it to be source code compatibe with these ffi bindings. If you 
-  have any problems with these bindings, please contact the maintainer at  beoran@rubyforge.org .      
+  These bindings are intened to as an alternative for the chipmunk-ffi bindings when performance is of the utmost importance, as it may be for games. The intent is for it to be source code compatibe with the ffi bindings. If you have any problems with these bindings, please contact the maintainer at beoran@rubyforge.org.      
   
 CONTRACTING:
-  Howling Moon Software (Slembke's company) is available for contracting if you 
-  want to make the physics in your game really stand out. Feel free to contact 
-  them through their webpage: http://howlingmoonsoftware.com/contracting.php
+  Howling Moon Software (Slembke's company) is available for contracting if you want to make the physics in your game really stand out. Feel free to contact them through their webpage: http://howlingmoonsoftware.com/contracting.php
 
 CHANGES SINCE 4.x:
-* Brand new Joint/Constraint API: New constraints can be added easily and are 
-  much more flexible than the old joint system.
-* Efficient Segment Queries - Like raycasting, but with line segments.
-* Brand new collision callback API: Collision begin/separate events, API for 
-  removal of objects within callbacks, more programable control over collision
-  handling.  
+  * Brand new Joint/Constraint API: New constraints can be added easily and are much more flexible than the old joint system.
+  * Efficient Segment Queries - Like raycasting, but with line segments.
+  * Brand new collision callback API: Collision begin/separate events, API for removal of objects within callbacks, more programable control over collision handling.  
 
 CHANGES SINCE RELEASE 3:
 
