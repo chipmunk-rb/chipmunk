@@ -19,6 +19,7 @@
  * SOFTWARE.
  */
  
+#include <stdlib.h>
 #include "chipmunk.h"
 
 #include "ruby.h"
@@ -49,9 +50,21 @@ rb_cpBodyGetMass(VALUE self)
 }
 
 static VALUE
+rb_cpBodyGetMassInv(VALUE self)
+{
+  return rb_float_new(BODY(self)->m_inv);
+}
+
+static VALUE
 rb_cpBodyGetMoment(VALUE self)
 {
 	return rb_float_new(BODY(self)->i);
+}
+
+static VALUE
+rb_cpBodyGetMomentInv(VALUE self)
+{
+  return rb_float_new(BODY(self)->i_inv);
 }
 
 static VALUE
@@ -94,6 +107,18 @@ static VALUE
 rb_cpBodyGetRot(VALUE self)
 {
 	return VWRAP(self, &BODY(self)->rot);
+}
+
+static VALUE
+rb_cpBodyGetVelLimit(VALUE self)
+{
+  return rb_float_new(BODY(self)->v_limit);
+}
+
+static VALUE
+rb_cpBodyGetAVelLimit(VALUE self)
+{
+  return rb_float_new(BODY(self)->w_limit);
 }
 
 
@@ -153,6 +178,21 @@ rb_cpBodySetTorque(VALUE self, VALUE val)
 	return val;
 }
 
+static VALUE 
+rb_cpBodySetVelLimit(VALUE self, VALUE val)
+{
+  BODY(self)->v_limit = NUM2DBL(val);
+  return val;
+}
+  
+static VALUE 
+rb_cpBodySetAVelLimit(VALUE self, VALUE val)
+{
+  BODY(self)->w_limit = NUM2DBL(val);
+  return val;
+}
+
+
 static VALUE
 rb_cpBodyLocal2World(VALUE self, VALUE v)
 {
@@ -169,37 +209,56 @@ static VALUE
 rb_cpBodyResetForces(VALUE self)
 {
 	cpBodyResetForces(BODY(self));
-	return Qnil;
+	return self;
 }
 
 static VALUE
 rb_cpBodyApplyForce(VALUE self, VALUE f, VALUE r)
 {
 	cpBodyApplyForce(BODY(self), *VGET(f), *VGET(r));
-	return Qnil;
+	return self;
 }
 
 static VALUE
 rb_cpBodyApplyImpulse(VALUE self, VALUE j, VALUE r)
 {
 	cpBodyApplyImpulse(BODY(self), *VGET(j), *VGET(r));
-	return Qnil;
+	return self;
 }
 
 static VALUE
 rb_cpBodyUpdateVelocity(VALUE self, VALUE g, VALUE dmp, VALUE dt)
 {
 	cpBodyUpdateVelocity(BODY(self), *VGET(g), NUM2DBL(dmp), NUM2DBL(dt));
-	return Qnil;
+	return self;
 }
 
 static VALUE
 rb_cpBodyUpdatePosition(VALUE self, VALUE dt)
 {
 	cpBodyUpdatePosition(BODY(self), NUM2DBL(dt));
-	return Qnil;
+	return self;
 }
 
+// Intended for objects that are moved manually with a custom velocity integration function.
+static VALUE 
+rb_cpBodySlew(VALUE self, VALUE pos, VALUE dt) 
+{
+  cpBodySlew(BODY(self), *VGET(pos), NUM2DBL(dt));
+  return self;
+}
+
+static VALUE 
+rb_cpApplyDampedSpring(VALUE klass, VALUE a, VALUE b, 
+  VALUE anchr1, VALUE anchr2, VALUE rlen, VALUE k, VALUE dmp, VALUE dt)
+{
+  cpApplyDampedSpring(BODY(a), BODY(b), *VGET(anchr1), *VGET(anchr2), 
+  NUM2DBL(rlen), NUM2DBL(k), NUM2DBL(dmp), NUM2DBL(dt));
+  return klass;
+} 
+   
+
+void cpApplyDampedSpring(cpBody *a, cpBody *b, cpVect anchr1, cpVect anchr2, cpFloat rlen, cpFloat k, cpFloat dmp, cpFloat dt);
 
 void
 Init_cpBody(void)
@@ -208,24 +267,56 @@ Init_cpBody(void)
 	rb_define_alloc_func(c_cpBody, rb_cpBodyAlloc);
 	rb_define_method(c_cpBody, "initialize", rb_cpBodyInitialize, 2);
 
-	rb_define_method(c_cpBody, "m" , rb_cpBodyGetMass, 0);
-	rb_define_method(c_cpBody, "i" , rb_cpBodyGetMoment, 0);	
-	rb_define_method(c_cpBody, "p" , rb_cpBodyGetPos, 0);
-	rb_define_method(c_cpBody, "v" , rb_cpBodyGetVel, 0);
-	rb_define_method(c_cpBody, "f" , rb_cpBodyGetForce, 0);
-	rb_define_method(c_cpBody, "a" , rb_cpBodyGetAngle, 0);
-	rb_define_method(c_cpBody, "w" , rb_cpBodyGetAVel, 0);
-	rb_define_method(c_cpBody, "t" , rb_cpBodyGetTorque, 0);
-	rb_define_method(c_cpBody, "rot", rb_cpBodyGetRot, 0);
+	rb_define_method(c_cpBody, "m"     , rb_cpBodyGetMass, 0);
+  rb_define_method(c_cpBody, "m_inv" , rb_cpBodyGetMassInv, 0); 
+	rb_define_method(c_cpBody, "i"     , rb_cpBodyGetMoment, 0);
+  rb_define_method(c_cpBody, "i_inv" , rb_cpBodyGetMomentInv, 0);
+	rb_define_method(c_cpBody, "p"     , rb_cpBodyGetPos, 0);
+	rb_define_method(c_cpBody, "v"     , rb_cpBodyGetVel, 0);
+	rb_define_method(c_cpBody, "f"     , rb_cpBodyGetForce, 0);
+	rb_define_method(c_cpBody, "a"     , rb_cpBodyGetAngle, 0);
+	rb_define_method(c_cpBody, "w"     , rb_cpBodyGetAVel, 0);
+	rb_define_method(c_cpBody, "t"     , rb_cpBodyGetTorque, 0);
+	rb_define_method(c_cpBody, "rot"   , rb_cpBodyGetRot, 0);
 	
-	rb_define_method(c_cpBody, "m=", rb_cpBodySetMass, 1);
-	rb_define_method(c_cpBody, "i=", rb_cpBodySetMoment, 1);
-	rb_define_method(c_cpBody, "p=", rb_cpBodySetPos, 1);
-	rb_define_method(c_cpBody, "v=", rb_cpBodySetVel, 1);
-	rb_define_method(c_cpBody, "f=", rb_cpBodySetForce, 1);
-	rb_define_method(c_cpBody, "a=", rb_cpBodySetAngle, 1);
-	rb_define_method(c_cpBody, "w=", rb_cpBodySetAVel, 1);
-	rb_define_method(c_cpBody, "t=", rb_cpBodySetTorque, 1);
+	rb_define_method(c_cpBody, "m="    , rb_cpBodySetMass, 1);
+	rb_define_method(c_cpBody, "i="    , rb_cpBodySetMoment, 1);
+	rb_define_method(c_cpBody, "p="    , rb_cpBodySetPos, 1);
+	rb_define_method(c_cpBody, "v="    , rb_cpBodySetVel, 1);
+	rb_define_method(c_cpBody, "f="    , rb_cpBodySetForce, 1);
+	rb_define_method(c_cpBody, "a="    , rb_cpBodySetAngle, 1);
+	rb_define_method(c_cpBody, "w="    , rb_cpBodySetAVel, 1);
+	rb_define_method(c_cpBody, "t="    , rb_cpBodySetTorque, 1);
+	
+	rb_define_method(c_cpBody, "mass"    , rb_cpBodyGetMass, 0);
+	rb_define_method(c_cpBody, "moment"  , rb_cpBodyGetMoment, 0);	
+	rb_define_method(c_cpBody, "pos"     , rb_cpBodyGetPos, 0);
+	rb_define_method(c_cpBody, "vel"     , rb_cpBodyGetVel, 0);
+	rb_define_method(c_cpBody, "force"   , rb_cpBodyGetForce, 0);
+	rb_define_method(c_cpBody, "angle"   , rb_cpBodyGetAngle, 0);
+	rb_define_method(c_cpBody, "ang_vel" , rb_cpBodyGetAVel, 0);
+	rb_define_method(c_cpBody, "torque"  , rb_cpBodyGetTorque, 0);
+	rb_define_method(c_cpBody, "rot"     , rb_cpBodyGetRot, 0);
+  rb_define_method(c_cpBody, "v_limit" , rb_cpBodyGetVelLimit, 0);
+  rb_define_method(c_cpBody, "w_limit" , rb_cpBodyGetAVelLimit, 0);
+  	
+	rb_define_method(c_cpBody, "mass="   , rb_cpBodySetMass, 1);
+	rb_define_method(c_cpBody, "moment=" , rb_cpBodySetMoment, 1);
+	rb_define_method(c_cpBody, "pos="    , rb_cpBodySetPos, 1);
+	rb_define_method(c_cpBody, "vel="    , rb_cpBodySetVel, 1);
+	rb_define_method(c_cpBody, "force="  , rb_cpBodySetForce, 1);
+	rb_define_method(c_cpBody, "angle="  , rb_cpBodySetAngle, 1);
+	rb_define_method(c_cpBody, "ang_vel=", rb_cpBodySetAVel, 1);
+	rb_define_method(c_cpBody, "torque=" , rb_cpBodySetTorque, 1);
+  rb_define_method(c_cpBody, "v_limit=", rb_cpBodySetVelLimit, 1);
+  rb_define_method(c_cpBody, "w_limit=", rb_cpBodySetAVelLimit, 1);
+ 
+   /* Some more aliases */
+  rb_define_method(c_cpBody, "ang_vel_limit"  , rb_cpBodyGetAVelLimit, 0);  
+  rb_define_method(c_cpBody, "vel_limit"      , rb_cpBodyGetVelLimit, 0);
+  rb_define_method(c_cpBody, "ang_vel_limit=" , rb_cpBodySetAVelLimit, 1);
+  rb_define_method(c_cpBody, "vel_limit="     , rb_cpBodySetVelLimit, 1);
+
 	
 	rb_define_method(c_cpBody, "local2world", rb_cpBodyLocal2World, 1);
 	rb_define_method(c_cpBody, "world2local", rb_cpBodyWorld2Local, 1);
@@ -235,5 +326,13 @@ Init_cpBody(void)
 	rb_define_method(c_cpBody, "apply_impulse", rb_cpBodyApplyImpulse, 2);
 	
 	rb_define_method(c_cpBody, "update_velocity", rb_cpBodyUpdateVelocity, 3);
-	rb_define_method(c_cpBody, "update_position", rb_cpBodyUpdatePosition, 1);
+	rb_define_method(c_cpBody, "update_position", rb_cpBodyUpdatePosition, 1);  
+  
+  /* Manual integration function */
+  rb_define_method(c_cpBody, "slew", rb_cpBodySlew, 2);
+  
+  /* Damped spring function */
+  rb_define_singleton_method(c_cpBody, 
+    "apply_damped_spring", rb_cpApplyDampedSpring, 8);
+	
 }

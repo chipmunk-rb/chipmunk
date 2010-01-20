@@ -21,6 +21,7 @@
  
 extern VALUE m_Chipmunk;
 
+extern VALUE c_cpArbiter;
 extern VALUE c_cpVect;
 extern VALUE c_cpBB;
 extern VALUE c_cpBody;
@@ -28,7 +29,7 @@ extern VALUE m_cpShape;
 extern VALUE c_cpCircleShape;
 extern VALUE c_cpSegmentShape;
 extern VALUE c_cpPolyShape;
-extern VALUE m_cpJoint;
+extern VALUE m_cpConstraint;
 extern VALUE c_cpSpace;
 
 extern ID id_parent;
@@ -50,28 +51,34 @@ VWRAP(VALUE parent, cpVect *v)
 	return vec_obj;	
 }
 
-#define GETTER_TEMPLATE(func_name, klass, klass_name, type)\
+#define GETTER_TEMPLATE(func_name, klass, type)\
 static inline type *\
 func_name(VALUE self)\
 {\
-	if(!rb_obj_is_kind_of(self, klass))\
-		rb_raise(rb_eTypeError, "wrong argument type %s (expected CP::klass_name)", rb_obj_classname(self));\
+	if(!rb_obj_is_kind_of(self, klass)){\
+		VALUE klass_name = rb_funcall(klass, rb_intern("to_s"), 0);\
+		rb_raise(rb_eTypeError, "wrong argument type %s (expected %s)", rb_obj_classname(self), StringValuePtr(klass_name));\
+	}\
 	type *ptr;\
 	Data_Get_Struct(self, type, ptr);\
 	return ptr;\
 }\
 
-GETTER_TEMPLATE(VGET , c_cpVect , Vec2 , cpVect )
-GETTER_TEMPLATE(BBGET, c_cpBB   , BB   , cpBB   )
-GETTER_TEMPLATE(BODY , c_cpBody , Body , cpBody )
-GETTER_TEMPLATE(SHAPE, m_cpShape, Shape, cpShape)
-GETTER_TEMPLATE(JOINT, m_cpJoint, Joint, cpJoint)
-GETTER_TEMPLATE(SPACE, c_cpSpace, Space, cpSpace)
+GETTER_TEMPLATE(VGET , c_cpVect , cpVect )
+GETTER_TEMPLATE(BBGET, c_cpBB   , cpBB   )
+GETTER_TEMPLATE(BODY , c_cpBody , cpBody )
+GETTER_TEMPLATE(SHAPE, m_cpShape, cpShape)
+GETTER_TEMPLATE(CONSTRAINT, m_cpConstraint, cpConstraint)
+GETTER_TEMPLATE(SPACE, c_cpSpace, cpSpace)
+GETTER_TEMPLATE(ARBITER, c_cpArbiter, cpArbiter)
+
 
 void Init_chipmunk(void);
 void Init_cpVect();
+void Init_cpArbiter();
 void Init_cpBB();
 void Init_cpBody();
 void Init_cpShape();
-void Init_cpJoint();
+void Init_cpConstraint();
 void Init_cpSpace();
+

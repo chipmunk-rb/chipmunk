@@ -19,6 +19,7 @@
  * SOFTWARE.
  */
  
+#include <stdlib.h>
 #include "chipmunk.h"
 
 #include "ruby.h"
@@ -30,9 +31,79 @@ VALUE m_cpShape;
 VALUE c_cpCircleShape;
 VALUE c_cpSegmentShape;
 VALUE c_cpPolyShape;
+VALUE c_cpSegmentQueryInfo;
+
+//c_cpSegmentQueryInfo
+GETTER_TEMPLATE(SQINFO, c_cpSegmentQueryInfo, cpSegmentQueryInfo)
+
+static cpSegmentQueryInfo * cpSegmentQueryInfoAlloc() 
+{
+  return malloc(sizeof(cpSegmentQueryInfo));
+}
+
+static cpSegmentQueryInfo * cpSegmentQueryInfoInit(cpSegmentQueryInfo * self, 
+  cpShape * shape, cpFloat t, cpVect n) 
+{
+  self->shape = shape;
+  self->t     = t;
+  self->n     = n;
+  return self;
+}
+
+static VALUE
+rb_cpSegmentQueryInfoAlloc(VALUE klass)
+{
+  struct cpSegmentQueryInfo * info = cpSegmentQueryInfoAlloc();  
+  return Data_Wrap_Struct(klass, NULL, free, info);
+}
+
+static VALUE
+rb_cpSeqmentQueryInfoInitialize(VALUE self, VALUE shape, VALUE t, VALUE n)
+{
+  struct cpSegmentQueryInfo * info;
+  info        = SQINFO(self);
+  cpSegmentQueryInfoInit(info, SHAPE(shape), NUM2DBL(t), *VGET(n));
+  return self;
+}
+
+static VALUE
+rb_cpSeqmentQueryInfoGetShape(VALUE self) 
+{
+  cpShape * shape = SQINFO(self)->shape;
+  if (!shape) return Qnil;  
+  //XXX: technically speaking, this is wrong... :p. 
+  // It's hard to wrap, though...
+  return (VALUE) SQINFO(self)->shape->data;
+  // return Qtrue;
+  // return Data_Wrap_Struct(c_cpShape, 0, cpShapeFree, SQINFO(self)->shape);
+}
+
+static VALUE
+rb_cpSeqmentQueryInfoGetT(VALUE self) 
+{
+  return rb_float_new(SQINFO(self)->t);
+}
+
+static VALUE
+rb_cpSeqmentQueryInfoGetN(VALUE self) 
+{  
+  return VNEW(SQINFO(self)->n);
+}
+
+static VALUE
+rb_cpSeqmentQueryInfoHitPoint(VALUE self, VALUE start, VALUE end)
+{
+  return VNEW(cpSegmentQueryHitPoint(*VGET(start), *VGET(end), *SQINFO(self)));
+}
+
+static VALUE
+rb_cpSeqmentQueryInfoHitDist(VALUE self, VALUE start, VALUE end)
+{
+  return rb_float_new(cpSegmentQueryHitDist(*VGET(start), *VGET(end), *SQINFO(self)));
+}
 
 
-
+//c_cpShape
 static VALUE
 rb_cpShapeGetBody(VALUE self)
 {
@@ -123,6 +194,7 @@ rb_cpShapeGetFriction(VALUE self)
 	return rb_float_new(SHAPE(self)->u);
 }
 
+
 static VALUE
 rb_cpShapeSetElasticity(VALUE self, VALUE val)
 {
@@ -157,6 +229,46 @@ rb_cpShapeResetIdCounter(VALUE self)
 	return Qnil;
 }
 
+static VALUE
+rb_cpShapeGetData(VALUE self)
+{
+  return (VALUE) (SHAPE(self)->data);
+}
+
+
+static VALUE
+rb_cpShapeGetSensor(VALUE self)
+{
+  int bool = (SHAPE(self)->sensor);  
+  return bool ? Qtrue : Qfalse;
+}
+
+static VALUE
+rb_cpShapeSetSensor(VALUE self, VALUE val)
+{
+  int bool = ((val == Qnil) || (val == Qfalse)) ? 0 :  1;
+  SHAPE(self)->sensor = bool;    
+  return val;
+}
+
+static VALUE 
+rb_cpShapePointQuery(VALUE self, VALUE point) {  
+  int bool = cpShapePointQuery(SHAPE(self), *VGET(point));
+  return bool ? Qtrue : Qfalse;
+}
+
+// Shape/segment query
+static VALUE
+rb_cpShapeSegmentQuery(VALUE self, VALUE a, VALUE b) 
+{
+  cpSegmentQueryInfo * info = cpSegmentQueryInfoAlloc();
+  int bool = cpShapeSegmentQuery(SHAPE(self), *VGET(a), *VGET(b), info);
+  if (bool) {  
+    return Data_Wrap_Struct(c_cpSegmentQueryInfo, NULL, free, info);
+  } else {
+    return Qnil;
+  } 
+}
 
 
 //cpCircle
@@ -222,10 +334,11 @@ rb_cpPolyInitialize(VALUE self, VALUE body, VALUE arr, VALUE offset)
 	
 	Check_Type(arr, T_ARRAY);
 	int numVerts = RARRAY_LEN(arr);
+	VALUE *ary_ptr = RARRAY_PTR(arr);
 	cpVect verts[numVerts];
 	
 	for(int i=0; i<numVerts; i++)
-		verts[i] = *VGET(RARRAY_PTR(arr)[i]);
+		verts[i] = *VGET(ary_ptr[i]);
 	
 	cpPolyShapeInit(poly, BODY(body), numVerts, verts, *VGET(offset));
 	poly->shape.data = (void *)self;
@@ -235,6 +348,9 @@ rb_cpPolyInitialize(VALUE self, VALUE body, VALUE arr, VALUE offset)
 	
 	return self;
 }
+
+
+
 
 
 
@@ -266,9 +382,22 @@ Init_cpShape(void)
 	
 	rb_define_method(m_cpShape, "e=", rb_cpShapeSetElasticity, 1);
 	rb_define_method(m_cpShape, "u=", rb_cpShapeSetFriction, 1);
-	
-	rb_define_method(m_cpShape, "surface_v", rb_cpShapeGetSurfaceV, 0);
-	rb_define_method(m_cpShape, "surface_v=", rb_cpShapeSetSurfaceV, 1);
+		
+  rb_define_method(m_cpShape, "surface_v"  , rb_cpShapeGetSurfaceV, 0);
+	rb_define_method(m_cpShape, "surface_v=" , rb_cpShapeSetSurfaceV, 1);
+  
+  rb_define_method(m_cpShape, "data"       , rb_cpShapeGetData, 0);  
+  /* 
+  XXX: do we need data= ? Data is used internally, so perhaps what 
+  chipmunk-ffi isdoing doesn't make sense here?
+  */   
+  rb_define_method(m_cpShape, "sensor"  , rb_cpShapeGetSensor, 0);
+  rb_define_method(m_cpShape, "sensor=" , rb_cpShapeSetSensor, 1);
+  
+  rb_define_method(m_cpShape, "point_query" , rb_cpShapePointQuery, 1);
+  rb_define_method(m_cpShape, "segment_query", rb_cpShapeSegmentQuery, 3);
+  
+  
 	
 	rb_define_singleton_method(m_cpShape, "reset_id_counter", rb_cpShapeResetIdCounter, 0);
 
@@ -289,4 +418,24 @@ Init_cpShape(void)
 	rb_include_module(c_cpPolyShape, m_cpShape);
 	rb_define_alloc_func(c_cpPolyShape, rb_cpPolyAlloc);
 	rb_define_method(c_cpPolyShape, "initialize", rb_cpPolyInitialize, 3);
+  
+  
+  c_cpSegmentQueryInfo = rb_define_class_under(m_cpShape, 
+    "SegmentQueryInfo", rb_cObject);
+  rb_define_alloc_func(c_cpSegmentQueryInfo, rb_cpSegmentQueryInfoAlloc);
+  rb_define_method(c_cpSegmentQueryInfo, "initialize",
+    rb_cpSeqmentQueryInfoInitialize, 3);
+    
+  rb_define_method(c_cpSegmentQueryInfo, "shape", 
+    rb_cpSeqmentQueryInfoGetShape, 0);
+  rb_define_method(c_cpSegmentQueryInfo, "t", 
+    rb_cpSeqmentQueryInfoGetT, 0);
+  rb_define_method(c_cpSegmentQueryInfo, "n", 
+    rb_cpSeqmentQueryInfoGetN, 0);
+  rb_define_method(c_cpSegmentQueryInfo, "hit_point", 
+    rb_cpSeqmentQueryInfoHitPoint, 2);    
+  rb_define_method(c_cpSegmentQueryInfo, "hit_distance", 
+    rb_cpSeqmentQueryInfoHitDist, 2);
+  
 }
+
