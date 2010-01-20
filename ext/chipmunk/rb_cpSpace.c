@@ -110,6 +110,20 @@ rb_cpSpaceSetGravity(VALUE self, VALUE val)
 }
 
 static int
+respondsTo(VALUE obj, ID method)
+{
+	VALUE value = rb_funcall(obj, rb_intern("respond_to?"), 1, ID2SYM(method));
+	return RTEST(value);
+}
+
+static int
+isBlock(VALUE obj)
+{
+	return respondsTo(obj, id_call);
+}
+
+
+static int
 doNothingCallback(cpArbiter *arb, cpSpace *space, void *data)
 {
 	return 0;
@@ -118,12 +132,17 @@ doNothingCallback(cpArbiter *arb, cpSpace *space, void *data)
 /* This callback can also pass arbiters... */
 static int genericCallback(cpArbiter *arb, cpSpace * space, void * data, ID func) 
 {  
-  int arity = 3;
-  /* int arity = rb_obj_method_arity((VALUE) data, func);
+  int arity = 2;
+  /* int arity = rb_obj_method_arity((VALUE) data, func); */
   /* XXX: this doesn't work. */
   VALUE arbiter = Qnil;
   cpShape *a    = NULL;
   cpShape *b    = NULL;
+  if(isBlock((VALUE) data)) {
+    arity       = rb_proc_arity((VALUE) data);
+  } else {
+    arity       = rb_obj_method_arity((VALUE) data, func);
+  }
   
   switch (arity) { 
     case 1:
@@ -148,19 +167,19 @@ compatibilityCallback(cpArbiter *arb, cpSpace *space, void *data)
 	/*CP_ARBITER_GET_SHAPES(arb, a, b);
 	return rb_funcall((VALUE)data, id_call, 2, (VALUE)a->data, (VALUE)b->data);
 	*/
-        genericCallback(arb, space, data, id_call);
+        return genericCallback(arb, space, data, id_call);
 }
 
 static int
 beginCallback(cpArbiter *arb, cpSpace *space, void *data)
 {
-	genericCallback(arb, space, data, id_begin);
+	return genericCallback(arb, space, data, id_begin);
 }
 
 static int
 preSolveCallback(cpArbiter *arb, cpSpace *space, void *data)
 { 
-        genericCallback(arb, space, data, id_pre_solve);
+        return genericCallback(arb, space, data, id_pre_solve);
 }
 
 static void
@@ -174,18 +193,6 @@ separateCallback(cpArbiter *arb, cpSpace *space, void *data)
         genericCallback(arb, space, data, id_separate);
 }
 
-static int
-respondsTo(VALUE obj, ID method)
-{
-	VALUE value = rb_funcall(obj, rb_intern("respond_to?"), 1, ID2SYM(method));
-	return RTEST(value);
-}
-
-static int
-isBlock(VALUE obj)
-{
-	return respondsTo(obj, id_call);
-}
 
 static VALUE
 rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self)
