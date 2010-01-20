@@ -49,7 +49,7 @@ describe 'Shape in chipmunk' do
 
   class CollisionHandler
     attr_reader :begin_called
-    def begin(a,b)
+    def begin(a,b,arbiter)
       @begin_called = [a,b]
     end
   end

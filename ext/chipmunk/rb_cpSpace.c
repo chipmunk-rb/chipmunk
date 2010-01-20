@@ -492,6 +492,11 @@ Init_cpSpace(void)
 	rb_define_method(c_cpSpace, "remove_collision_func", rb_cpSpaceRemoveCollisionHandler, 2);
 	rb_define_method(c_cpSpace, "set_default_collision_func", rb_cpSpaceSetDefaultCollisionHandler, -1);
 	
+	rb_define_method(c_cpSpace, "add_collision_handler", rb_cpSpaceAddCollisionHandler, -1);
+	rb_define_method(c_cpSpace, "remove_collision_handler", rb_cpSpaceRemoveCollisionHandler, 2);
+	rb_define_method(c_cpSpace, "set_default_collision_handler", rb_cpSpaceSetDefaultCollisionHandler, -1);
+	
+	
 	rb_define_method(c_cpSpace, "add_shape", rb_cpSpaceAddShape, 1);
 	rb_define_method(c_cpSpace, "add_static_shape", rb_cpSpaceAddStaticShape, 1);
 	rb_define_method(c_cpSpace, "add_body", rb_cpSpaceAddBody, 1);
