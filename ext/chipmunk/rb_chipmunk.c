@@ -98,9 +98,11 @@ Init_chipmunk(void)
 	// TODO add seg moment function
 	
 	Init_cpVect();
+  Init_cpArbiter(); 
 	Init_cpBB();
 	Init_cpBody();
 	Init_cpShape();
 	Init_cpConstraint();
 	Init_cpSpace();
+  
 }

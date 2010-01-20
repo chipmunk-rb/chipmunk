@@ -21,6 +21,7 @@
  
 extern VALUE m_Chipmunk;
 
+extern VALUE c_cpArbiter;
 extern VALUE c_cpVect;
 extern VALUE c_cpBB;
 extern VALUE c_cpBody;
@@ -69,11 +70,14 @@ GETTER_TEMPLATE(BODY , c_cpBody , cpBody )
 GETTER_TEMPLATE(SHAPE, m_cpShape, cpShape)
 GETTER_TEMPLATE(CONSTRAINT, m_cpConstraint, cpConstraint)
 GETTER_TEMPLATE(SPACE, c_cpSpace, cpSpace)
+GETTER_TEMPLATE(ARBITER, c_cpArbiter, cpArbiter)
 
 void Init_chipmunk(void);
 void Init_cpVect();
+void Init_cpArbiter();
 void Init_cpBB();
 void Init_cpBody();
 void Init_cpShape();
 void Init_cpConstraint();
 void Init_cpSpace();
+

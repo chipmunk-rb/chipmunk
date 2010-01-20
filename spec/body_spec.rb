@@ -1,3 +1,5 @@
+require File.dirname(__FILE__)+'/spec_helper'
+
 describe 'A new Body' do
   it 'should be creatable' do
     b = CP::Body.new(5, 7)
