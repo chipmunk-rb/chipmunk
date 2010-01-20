@@ -3,10 +3,7 @@ Ruby Bindings to Chipmunk Physics Version 5.1.0
 (C) Scott Lembcke, Beoran and John Mair (banisterfiend)
 
 IMPORTANT NOTICE:
-This is a fork of Chipmunk 4.1.0 for use with Ruby 1.8.x and 1.9.x. 
-The standard version of Chipmunk is only compatible with 1.8.x.
-The standalone library of Chipmunk will not be not maintained in 
-this branch, at least not for now. 
+These are bindings for MRI Ruby 1.8.x and 1.9.x to Chipmunk version 5.1.0. 
 
 (1) 1/10/09 Cross-Platform Gem built by John Mair (banisterfiend)
     * Just go: gem install chipmunk  
