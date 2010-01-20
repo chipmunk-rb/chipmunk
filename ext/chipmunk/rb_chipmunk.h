@@ -51,6 +51,14 @@ VWRAP(VALUE parent, cpVect *v)
 	return vec_obj;	
 }
 
+static inline VALUE
+ARBWRAP(cpArbiter *arb)
+{
+  VALUE arb_obj = Data_Wrap_Struct(c_cpArbiter, NULL, cpArbiterFree, arb);
+  return arb_obj;	
+}
+
+
 #define GETTER_TEMPLATE(func_name, klass, type)\
 static inline type *\
 func_name(VALUE self)\

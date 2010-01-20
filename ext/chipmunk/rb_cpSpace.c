@@ -115,39 +115,63 @@ doNothingCallback(cpArbiter *arb, cpSpace *space, void *data)
 	return 0;
 }
 
+/* This callback can also pass arbiters... */
+static int genericCallback(cpArbiter *arb, cpSpace * space, void * data, ID func) 
+{  
+  int arity = 3;
+  /* int arity = rb_obj_method_arity((VALUE) data, func);
+  /* XXX: this doesn't work. */
+  VALUE arbiter = Qnil;
+  cpShape *a    = NULL;
+  cpShape *b    = NULL;
+  
+  switch (arity) { 
+    case 1:
+      arbiter = ARBWRAP(arb);
+      return rb_funcall((VALUE)data, func, 1, arbiter);      
+    case 2:
+      cpArbiterGetShapes(arb, &a, &b);
+      return rb_funcall((VALUE)data, func, 2, (VALUE)a->data, (VALUE)b->data);
+    case 3:
+      cpArbiterGetShapes(arb, &a, &b);
+      arbiter = ARBWRAP(arb);
+      return rb_funcall((VALUE)data, func, 3, (VALUE)a->data, (VALUE)b->data, arbiter);
+    default: 
+      rb_raise(rb_eArgError, "Arity of callback must be 1, 2, or 3.");
+  }
+    
+} 
+
 static int
 compatibilityCallback(cpArbiter *arb, cpSpace *space, void *data)
 {
-	CP_ARBITER_GET_SHAPES(arb, a, b);
+	/*CP_ARBITER_GET_SHAPES(arb, a, b);
 	return rb_funcall((VALUE)data, id_call, 2, (VALUE)a->data, (VALUE)b->data);
+	*/
+        genericCallback(arb, space, data, id_call);
 }
 
 static int
 beginCallback(cpArbiter *arb, cpSpace *space, void *data)
 {
-	CP_ARBITER_GET_SHAPES(arb, a, b);
-	return rb_funcall((VALUE)data, id_begin, 2, (VALUE)a->data, (VALUE)b->data);
+	genericCallback(arb, space, data, id_begin);
 }
 
 static int
 preSolveCallback(cpArbiter *arb, cpSpace *space, void *data)
-{
-	CP_ARBITER_GET_SHAPES(arb, a, b);
-	return rb_funcall((VALUE)data, id_pre_solve, 2, (VALUE)a->data, (VALUE)b->data);
+{ 
+        genericCallback(arb, space, data, id_pre_solve);
 }
 
 static void
 postSolveCallback(cpArbiter *arb, cpSpace *space, void *data)
 {
-	CP_ARBITER_GET_SHAPES(arb, a, b);
-	rb_funcall((VALUE)data, id_post_solve, 2, (VALUE)a->data, (VALUE)b->data);
-}
+        genericCallback(arb, space, data, id_post_solve);}
 
 static void
 separateCallback(cpArbiter *arb, cpSpace *space, void *data)
 {
-	CP_ARBITER_GET_SHAPES(arb, a, b);
-	rb_funcall((VALUE)data, id_separate, 2, (VALUE)a->data, (VALUE)b->data);
+        genericCallback(arb, space, data, id_separate);
 }
 
 static int
