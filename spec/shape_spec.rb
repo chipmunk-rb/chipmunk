@@ -37,12 +37,23 @@ describe 'ShapeStruct in chipmunk' do
       # he sets layers to -1 on an unsigned int
       s.layers.should == 2**32-1
     end
-
+    
     it 'can get its group' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
-      s.struct.group.should == 0
+      # Nil, because not set before
+      s.group.should == nil
     end
+    
+    it 'can set its group' do
+      class Aid; end
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+      # Nil, because not set before
+      s.group = Aid 
+      s.group.should == Aid
+    end
+
 
     it 'can get its col type' do
       bod = CP::Body.new 90, 76
@@ -50,7 +61,9 @@ describe 'ShapeStruct in chipmunk' do
       s.collision_type.should == nil
       s.collision_type = :foo
       s.collision_type.should == :foo
-      s.struct.collision_type.should == :foo.object_id
+      # s.collision_type.should == :foo.object_id
+      # the next one on top is impossible, 
+      # and contradictory to boot.
     end
 
     it 'can get its sensor' do
@@ -78,14 +91,20 @@ describe 'ShapeStruct in chipmunk' do
     it 'can get its data' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
-      s.data.read_long.should == s.object_id
+      p s.data
+      s.data.should == s
+      # s.data.read_long.should == s.object_id
+      # Chipmunk stores the shape object itself in data
     end
 
+    # Do we need this?
+=begin    
     it 'can get its klass' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
-      ShapeClassStruct.new(s.struct.klass).type.should == :circle_shape
+      ShapeClassStruct.new(s.struct.klass).type.should == :circle_shape      
     end
+=end    
 
     it 'can set its bodys v' do
       bod = CP::Body.new 90, 76
@@ -112,8 +131,9 @@ describe 'ShapeStruct in chipmunk' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
       info = s.segment_query(vec2(-100,10),vec2(0,10))
-      GC.start
+      GC.start            
       info.hit.should be_true
+      info.hit.should == s
       info.t.should be_close(0.827,0.001)
       info.n.x.should be_close(-0.866, 0.001)
       info.n.y.should be_close(0.5, 0.001)

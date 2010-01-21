@@ -392,10 +392,11 @@ Init_cpShape(void)
   chipmunk-ffi isdoing doesn't make sense here?
   */   
   rb_define_method(m_cpShape, "sensor"  , rb_cpShapeGetSensor, 0);
+  rb_define_method(m_cpShape, "sensor?" , rb_cpShapeGetSensor, 0);
   rb_define_method(m_cpShape, "sensor=" , rb_cpShapeSetSensor, 1);
   
   rb_define_method(m_cpShape, "point_query" , rb_cpShapePointQuery, 1);
-  rb_define_method(m_cpShape, "segment_query", rb_cpShapeSegmentQuery, 3);
+  rb_define_method(m_cpShape, "segment_query", rb_cpShapeSegmentQuery, 2);
   
   
 	
@@ -428,6 +429,8 @@ Init_cpShape(void)
     
   rb_define_method(c_cpSegmentQueryInfo, "shape", 
     rb_cpSeqmentQueryInfoGetShape, 0);
+  rb_define_method(c_cpSegmentQueryInfo, "hit", 
+    rb_cpSeqmentQueryInfoGetShape, 0);  
   rb_define_method(c_cpSegmentQueryInfo, "t", 
     rb_cpSeqmentQueryInfoGetT, 0);
   rb_define_method(c_cpSegmentQueryInfo, "n", 

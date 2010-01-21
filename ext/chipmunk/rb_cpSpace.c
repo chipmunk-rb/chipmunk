@@ -109,19 +109,23 @@ rb_cpSpaceSetGravity(VALUE self, VALUE val)
 	return val;
 }
 
-static int
-respondsTo(VALUE obj, ID method)
-{
-	VALUE value = rb_funcall(obj, rb_intern("respond_to?"), 1, ID2SYM(method));
-	return RTEST(value);
-}
+#define respondsTo(obj, id) rb_respond_to(obj, id)
 
 static int
 isBlock(VALUE obj)
 {
-	return respondsTo(obj, id_call);
+	return rb_respond_to(obj, id_call);
 }
 
+static VALUE 
+callbackToMethod(VALUE obj, ID func) {
+  return rb_funcall(obj, rb_intern("method"), 1, func);  
+} 
+
+static int 
+callbackArity(VALUE callback) {
+  return rb_funcall(callback, rb_intern("arity"), 0);  
+} 
 
 static int
 doNothingCallback(cpArbiter *arb, cpSpace *space, void *data)
@@ -130,18 +134,21 @@ doNothingCallback(cpArbiter *arb, cpSpace *space, void *data)
 }
 
 /* This callback can also pass arbiters... */
-static int genericCallback(cpArbiter *arb, cpSpace * space, void * data, ID func) 
+static int 
+genericCallback(cpArbiter *arb, cpSpace * space, 
+  void * data, ID func) 
 {  
   int arity = 2;
   /* int arity = rb_obj_method_arity((VALUE) data, func); */
   /* XXX: this doesn't work. */
-  VALUE arbiter = Qnil;
-  cpShape *a    = NULL;
-  cpShape *b    = NULL;
+  VALUE arbiter   = Qnil;
+  cpShape *a      = NULL;
+  cpShape *b      = NULL;
   if(isBlock((VALUE) data)) {
-    arity       = rb_proc_arity((VALUE) data);
-  } else {
-    arity       = rb_obj_method_arity((VALUE) data, func);
+    arity         = callbackArity((VALUE) data);
+  } else  {
+    VALUE method  = callbackToMethod((VALUE) data, func);  
+    arity         = callbackArity(method);
   }
   
   switch (arity) { 

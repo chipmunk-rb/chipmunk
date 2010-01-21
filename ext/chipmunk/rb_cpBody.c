@@ -137,6 +137,13 @@ rb_cpBodySetMoment(VALUE self, VALUE val)
 }
 
 static VALUE
+rb_cpBodySetMomentInv(VALUE self, VALUE val)
+{
+  cpBodySetMoment(BODY(self), 1.0 / NUM2DBL(val));
+  return val;
+}
+
+static VALUE
 rb_cpBodySetPos(VALUE self, VALUE val)
 {
 	BODY(self)->p = *VGET(val);
@@ -301,7 +308,7 @@ Init_cpBody(void)
   rb_define_method(c_cpBody, "w_limit" , rb_cpBodyGetAVelLimit, 0);
   	
 	rb_define_method(c_cpBody, "mass="   , rb_cpBodySetMass, 1);
-	rb_define_method(c_cpBody, "moment=" , rb_cpBodySetMoment, 1);
+	rb_define_method(c_cpBody, "moment=" , rb_cpBodySetMoment, 1);   
 	rb_define_method(c_cpBody, "pos="    , rb_cpBodySetPos, 1);
 	rb_define_method(c_cpBody, "vel="    , rb_cpBodySetVel, 1);
 	rb_define_method(c_cpBody, "force="  , rb_cpBodySetForce, 1);
@@ -312,6 +319,8 @@ Init_cpBody(void)
   rb_define_method(c_cpBody, "w_limit=", rb_cpBodySetAVelLimit, 1);
  
    /* Some more aliases */
+  rb_define_method(c_cpBody, "moment_inv"     , rb_cpBodyGetMomentInv, 1);
+  rb_define_method(c_cpBody, "moment_inv="    , rb_cpBodySetMomentInv, 1);
   rb_define_method(c_cpBody, "ang_vel_limit"  , rb_cpBodyGetAVelLimit, 0);  
   rb_define_method(c_cpBody, "vel_limit"      , rb_cpBodyGetVelLimit, 0);
   rb_define_method(c_cpBody, "ang_vel_limit=" , rb_cpBodySetAVelLimit, 1);

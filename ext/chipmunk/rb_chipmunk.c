@@ -111,7 +111,8 @@ Init_chipmunk(void)
   rb_define_module_function(m_Chipmunk, "moment_for_segment",
     rb_momentForSegment, 3);
   rb_define_const(m_Chipmunk, "INFINITY", rb_float_new(INFINITY)); 
-  
+  rb_define_const(m_Chipmunk, "VERSION" ,
+    rb_str_new2(cpVersionString));
 	
 	Init_cpVect();
   Init_cpArbiter(); 
