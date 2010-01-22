@@ -27,6 +27,21 @@
 
 VALUE c_cpArbiter;
 
+/*
+* I quote the C docs on cpArbiter: 
+* Memory Management
+* You should never need to create an arbiter, nor will you ever need to free one as they are handled by the space. More importantly, because they are handled by the space you should never hold onto a reference to an arbiter as you don't know when they will be destroyed. Use them within the callback where they are given to you and then forget about them or copy out the information you need from them. 
+* 
+* Thios means that Arbiter doesn't need an initialize, and also 
+* does NOT need any garbage collection.
+*/
+
+VALUE rb_cpArbiterWrap(cpArbiter *arb)
+{
+  return Data_Wrap_Struct(c_cpArbiter, NULL, NULL, arb);
+}
+
+/*
 static VALUE
 rb_cpArbiterAlloc(VALUE klass)
 {
@@ -44,6 +59,7 @@ rb_cpArbiterInitialize(VALUE self, VALUE a, VALUE b, VALUE r, VALUE t)
   cpArbiterInit(arb, sa, sb);
   return self;
 }
+*/
 
 static VALUE
 rb_cpArbiterTotalImpulse(VALUE self) {
@@ -137,7 +153,7 @@ rb_cpArbiterGetNormal(VALUE self, VALUE index) {
   int i          = NUM2LONG(index);    
   if (i >= arb->numContacts) { 
     rb_raise(rb_eIndexError, "No such normal.");
-  }    
+  }
   return VNEW(cpArbiterGetNormal(arb, i));
 }
 
@@ -182,10 +198,10 @@ void
 Init_cpArbiter(void)
 {
   c_cpArbiter = rb_define_class_under(m_Chipmunk, "Arbiter", rb_cObject);
-    
-  rb_define_alloc_func(c_cpArbiter, rb_cpArbiterAlloc);
+  /*  
+  rb_define_alloc_func(c_cpArbiter, rb_cpArbiterAlloc);  
   rb_define_method(c_cpArbiter    , "initialize", rb_cpArbiterInitialize, 2);
-  
+  */
   rb_define_method(c_cpArbiter, "a", rb_cpArbiterGetA, 0);
   rb_define_method(c_cpArbiter, "b", rb_cpArbiterGetB, 0);  
   rb_define_method(c_cpArbiter, "e" , rb_cpArbiterGetE, 0);

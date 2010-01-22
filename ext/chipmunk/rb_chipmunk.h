@@ -51,10 +51,14 @@ VWRAP(VALUE parent, cpVect *v)
 	return vec_obj;	
 }
 
+/*
+* Arbiters may bot be allocated or deallocated by Ruby.
+* Chipmunk handles them itself. 
+*/
 static inline VALUE
 ARBWRAP(cpArbiter *arb)
 {
-  VALUE arb_obj = Data_Wrap_Struct(c_cpArbiter, NULL, cpArbiterFree, arb);
+  VALUE arb_obj = Data_Wrap_Struct(c_cpArbiter, NULL, NULL, arb);
   return arb_obj;	
 }
 
