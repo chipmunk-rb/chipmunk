@@ -122,9 +122,9 @@ callbackToMethod(VALUE obj, ID func) {
   return rb_funcall(obj, rb_intern("method"), 1, func);  
 } 
 
-static int 
+static VALUE 
 callbackArity(VALUE callback) {
-  return rb_funcall(callback, rb_intern("arity"), 0);  
+  return rb_funcall(callback, rb_intern("arity"), 0, 0);  
 } 
 
 static int
@@ -138,18 +138,22 @@ static int
 genericCallback(cpArbiter *arb, cpSpace * space, 
   void * data, ID func) 
 {  
-  int arity = 2;
+  int arity = 3;
   /* int arity = rb_obj_method_arity((VALUE) data, func); */
   /* XXX: this doesn't work. */
   VALUE arbiter   = Qnil;
   cpShape *a      = NULL;
   cpShape *b      = NULL;
   if(isBlock((VALUE) data)) {
-    arity         = callbackArity((VALUE) data);
+    arity         = NUM2INT(callbackArity((VALUE)data));
   } else  {
-    VALUE method  = callbackToMethod((VALUE) data, func);  
-    arity         = callbackArity(method);
+    arity = 3;
+    /* VALUE method  = callbackToMethod((VALUE) data, func);  
+    arity         = NUM2INT(callbackArity(method));
+    */
   }
+  
+
   
   switch (arity) { 
     case 1:
