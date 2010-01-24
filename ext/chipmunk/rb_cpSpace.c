@@ -119,7 +119,7 @@ isBlock(VALUE obj)
 
 static VALUE 
 callbackToMethod(VALUE obj, ID func) {
-  return rb_funcall(obj, rb_intern("method"), 1, func);  
+  return rb_funcall(obj, rb_intern("method"), 1, ID2SYM(func));  
 } 
 
 static VALUE 
@@ -144,31 +144,43 @@ genericCallback(cpArbiter *arb, cpSpace * space,
   VALUE arbiter   = Qnil;
   cpShape *a      = NULL;
   cpShape *b      = NULL;
-  if(isBlock((VALUE) data)) {
-    arity         = NUM2INT(callbackArity((VALUE)data));
-  } else  {
-    arity = 3;
-    /* VALUE method  = callbackToMethod((VALUE) data, func);  
-    arity         = NUM2INT(callbackArity(method));
-    */
+  VALUE proc      = Qnil;
+  VALUE block     = (VALUE) data;
+  VALUE result;
+  
+  if(isBlock(block)) { 
+    proc          = block;      
+  } else  {    
+    proc          = callbackToMethod((VALUE) data, func);  
   }
   
-
+  arity           = NUM2INT(callbackArity(proc));
   
   switch (arity) { 
+    case -1:
+      result  = rb_funcall(proc, id_call, 3, (VALUE)a->data, (VALUE)b->data, arbiter);
+      break;
+    case 0:
+      result  = rb_funcall(proc, id_call, 0);      
+      break;
     case 1:
       arbiter = ARBWRAP(arb);
-      return rb_funcall((VALUE)data, func, 1, arbiter);      
+      result  = rb_funcall(proc, id_call, 1, arbiter);      
+      break;
     case 2:
       cpArbiterGetShapes(arb, &a, &b);
-      return rb_funcall((VALUE)data, func, 2, (VALUE)a->data, (VALUE)b->data);
+      result  = rb_funcall(proc, id_call, 2, (VALUE)a->data, (VALUE)b->data);
+      break;
     case 3:
       cpArbiterGetShapes(arb, &a, &b);
       arbiter = ARBWRAP(arb);
-      return rb_funcall((VALUE)data, func, 3, (VALUE)a->data, (VALUE)b->data, arbiter);
+      result  = rb_funcall(proc, id_call, 3, (VALUE)a->data, (VALUE)b->data, arbiter);
+      break;
     default: 
-      rb_raise(rb_eArgError, "Arity of callback must be 1, 2, or 3.");
+      rb_raise(rb_eArgError, "Arity of callback must be -1, 0, 1, 2, or 3.");
+      break;
   }
+  return  (RTEST(result) ? 1 : 0); 
     
 } 
 

@@ -42,7 +42,7 @@ CHANGES SINCE RELEASE 3:
 
   * Rational versioning scheme: (major.minor.build) Small changes
     increment the build number. Significant changes that don't affect
-    backwards compatibility increment the minor number. Major changes
+     backwards compatibility increment the minor number. Major changes
     that will break backwards compatibility will increment the major
     number.
 

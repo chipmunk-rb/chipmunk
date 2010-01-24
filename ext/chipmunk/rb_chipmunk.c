@@ -89,24 +89,24 @@ rb_momentForSegment(VALUE self, VALUE m, VALUE a, VALUE b)
 void
 Init_chipmunk(void)
 {
-	id_parent = rb_intern("parent");
+  id_parent = rb_intern("parent");
 	
-	cpInitChipmunk();
+  cpInitChipmunk();
 	
-	rb_eval_string("Float::INFINITY = 1.0/0.0");
+  rb_eval_string("Float::INFINITY = 1.0/0.0");
 	
-	m_Chipmunk = rb_define_module("CP");
-	rb_define_module_function(m_Chipmunk, "bias_coef", 
+  m_Chipmunk = rb_define_module("CP");
+  rb_define_module_function(m_Chipmunk, "bias_coef", 
     rb_get_cp_bias_coef, 0);
-	rb_define_module_function(m_Chipmunk, "bias_coef=", 
+  rb_define_module_function(m_Chipmunk, "bias_coef=", 
     rb_set_cp_bias_coef, 1);
-	rb_define_module_function(m_Chipmunk, "collision_slop",
+  rb_define_module_function(m_Chipmunk, "collision_slop",
     rb_get_cp_collision_slop, 0);  
-	rb_define_module_function(m_Chipmunk, "collision_slop=",
+  rb_define_module_function(m_Chipmunk, "collision_slop=",
     rb_set_cp_collision_slop, 1);	
-	rb_define_module_function(m_Chipmunk, "moment_for_circle", 
+  rb_define_module_function(m_Chipmunk, "moment_for_circle", 
     rb_momentForCircle, 4);
-	rb_define_module_function(m_Chipmunk, "moment_for_poly", 
+  rb_define_module_function(m_Chipmunk, "moment_for_poly", 
     rb_momentForPoly, 3);
   rb_define_module_function(m_Chipmunk, "moment_for_segment",
     rb_momentForSegment, 3);
@@ -114,12 +114,12 @@ Init_chipmunk(void)
   rb_define_const(m_Chipmunk, "VERSION" ,
     rb_str_new2(cpVersionString));
 	
-	Init_cpVect();
+  Init_cpVect();
   Init_cpArbiter(); 
-	Init_cpBB();
-	Init_cpBody();
-	Init_cpShape();
-	Init_cpConstraint();
-	Init_cpSpace();
+  Init_cpBB();
+  Init_cpBody();
+  Init_cpShape();
+  Init_cpConstraint();
+  Init_cpSpace();
   
 }

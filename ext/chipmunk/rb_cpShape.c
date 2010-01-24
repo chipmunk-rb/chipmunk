@@ -144,21 +144,22 @@ rb_cpShapeGetGroup(VALUE self)
 static VALUE
 rb_cpShapeSetGroup(VALUE self, VALUE val)
 {
-	VALUE group_type = rb_obj_id(val);
-	rb_iv_set(self, "group", val);
+  VALUE group_type = rb_obj_id(val);
+  rb_iv_set(self, "group", val);
+  
   if (val == rb_intern("no_group")) {
     SHAPE(self)->group = CP_NO_GROUP;
   } else {   
-	 SHAPE(self)->group = NUM2UINT(group_type);
+    SHAPE(self)->group = NUM2UINT(group_type);
   } 
 	
-	return val;
+  return val;
 }
 
 static VALUE
 rb_cpShapeGetLayers(VALUE self)
 {
-	if(SHAPE(self)->layers == CP_ALL_LAYERS) { 
+  if(SHAPE(self)->layers == CP_ALL_LAYERS) { 
     return rb_intern("all_layers");
   }  
   return UINT2NUM(SHAPE(self)->layers);

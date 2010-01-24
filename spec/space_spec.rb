@@ -99,7 +99,7 @@ describe 'Shape in chipmunk' do
 
     boda = Body.new 90, 46
     bodb = Body.new 9, 6
-    pj = CP::PinJoint.new(boda,bodb,ZERO_VEC_2,ZERO_VEC_2)
+    pj = CP::Constraint::PinJoint.new(boda,bodb,ZERO_VEC_2,ZERO_VEC_2)
 
     space.add_constraint pj
   end
@@ -112,7 +112,7 @@ describe 'Shape in chipmunk' do
 
     space.add_shape shapy
 
-    obj = space.point_query_first(vec2(20,20),CP::ALL_ONES,0)
+    obj = space.point_query_first(vec2(20,20),~0,0)
     obj.should == shapy
 
   end
