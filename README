@@ -1,9 +1,9 @@
-Ruby Bindings to Chipmunk Physics Version 5.1.0
+Ruby Bindings to Chipmunk Physics Version 5.2.0
 
 (C) Scott Lembcke, Beoran and John Mair (banisterfiend)
 
 IMPORTANT NOTICE:
-These are bindings for MRI Ruby 1.8.x and 1.9.x to Chipmunk version 5.1.0. 
+These are bindings for MRI Ruby 1.8.x and 1.9.x to Chipmunk version 5.2.0 
 
 (1) 1/10/09 Cross-Platform Gem built by John Mair (banisterfiend)
     * Just go: gem install chipmunk  
