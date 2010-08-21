@@ -93,7 +93,7 @@ Init_chipmunk(void)
 	
   cpInitChipmunk();
 	
-  rb_eval_string("Float::INFINITY = 1.0/0.0");
+  rb_eval_string("Float::INFINITY = 1.0/0.0 unless Float.const_defined? :INFINITY");
 	
   m_Chipmunk = rb_define_module("CP");
   rb_define_module_function(m_Chipmunk, "bias_coef", 
