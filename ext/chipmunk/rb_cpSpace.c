@@ -109,113 +109,59 @@ rb_cpSpaceSetGravity(VALUE self, VALUE val)
 	return val;
 }
 
-#define respondsTo(obj, id) rb_respond_to(obj, id)
-
-static int
-isBlock(VALUE obj)
-{
-	return rb_respond_to(obj, id_call);
-}
-
-static VALUE 
-callbackToMethod(VALUE obj, ID func) {
-  return rb_funcall(obj, rb_intern("method"), 1, ID2SYM(func));  
-} 
-
-static VALUE 
-callbackArity(VALUE callback) {
-  return rb_funcall(callback, rb_intern("arity"), 0, 0);  
-} 
-
 static int
 doNothingCallback(cpArbiter *arb, cpSpace *space, void *data)
 {
 	return 0;
 }
 
-/* This callback can also pass arbiters... */
-static int 
-genericCallback(cpArbiter *arb, cpSpace * space, 
-  void * data, ID func) 
-{  
-  int arity = 3;
-  /* int arity = rb_obj_method_arity((VALUE) data, func); */
-  /* XXX: this doesn't work. */
-  VALUE arbiter   = Qnil;
-  cpShape *a      = NULL;
-  cpShape *b      = NULL;
-  VALUE proc      = Qnil;
-  VALUE block     = (VALUE) data;
-  VALUE result;
-  
-  if(isBlock(block)) { 
-    proc          = block;      
-  } else  {    
-    proc          = callbackToMethod((VALUE) data, func);  
-  }
-  
-  arity           = NUM2INT(callbackArity(proc));
-  
-  switch (arity) { 
-    case -1:
-      result  = rb_funcall(proc, id_call, 3, (VALUE)a->data, (VALUE)b->data, arbiter);
-      break;
-    case 0:
-      result  = rb_funcall(proc, id_call, 0);      
-      break;
-    case 1:
-      arbiter = ARBWRAP(arb);
-      result  = rb_funcall(proc, id_call, 1, arbiter);      
-      break;
-    case 2:
-      cpArbiterGetShapes(arb, &a, &b);
-      result  = rb_funcall(proc, id_call, 2, (VALUE)a->data, (VALUE)b->data);
-      break;
-    case 3:
-      cpArbiterGetShapes(arb, &a, &b);
-      arbiter = ARBWRAP(arb);
-      result  = rb_funcall(proc, id_call, 3, (VALUE)a->data, (VALUE)b->data, arbiter);
-      break;
-    default: 
-      rb_raise(rb_eArgError, "Arity of callback must be -1, 0, 1, 2, or 3.");
-      break;
-  }
-  return  (RTEST(result) ? 1 : 0); 
-    
-} 
-
 static int
 compatibilityCallback(cpArbiter *arb, cpSpace *space, void *data)
 {
-	/*CP_ARBITER_GET_SHAPES(arb, a, b);
+	CP_ARBITER_GET_SHAPES(arb, a, b);
 	return rb_funcall((VALUE)data, id_call, 2, (VALUE)a->data, (VALUE)b->data);
-	*/
-        return genericCallback(arb, space, data, id_call);
 }
 
 static int
 beginCallback(cpArbiter *arb, cpSpace *space, void *data)
 {
-	return genericCallback(arb, space, data, id_begin);
+	CP_ARBITER_GET_SHAPES(arb, a, b);
+	return rb_funcall((VALUE)data, id_begin, 2, (VALUE)a->data, (VALUE)b->data);
 }
 
 static int
 preSolveCallback(cpArbiter *arb, cpSpace *space, void *data)
-{ 
-        return genericCallback(arb, space, data, id_pre_solve);
+{
+	CP_ARBITER_GET_SHAPES(arb, a, b);
+	return rb_funcall((VALUE)data, id_pre_solve, 2, (VALUE)a->data, (VALUE)b->data);
 }
 
 static void
 postSolveCallback(cpArbiter *arb, cpSpace *space, void *data)
 {
-        genericCallback(arb, space, data, id_post_solve);}
+	CP_ARBITER_GET_SHAPES(arb, a, b);
+	rb_funcall((VALUE)data, id_post_solve, 2, (VALUE)a->data, (VALUE)b->data);
+}
 
 static void
 separateCallback(cpArbiter *arb, cpSpace *space, void *data)
 {
-        genericCallback(arb, space, data, id_separate);
+	CP_ARBITER_GET_SHAPES(arb, a, b);
+	rb_funcall((VALUE)data, id_separate, 2, (VALUE)a->data, (VALUE)b->data);
 }
 
+static int
+respondsTo(VALUE obj, ID method)
+{
+	VALUE value = rb_funcall(obj, rb_intern("respond_to?"), 1, ID2SYM(method));
+	return RTEST(value);
+}
+
+static int
+isBlock(VALUE obj)
+{
+	return respondsTo(obj, id_call);
+}
 
 static VALUE
 rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self)
@@ -224,8 +170,8 @@ rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self)
 	obj = 0;
 	rb_scan_args(argc, argv, "21&", &a, &b, &obj, &block);
 
-	VALUE id_a   = rb_obj_id(a);
-	VALUE id_b   = rb_obj_id(b);
+	VALUE id_a = rb_obj_id(a);
+	VALUE id_b = rb_obj_id(b);
 	VALUE blocks = rb_iv_get(self, "blocks");
 	
 	if(RTEST(obj) && RTEST(block)){
@@ -242,7 +188,7 @@ rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self)
 		
 		rb_hash_aset(blocks, rb_ary_new3(2, id_a, id_b), block);
 	} else if(RTEST(obj)) {
-		// Do we need to make it pass arbiters??? FFI bindings also don't bother.
+		rb_notimplement(); // need to make it pass arbiters and crap
 		cpSpaceAddCollisionHandler(
 			SPACE(self), NUM2UINT(id_a), NUM2UINT(id_b),
 			(respondsTo(obj, id_begin)      ? beginCallback     : NULL),
@@ -250,7 +196,8 @@ rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self)
 			(respondsTo(obj, id_post_solve) ? postSolveCallback : NULL),
 			(respondsTo(obj, id_separate)   ? separateCallback  : NULL),
 			(void *)obj
-		);		
+		);
+		
 		rb_hash_aset(blocks, rb_ary_new3(2, id_a, id_b), obj);
 	} else {
 		cpSpaceAddCollisionHandler(
@@ -278,13 +225,13 @@ rb_cpSpaceRemoveCollisionHandler(VALUE self, VALUE a, VALUE b)
 static VALUE
 rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self)
 {
-	VALUE obj, block; 
+	VALUE obj, block;
 	rb_scan_args(argc, argv, "01&", &obj, &block);
-  
+	
 	if(RTEST(obj) && RTEST(block)){
 		rb_raise(rb_eArgError, "Cannot specify both a handler object and a block.");
 	} else if(RTEST(block)){
-		// Do we need need to make it pass arbiters? FFI bindings don't do it.
+		rb_notimplement(); // need to make it pass arbiters and crap
 		cpSpaceSetDefaultCollisionHandler(
 			SPACE(self),
 			NULL,
@@ -293,11 +240,11 @@ rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self)
 			NULL,
 			(void *)block
 		);
-    		
+		
 		rb_hash_aset(rb_iv_get(self, "blocks"), ID2SYM(rb_intern("default")), block);
 	} else if(RTEST(obj)) {
 		cpSpaceSetDefaultCollisionHandler(
-			SPACE(self),   
+			SPACE(self),
 			(respondsTo(obj, id_begin)      ? beginCallback     : NULL),
 			(respondsTo(obj, id_pre_solve)  ? preSolveCallback  : NULL),
 			(respondsTo(obj, id_post_solve) ? postSolveCallback : NULL),
@@ -309,7 +256,7 @@ rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self)
 	} else {
 		cpSpaceSetDefaultCollisionHandler(
 			SPACE(self), NULL, doNothingCallback, NULL, NULL, NULL
-		);    
+		);
 	}
 	
 	return Qnil;
@@ -489,11 +436,11 @@ rb_cpSpaceStep(VALUE self, VALUE dt)
 void
 Init_cpSpace(void)
 {
-	id_call        = rb_intern("call");
-	id_begin       = rb_intern("begin");
-	id_pre_solve   = rb_intern("pre_solve");
-	id_post_solve  = rb_intern("post_solve");
-	id_separate    = rb_intern("separate");
+	id_call = rb_intern("call");
+	id_begin = rb_intern("begin");
+	id_pre_solve = rb_intern("pre_solve");
+	id_post_solve = rb_intern("post_solve");
+	id_separate = rb_intern("separate");
 	
 	c_cpSpace = rb_define_class_under(m_Chipmunk, "Space", rb_cObject);
 	rb_define_alloc_func(c_cpSpace, rb_cpSpaceAlloc);
@@ -514,11 +461,6 @@ Init_cpSpace(void)
 	rb_define_method(c_cpSpace, "add_collision_func", rb_cpSpaceAddCollisionHandler, -1);
 	rb_define_method(c_cpSpace, "remove_collision_func", rb_cpSpaceRemoveCollisionHandler, 2);
 	rb_define_method(c_cpSpace, "set_default_collision_func", rb_cpSpaceSetDefaultCollisionHandler, -1);
-	
-	rb_define_method(c_cpSpace, "add_collision_handler", rb_cpSpaceAddCollisionHandler, -1);
-	rb_define_method(c_cpSpace, "remove_collision_handler", rb_cpSpaceRemoveCollisionHandler, 2);
-	rb_define_method(c_cpSpace, "set_default_collision_handler", rb_cpSpaceSetDefaultCollisionHandler, -1);
-	
 	
 	rb_define_method(c_cpSpace, "add_shape", rb_cpSpaceAddShape, 1);
 	rb_define_method(c_cpSpace, "add_static_shape", rb_cpSpaceAddStaticShape, 1);
