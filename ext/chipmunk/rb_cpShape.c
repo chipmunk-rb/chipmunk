@@ -41,6 +41,20 @@ rb_cpShapeGetBody(VALUE self)
 }
 
 static VALUE
+rb_cpShapeSensorP(VALUE self)
+{
+  return SHAPE(self)->sensor ? Qtrue : Qfalse; 
+}
+
+static VALUE
+rb_cpShapeSetSensor(VALUE self, VALUE sensor)
+{
+  int sens = (NIL_P(sensor) || (!sensor)) ? 0 : 1; 
+  SHAPE(self)->sensor =  sens;  
+  return sensor;
+}
+
+static VALUE
 rb_cpShapeSetBody(VALUE self, VALUE body)
 {
 	SHAPE(self)->body = BODY(body);
@@ -250,6 +264,10 @@ Init_cpShape(void)
 	
 	rb_define_method(m_cpShape, "body", rb_cpShapeGetBody, 0);
 	rb_define_method(m_cpShape, "body=", rb_cpShapeSetBody, 1);
+  
+  rb_define_method(m_cpShape, "sensor?", rb_cpShapeSensorP, 0);
+  rb_define_method(m_cpShape, "sensor=", rb_cpShapeSetSensor, 1);
+  
 	
 	rb_define_method(m_cpShape, "collision_type", rb_cpShapeGetCollType, 0);
 	rb_define_method(m_cpShape, "collision_type=", rb_cpShapeSetCollType, 1);
@@ -292,3 +310,4 @@ Init_cpShape(void)
 	rb_define_alloc_func(c_cpPolyShape, rb_cpPolyAlloc);
 	rb_define_method(c_cpPolyShape, "initialize", rb_cpPolyInitialize, 3);
 }
+// 

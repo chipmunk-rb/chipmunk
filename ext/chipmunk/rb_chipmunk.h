@@ -30,6 +30,7 @@ extern VALUE c_cpSegmentShape;
 extern VALUE c_cpPolyShape;
 extern VALUE m_cpConstraint;
 extern VALUE c_cpSpace;
+extern VALUE c_cpArbiter;
 
 extern ID id_parent;
 
@@ -69,6 +70,7 @@ GETTER_TEMPLATE(BODY , c_cpBody , cpBody )
 GETTER_TEMPLATE(SHAPE, m_cpShape, cpShape)
 GETTER_TEMPLATE(CONSTRAINT, m_cpConstraint, cpConstraint)
 GETTER_TEMPLATE(SPACE, c_cpSpace, cpSpace)
+GETTER_TEMPLATE(ARBITER, c_cpArbiter, cpArbiter)
 
 void Init_chipmunk(void);
 void Init_cpVect();

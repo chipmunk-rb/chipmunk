@@ -175,9 +175,43 @@ rb_cpVectNormBang(VALUE self)
 }
 
 static VALUE
+rb_cpVectNormSafe(VALUE self)
+{
+  return VNEW(cpvnormalize_safe(*VGET(self)));
+}
+
+static VALUE
+rb_cpVectNormSafeBang(VALUE self)
+{
+  cpVect *v = VGET(self);
+  *v = cpvnormalize_safe(*v);
+  return self;
+}
+
+static VALUE
 rb_cpVectPerp(VALUE self)
 {
 	return VNEW(cpvperp(*VGET(self)));
+}
+
+static VALUE
+rb_cpVectRperp(VALUE self)
+{
+  return VNEW(cpvrperp(*VGET(self)));
+}
+
+static VALUE
+rb_cpVectLerp(VALUE self, VALUE v, VALUE d)
+{
+  cpFloat df = NUM2DBL(d);
+  return VNEW(cpvlerp(*VGET(self), *VGET(v), df));
+}
+
+static VALUE
+rb_cpVectLerpconst(VALUE self, VALUE v, VALUE d)
+{
+  cpFloat df = NUM2DBL(d);
+  return VNEW(cpvlerpconst(*VGET(self), *VGET(v), df));
 }
 
 static VALUE
@@ -197,6 +231,19 @@ rb_cpVectUnRotate(VALUE self, VALUE v)
 {
 	return VNEW(cpvunrotate(*VGET(self), *VGET(v)));
 }
+
+static VALUE
+rb_cpVectDist(VALUE self, VALUE v)
+{
+  return rb_float_new(cpvdist(*VGET(self), *VGET(v)));
+}
+
+static VALUE
+rb_cpVectDistsq(VALUE self, VALUE v)
+{
+  return rb_float_new(cpvdistsq(*VGET(self), *VGET(v)));
+}
+
 
 static VALUE
 rb_cpVectNear(VALUE self, VALUE v, VALUE d)
@@ -241,11 +288,20 @@ Init_cpVect(void)
 	rb_define_method(c_cpVect, "lengthsq", rb_cpVectLengthsq, 0);
 	rb_define_method(c_cpVect, "normalize", rb_cpVectNorm, 0);
 	rb_define_method(c_cpVect, "normalize!", rb_cpVectNormBang, 0);
+  rb_define_method(c_cpVect, "normalize_safe", rb_cpVectNormSafe, 0);
+  rb_define_method(c_cpVect, "normalize_safe!", rb_cpVectNormSafeBang, 0); 
 	rb_define_method(c_cpVect, "perp", rb_cpVectPerp, 0);
+  rb_define_method(c_cpVect, "rperp", rb_cpVectRperp, 0);
+  rb_define_method(c_cpVect, "lerp", rb_cpVectLerp, 2);
+  rb_define_method(c_cpVect, "lerpconst", rb_cpVectLerpconst, 2);
 	rb_define_method(c_cpVect, "project", rb_cpVectProject, 1);
 	rb_define_method(c_cpVect, "rotate", rb_cpVectRotate, 1);
 	rb_define_method(c_cpVect, "unrotate", rb_cpVectUnRotate, 1);
 	rb_define_method(c_cpVect, "near?", rb_cpVectNear, 2);
+  
+  rb_define_method(c_cpVect, "dist", rb_cpVectDist, 1);
+  rb_define_method(c_cpVect, "distsq", rb_cpVectDistsq, 1);
+  
 		
 	rb_define_global_function("vec2", rb_vec2, 2);
 }

@@ -12,7 +12,7 @@ rescue LoadError
 #    puts "...done!"
 end
  
-CHIPMUNK_VERSION = "2.1.0"
+CHIPMUNK_VERSION = "5.3.4a"
  
 dlext = Config::CONFIG['DLEXT']
  

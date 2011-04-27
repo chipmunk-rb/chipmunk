@@ -222,8 +222,27 @@ rb_cpGrooveJoint_init(VALUE self, VALUE a, VALUE b, VALUE grv_a, VALUE grv_b, VA
 	return self;
 }
 
+MAKE_VEC_ACCESSORS(cpGrooveJoint, GrooveA)
+MAKE_VEC_ACCESSORS(cpGrooveJoint, GrooveB)
 MAKE_VEC_ACCESSORS(cpGrooveJoint, Anchr2)
-// TODO more accessors
+
+
+ALLOC_TEMPLATE(cpRatchetJoint, cpRatchetJointAlloc())
+
+static VALUE
+rb_cpRatchetJoint_init(VALUE self, VALUE a, VALUE b, VALUE phase, VALUE ratchet)
+{
+  cpRatchetJoint * joint = (cpRatchetJoint *)CONSTRAINT(self);
+  cpRatchetJointInit(joint, BODY(a), BODY(b), NUM2DBL(phase), NUM2DBL(ratchet));
+  rb_iv_set(self, "@body_a", a);
+  rb_iv_set(self, "@body_b", b);
+  
+  return self;
+}
+
+MAKE_FLT_ACCESSORS(cpRatchetJoint, Angle);
+MAKE_FLT_ACCESSORS(cpRatchetJoint, Phase);
+MAKE_FLT_ACCESSORS(cpRatchetJoint, Ratchet);
 
 
 #define STRINGIFY(v) #v
@@ -232,13 +251,13 @@ rb_define_method(c_##s, STRINGIFY(name), rb_##s##Get##m, 0); \
 rb_define_method(c_##s, STRINGIFY(name=), rb_##s##Set##m, 1);
 
 static VALUE
-make_class(char *name, void *alloc_func, void *init_func, int init_params)
+make_class(const char *name, void *alloc_func, void *init_func, int init_params)
 {
 	VALUE klass = rb_define_class_under(m_cpConstraint, name, rb_cObject);
 	rb_include_module(klass, m_cpConstraint);
 	rb_define_alloc_func(klass, alloc_func);
 	rb_define_method(klass, "initialize", init_func, init_params);
-	
+  	
 	return klass;
 }
 
@@ -255,10 +274,6 @@ Init_cpConstraint(void)
 	rb_define_method(m_cpConstraint, "max_bias", rb_cpConstraint_get_maxBias, 0);
 	rb_define_method(m_cpConstraint, "max_bias=", rb_cpConstraint_set_maxBias, 1);
 	
-	VALUE c_cpPinJoint = make_class("PinJoint", rb_cpPinJoint_alloc, rb_cpPinJoint_init, 4);
-	ACCESSOR_METHODS(cpPinJoint, Anchr1, anchr1)
-	ACCESSOR_METHODS(cpPinJoint, Anchr2, anchr2)
-	ACCESSOR_METHODS(cpPinJoint, Dist, dist)
 	
 	VALUE c_cpDampedRotarySpring = make_class("DampedRotarySpring", rb_cpDampedRotarySpring_alloc, rb_cpDampedRotarySpring_init, 5);
 	ACCESSOR_METHODS(cpDampedRotarySpring, RestAngle, rest_angle)
@@ -271,10 +286,20 @@ Init_cpConstraint(void)
 	ACCESSOR_METHODS(cpDampedSpring, RestLength, rest_length)
 	ACCESSOR_METHODS(cpDampedSpring, Stiffness, stiffness)
 	ACCESSOR_METHODS(cpDampedSpring, Damping, damping)
-	
-	VALUE c_cpGearJoint = make_class("GearJoint", rb_cpGearJoint_alloc, rb_cpGearJoint_init, 4);
-	ACCESSOR_METHODS(cpGearJoint, Phase, phase)
-	ACCESSOR_METHODS(cpGearJoint, Ratio, ratio)
+  
+  VALUE c_cpGearJoint = make_class("GearJoint", rb_cpGearJoint_alloc, rb_cpGearJoint_init, 4);
+  ACCESSOR_METHODS(cpGearJoint, Phase, phase)
+  ACCESSOR_METHODS(cpGearJoint, Ratio, ratio)
+  
+  VALUE c_cpGrooveJoint = make_class("GrooveJoint", rb_cpGrooveJoint_alloc, rb_cpGrooveJoint_init, 5);
+  ACCESSOR_METHODS(cpGrooveJoint, Anchr2, anchr2)
+  
+
+  VALUE c_cpPinJoint = make_class("PinJoint", rb_cpPinJoint_alloc, rb_cpPinJoint_init, 4);
+  ACCESSOR_METHODS(cpPinJoint, Anchr1, anchr1)
+  ACCESSOR_METHODS(cpPinJoint, Anchr2, anchr2)
+  ACCESSOR_METHODS(cpPinJoint, Dist, dist)
+
 	
 	VALUE c_cpPivotJoint = make_class("PivotJoint", rb_cpPivotJoint_alloc, rb_cpPivotJoint_init, 4);
 	ACCESSOR_METHODS(cpPivotJoint, Anchr1, anchr1)
@@ -292,10 +317,14 @@ Init_cpConstraint(void)
 	ACCESSOR_METHODS(cpSlideJoint, Anchr2, anchr2)
 	ACCESSOR_METHODS(cpSlideJoint, Min, min)
 	ACCESSOR_METHODS(cpSlideJoint, Max, max)
+  
+  
+  VALUE c_cpRatchetJoint = make_class("RatchetJoint", rb_cpRatchetJoint_alloc, rb_cpRatchetJoint_init, 4);
+  ACCESSOR_METHODS(cpRatchetJoint, Angle, angle)
+  ACCESSOR_METHODS(cpRatchetJoint, Phase, phase)
+  ACCESSOR_METHODS(cpRatchetJoint, Ratchet, ratchet)
+  
 	
-	VALUE c_cpGrooveJoint = make_class("GrooveJoint", rb_cpGrooveJoint_alloc, rb_cpGrooveJoint_init, 5);
-	ACCESSOR_METHODS(cpGrooveJoint, Anchr2, anchr2)
-// TODO groove joint accessors
-	
-	// TODO breakable joint
+  // TODO: breakable joints. Seems to be missing in chipmunk 5.4.3.
+  
 }

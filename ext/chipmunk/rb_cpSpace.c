@@ -343,6 +343,16 @@ rb_cpSpaceRehashStatic(VALUE self)
 	return Qnil;
 }
 
+static unsigned int get_layers(VALUE layers) {
+  if (NIL_P(layers)) return ~0;
+  return NUM2UINT(layers);
+} 
+
+static unsigned int get_group(VALUE group) {
+  if (NIL_P(group)) return 0;
+  return NUM2UINT(group);
+} 
+
 static void
 pointQueryCallback(cpShape *shape, VALUE block)
 {
@@ -356,9 +366,7 @@ rb_cpSpacePointQuery(int argc, VALUE *argv, VALUE self)
 	rb_scan_args(argc, argv, "12&", &point, &layers, &group, &block);
 	
 	cpSpacePointQuery(
-		SPACE(self), *VGET(point),
-		(NIL_P(layers) ? ~0 : NUM2UINT(layers)),
-		(NIL_P(group) ? 0 : NUM2UINT(rb_obj_id(group))),
+		SPACE(self), *VGET(point), get_layers(layers), get_group(group),
 		(cpSpacePointQueryFunc)pointQueryCallback, (void *)block
 	);
 	
@@ -373,8 +381,7 @@ rb_cpSpacePointQueryFirst(int argc, VALUE *argv, VALUE self)
 	
 	cpShape *shape = cpSpacePointQueryFirst(
 		SPACE(self), *VGET(point),
-		(NIL_P(layers) ? ~0 : NUM2UINT(layers)),
-		(NIL_P(group) ? 0 : NUM2UINT(rb_obj_id(group)))
+    get_layers(layers), get_group(group)
 	);
 	
 	return (shape ? (VALUE)shape->data : Qnil);
@@ -394,8 +401,7 @@ rb_cpSpaceSegmentQuery(int argc, VALUE *argv, VALUE self)
 	
 	cpSpaceSegmentQuery(
 		SPACE(self), *VGET(a), *VGET(b),
-		(NIL_P(layers) ? ~0 : NUM2UINT(layers)),
-		(NIL_P(group) ? 0 : NUM2UINT(rb_obj_id(group))),
+    get_layers(layers), get_group(group),
 		(cpSpaceSegmentQueryFunc)segmentQueryCallback, (void *)block
 	);
 	
@@ -406,14 +412,13 @@ static VALUE
 rb_cpSpaceSegmentQueryFirst(int argc, VALUE *argv, VALUE self)
 {
 	VALUE a, b, layers, group, block;
-	rb_scan_args(argc, argv, "22&", &a, &b, &layers, &group, &block);
-	
-	cpSegmentQueryInfo info = {NULL, 1.0f, cpvzero};
+  cpSegmentQueryInfo info = {NULL, 1.0f, cpvzero};
+  
+  rb_scan_args(argc, argv, "22&", &a, &b, &layers, &group, &block);  	
 	
 	cpSpaceSegmentQueryFirst(
-		SPACE(self), *VGET(a), *VGET(b),
-		(NIL_P(layers) ? ~0 : NUM2UINT(layers)),
-		(NIL_P(group) ? 0 : NUM2UINT(rb_obj_id(group))),
+		SPACE(self), *VGET(a), *VGET(b), 
+    get_layers(layers), get_group(group),
 		&info
 	);
 	
@@ -423,6 +428,56 @@ rb_cpSpaceSegmentQueryFirst(int argc, VALUE *argv, VALUE self)
 		return Qnil;
 	}
 }
+
+
+static void
+bbQueryCallback(cpShape *shape, VALUE block)
+{
+  rb_funcall(block, id_call, 1, (VALUE)shape->data);
+}
+
+/* Bounding box query. */
+static VALUE
+rb_cpSpaceBBQuery(int argc, VALUE *argv, VALUE self)
+{
+  VALUE bb, layers, group, block;
+  unsigned int l = ~0;
+  unsigned int g =  0;   
+  rb_scan_args(argc, argv, "12&", &bb, &layers, &group, &block);
+   
+  if (!NIL_P(layers)) l = NUM2UINT(layers);
+  if (!NIL_P(group))  g = NUM2UINT(group);
+  
+  cpSpaceBBQuery(
+    SPACE(self), *BBGET(bb), l, g,
+    (cpSpaceBBQueryFunc)bbQueryCallback, (void *)block
+  );
+  
+  return Qnil;
+}
+
+static void
+shapeQueryCallback(cpShape *shape, cpContactPointSet *points, VALUE block)
+{
+  rb_funcall(block, id_call, 1, (VALUE)shape->data);
+}
+
+/* Shape query. */
+static VALUE
+rb_cpSpaceShapeQuery(int argc, VALUE *argv, VALUE self)
+{
+  VALUE shape, block;
+  rb_scan_args(argc, argv, "1&", &shape, &block);
+  
+  cpSpaceShapeQuery(
+    SPACE(self), SHAPE(shape),
+    (cpSpaceShapeQueryFunc)shapeQueryCallback, (void *)block
+  );
+  
+  return Qnil;
+}
+
+
 
 static VALUE
 rb_cpSpaceStep(VALUE self, VALUE dt)
@@ -481,6 +536,10 @@ Init_cpSpace(void)
 	
 	rb_define_method(c_cpSpace, "segment_query", rb_cpSpaceSegmentQuery, -1);
 	rb_define_method(c_cpSpace, "segment_query_first", rb_cpSpaceSegmentQueryFirst, -1);
+  
+  rb_define_method(c_cpSpace, "bb_query"      , rb_cpSpaceBBQuery, -1);
+  rb_define_method(c_cpSpace, "shape_query"   , rb_cpSpaceShapeQuery, -1);
+  
 	
 	rb_define_method(c_cpSpace, "step", rb_cpSpaceStep, 1);
 }

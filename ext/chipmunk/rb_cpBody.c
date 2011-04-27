@@ -50,9 +50,22 @@ rb_cpBodyGetMass(VALUE self)
 }
 
 static VALUE
+rb_cpBodyGetMassInv(VALUE self)
+{
+  return rb_float_new(BODY(self)->m_inv);
+}
+
+static VALUE
 rb_cpBodyGetMoment(VALUE self)
 {
 	return rb_float_new(BODY(self)->i);
+}
+
+
+static VALUE
+rb_cpBodyGetMomentInv(VALUE self)
+{
+  return rb_float_new(BODY(self)->i_inv);
 }
 
 static VALUE
@@ -90,6 +103,19 @@ rb_cpBodyGetTorque(VALUE self)
 {
 	return rb_float_new(BODY(self)->t);
 }
+
+static VALUE
+rb_cpBodyGetVLimit(VALUE self)
+{
+  return rb_float_new(BODY(self)->v_limit);
+}
+
+static VALUE
+rb_cpBodyGetWLimit(VALUE self)
+{
+  return rb_float_new(BODY(self)->w_limit);
+}
+
 
 static VALUE
 rb_cpBodyGetRot(VALUE self)
@@ -154,6 +180,23 @@ rb_cpBodySetTorque(VALUE self, VALUE val)
 	return val;
 }
 
+
+static VALUE
+rb_cpBodySetVLimit(VALUE self, VALUE val)
+{
+  BODY(self)->v_limit = NUM2DBL(val);
+  return val;
+}
+
+static VALUE
+rb_cpBodySetWLimit(VALUE self, VALUE val)
+{
+  BODY(self)->w_limit = NUM2DBL(val);
+  return val;
+}
+
+
+
 static VALUE
 rb_cpBodyLocal2World(VALUE self, VALUE v)
 {
@@ -209,15 +252,16 @@ Init_cpBody(void)
 	rb_define_alloc_func(c_cpBody, rb_cpBodyAlloc);
 	rb_define_method(c_cpBody, "initialize", rb_cpBodyInitialize, 2);
 
-	rb_define_method(c_cpBody, "m" , rb_cpBodyGetMass, 0);
-	rb_define_method(c_cpBody, "i" , rb_cpBodyGetMoment, 0);	
-	rb_define_method(c_cpBody, "p" , rb_cpBodyGetPos, 0);
-	rb_define_method(c_cpBody, "v" , rb_cpBodyGetVel, 0);
-	rb_define_method(c_cpBody, "f" , rb_cpBodyGetForce, 0);
-	rb_define_method(c_cpBody, "a" , rb_cpBodyGetAngle, 0);
-	rb_define_method(c_cpBody, "w" , rb_cpBodyGetAVel, 0);
-	rb_define_method(c_cpBody, "t" , rb_cpBodyGetTorque, 0);
-	rb_define_method(c_cpBody, "rot", rb_cpBodyGetRot, 0);
+	rb_define_method(c_cpBody, "m"           , rb_cpBodyGetMass, 0);
+	rb_define_method(c_cpBody, "i"           , rb_cpBodyGetMoment, 0);
+  	
+	rb_define_method(c_cpBody, "p"   , rb_cpBodyGetPos, 0);
+	rb_define_method(c_cpBody, "v"   , rb_cpBodyGetVel, 0);
+	rb_define_method(c_cpBody, "f"   , rb_cpBodyGetForce, 0);
+	rb_define_method(c_cpBody, "a"   , rb_cpBodyGetAngle, 0);
+	rb_define_method(c_cpBody, "w"   , rb_cpBodyGetAVel, 0);
+	rb_define_method(c_cpBody, "t"   , rb_cpBodyGetTorque, 0);
+	rb_define_method(c_cpBody, "rot" , rb_cpBodyGetRot, 0);
 	
 	rb_define_method(c_cpBody, "m=", rb_cpBodySetMass, 1);
 	rb_define_method(c_cpBody, "i=", rb_cpBodySetMoment, 1);
@@ -237,15 +281,25 @@ Init_cpBody(void)
 	rb_define_method(c_cpBody, "ang_vel" , rb_cpBodyGetAVel, 0);
 	rb_define_method(c_cpBody, "torque" , rb_cpBodyGetTorque, 0);
 	rb_define_method(c_cpBody, "rot", rb_cpBodyGetRot, 0);
+  
+  rb_define_method(c_cpBody, "m_inv"       , rb_cpBodyGetMassInv, 0);
+  rb_define_method(c_cpBody, "mass_inv"    , rb_cpBodyGetMassInv, 0);
+  rb_define_method(c_cpBody, "moment_inv"  , rb_cpBodyGetMomentInv, 0);
+  rb_define_method(c_cpBody, "v_limit"     , rb_cpBodyGetVLimit, 0);
+  rb_define_method(c_cpBody, "w_limit"     , rb_cpBodyGetWLimit, 0);
+
 	
-	rb_define_method(c_cpBody, "mass=", rb_cpBodySetMass, 1);
-	rb_define_method(c_cpBody, "moment=", rb_cpBodySetMoment, 1);
-	rb_define_method(c_cpBody, "pos=", rb_cpBodySetPos, 1);
-	rb_define_method(c_cpBody, "vel=", rb_cpBodySetVel, 1);
-	rb_define_method(c_cpBody, "force=", rb_cpBodySetForce, 1);
-	rb_define_method(c_cpBody, "angle=", rb_cpBodySetAngle, 1);
-	rb_define_method(c_cpBody, "ang_vel=", rb_cpBodySetAVel, 1);
-	rb_define_method(c_cpBody, "torque=", rb_cpBodySetTorque, 1);
+	rb_define_method(c_cpBody, "mass="    , rb_cpBodySetMass, 1);
+	rb_define_method(c_cpBody, "moment="  , rb_cpBodySetMoment, 1);
+	rb_define_method(c_cpBody, "pos="     , rb_cpBodySetPos, 1);
+	rb_define_method(c_cpBody, "vel="     , rb_cpBodySetVel, 1);
+	rb_define_method(c_cpBody, "force="   , rb_cpBodySetForce, 1);
+	rb_define_method(c_cpBody, "angle="   , rb_cpBodySetAngle, 1);
+	rb_define_method(c_cpBody, "ang_vel=" , rb_cpBodySetAVel, 1);
+	rb_define_method(c_cpBody, "torque="  , rb_cpBodySetTorque, 1);
+  rb_define_method(c_cpBody, "v_limit=" , rb_cpBodySetVLimit, 1);
+  rb_define_method(c_cpBody, "w_limit=" , rb_cpBodySetWLimit, 1);
+ 
 	
 	rb_define_method(c_cpBody, "local2world", rb_cpBodyLocal2World, 1);
 	rb_define_method(c_cpBody, "world2local", rb_cpBodyWorld2Local, 1);

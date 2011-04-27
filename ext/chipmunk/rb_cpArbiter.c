@@ -30,9 +30,14 @@ VALUE c_cpArbiter;
 /*
 * I quote the C docs on cpArbiter: 
 * Memory Management
-* You should never need to create an arbiter, nor will you ever need to free one as they are handled by the space. More importantly, because they are handled by the space you should never hold onto a reference to an arbiter as you don't know when they will be destroyed. Use them within the callback where they are given to you and then forget about them or copy out the information you need from them. 
+* You should never need to create an arbiter, nor will you ever need to free 
+* one as they are handled by the space. More importantly, because they are 
+* handled by the space you should never hold onto a reference to an arbiter as 
+* you don't know when they will be destroyed. Use them within the callback 
+* where they are given to you and then forget about them or copy out the 
+* information you need from them. 
 * 
-* Thios means that Arbiter doesn't need an initialize, and also 
+* This means that Arbiter doesn't need an initialize, and also 
 * does NOT need any garbage collection.
 */
 
@@ -40,6 +45,7 @@ VALUE rb_cpArbiterWrap(cpArbiter *arb)
 {
   return Data_Wrap_Struct(c_cpArbiter, NULL, NULL, arb);
 }
+
 
 /*
 static VALUE

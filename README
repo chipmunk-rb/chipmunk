@@ -1,9 +1,46 @@
-Ruby Bindings to Chipmunk Physics Version 5.2.0
+Ruby Bindings to Chipmunk Physics Version 5.3.4
 
 (C) Scott Lembcke, Beoran and John Mair (banisterfiend)
 
 IMPORTANT NOTICE:
-These are bindings for MRI Ruby 1.8.x and 1.9.x to Chipmunk version 5.2.0 
+These are bindings for MRI Ruby 1.8.x and 1.9.x to Chipmunk version 5.3.4
+
+(1) 1/10/09 Cross-Platform Gem built by John Mair (banisterfiend)
+    * Just go: gem install chipmunk  
+
+FORUM:
+  http://www.slembcke.net/forums
+
+CONTACT:
+  slembcke@gmail.com (also on Google Talk) for Chipmunk.
+  beoran@rubyforge.org for these bindings to Ruby.
+
+ABOUT CHIPMUNK:
+  Chipmunk is a simple, lightweight and fast 2D rigid body physics library 
+  written in C by Slembcke. It's licensed under the unrestrictive, OSI approved 
+  MIT license. 
+  
+ABOUT THESE RUBY BINDINGS:  
+  Although chipmunk comes with ruby bindings, they are not always up to date 
+  with regards to the functionality of the C library, and historically, they
+  have been incompatible with recent versions of Ruby. 
+    
+  Therefore, these bindings are intended to as an enhanced version with more 
+  features and better compatibility with recent versions of Ruby. They are also 
+  intended to be an alternative to the chipmunk-ffi bindings when performance 
+  is of the utmost importance, as it may be for games. 
+  
+  The intent is for these bindings to be source code compatibe with both 
+  Slembcke's and ffi's bindings, with the former taking precedence on the 
+  latter. If you have any problems with these bindings, please contact the 
+  maintainer at beoran@rubyforge.org.
+  
+CONTRACTING:
+  Howling Moon Software (Slembke's company) is available for contracting if you 
+  want to make the physics in your game really stand out. Feel free to contact 
+  them through their webpage: http://howlingmoonsoftware.com/contracting.php
+
+INFO FOR MAINTAINERS:
 
 (1) 1/10/09 Cross-Platform Gem built by John Mair (banisterfiend)
     * Just go: gem install chipmunk  
@@ -15,46 +52,6 @@ These are bindings for MRI Ruby 1.8.x and 1.9.x to Chipmunk version 5.2.0
     * Install 1.9.1 and 1.8.6 mingw ruby versions (instructions above)
     * Type: rake cross native gem RUBY_CC_VERSION=1.8.6:1.9.1
     * Upload new gems to rubyforge and gemcutter.
-
-FORUM:
-
-  http://www.slembcke.net/forums
-
-CONTACT:
-  slembcke@gmail.com (also on Google Talk) for Chipmunk
-  beoran@rubyforge.org for these bindings
-
-ABOUT:
-  Chipmunk is a simple, lightweight and fast 2D rigid body physics library 
-  written in C. It's licensed under the unrestrictive, OSI approved MIT license. My aim is to give 2D developers access the same quality of physics you find in newer 3D games. I hope you enjoy using Chipmunk, and please consider donating to help make it worth our time to continue to support Chipmunk with great new features.
-  
-  These bindings are intened to as an alternative for the chipmunk-ffi bindings when performance is of the utmost importance, as it may be for games. The intent is for it to be source code compatibe with the ffi bindings. If you have any problems with these bindings, please contact the maintainer at beoran@rubyforge.org.      
-  
-CONTRACTING:
-  Howling Moon Software (Slembke's company) is available for contracting if you want to make the physics in your game really stand out. Feel free to contact them through their webpage: http://howlingmoonsoftware.com/contracting.php
-
-CHANGES SINCE 4.x:
-  * Brand new Joint/Constraint API: New constraints can be added easily and are much more flexible than the old joint system.
-  * Efficient Segment Queries - Like raycasting, but with line segments.
-  * Brand new collision callback API: Collision begin/separate events, API for removal of objects within callbacks, more programable control over collision handling.  
-
-CHANGES SINCE RELEASE 3:
-
-  * Rational versioning scheme: (major.minor.build) Small changes
-    increment the build number. Significant changes that don't affect
-     backwards compatibility increment the minor number. Major changes
-    that will break backwards compatibility will increment the major
-    number.
-
-  * Optimizations: Speed increases of 5-10% should be common.
-
-  * Groove Joint: Similar to a pivot joint, but one of the anchors is
-    on a linear slide instead of being fixed.
-
-  * Comments/cleanup. The code should be much more readable now.
-
-  * Official build paths for working on Linux and MSVC.
-
 
 
 

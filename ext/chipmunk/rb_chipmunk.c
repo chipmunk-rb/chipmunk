@@ -86,6 +86,7 @@ Init_chipmunk(void)
 	cpInitChipmunk();
 	
 	rb_eval_string("Float::INFINITY = 1.0/0.0");
+   
 	
 	m_Chipmunk = rb_define_module("CP");
 	rb_define_module_function(m_Chipmunk, "bias_coef", rb_get_cp_bias_coef, 0);
@@ -96,7 +97,8 @@ Init_chipmunk(void)
 	rb_define_module_function(m_Chipmunk, "moment_for_circle", rb_momentForCircle, 4);
 	rb_define_module_function(m_Chipmunk, "moment_for_poly", rb_momentForPoly, 3);
 	// TODO add seg moment function
-	
+	rb_eval_string("CP::INFINITY = 1.0/0.0");
+  
 	Init_cpVect();
 	Init_cpBB();
 	Init_cpBody();
