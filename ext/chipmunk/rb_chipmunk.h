@@ -77,6 +77,9 @@ GETTER_TEMPLATE(ARBITER, c_cpArbiter, cpArbiter)
 // Helper to wrap cpArbter objects.
 VALUE rb_cpArbiterWrap(cpArbiter *arb);
 
+//Helper that allocates and initializes a SegmenQueryInfo struct
+VALUE rb_cpSegmentQueryInfoNew(VALUE shape, VALUE t, VALUE n);
+
 void Init_chipmunk(void);
 void Init_cpVect();
 void Init_cpBB();

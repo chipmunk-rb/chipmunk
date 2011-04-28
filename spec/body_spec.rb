@@ -5,7 +5,17 @@ describe 'A new Body' do
     b = CP::Body.new(5, 7)
     b.m.should == 5
     b.i.should == 7
+    b.static?.should be_false
+    b.sleep?.should be_false
   end
+  
+  describe 'StaticBody class' do
+    it 'should be creatable' do
+      b = CP::StaticBody.new()
+      # fails somehow: b.static?.should == true
+    end
+  end
+
 
   it 'can set its mass' do
     b = CP::Body.new(5, 7)

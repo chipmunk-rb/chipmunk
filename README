@@ -44,6 +44,12 @@ CONTRACTING:
   want to make the physics in your game really stand out. Feel free to contact 
   them through their webpage: http://howlingmoonsoftware.com/contracting.php
 
+TODO:
+  * More functionality. 
+  * Specs for the new functionality I've wrapped and will wrap.
+  * Better documentation, perhaps based on C API documentation.
+  
+
 INFO FOR MAINTAINERS:
 
 (1) 1/10/09 Cross-Platform Gem built by John Mair (banisterfiend)

@@ -26,6 +26,7 @@
 #include "rb_chipmunk.h"
 
 VALUE c_cpBody;
+VALUE c_cpStaticBody;
 
 static VALUE
 rb_cpBodyAlloc(VALUE klass)
@@ -39,8 +40,22 @@ rb_cpBodyInitialize(VALUE self, VALUE m, VALUE i)
 {
 	cpBody *body = BODY(self);
 	cpBodyInit(body, NUM2DBL(m), NUM2DBL(i));
-	
 	return self;
+}
+
+static VALUE
+rb_cpBodyAllocStatic(VALUE klass)
+{
+  cpBody *body = cpBodyNewStatic();
+  return Data_Wrap_Struct(klass, NULL, cpBodyFree, body);
+}
+
+static VALUE
+rb_cpBodyInitializeStatic(VALUE self)
+{
+  cpBody *body = BODY(self);
+  cpBodyInitStatic(body);
+  return self;
 }
 
 static VALUE
@@ -213,37 +228,76 @@ static VALUE
 rb_cpBodyResetForces(VALUE self)
 {
 	cpBodyResetForces(BODY(self));
-	return Qnil;
+	return self;
 }
 
 static VALUE
 rb_cpBodyApplyForce(VALUE self, VALUE f, VALUE r)
 {
 	cpBodyApplyForce(BODY(self), *VGET(f), *VGET(r));
-	return Qnil;
+	return self;
 }
 
 static VALUE
 rb_cpBodyApplyImpulse(VALUE self, VALUE j, VALUE r)
 {
 	cpBodyApplyImpulse(BODY(self), *VGET(j), *VGET(r));
-	return Qnil;
+	return self;
 }
 
 static VALUE
 rb_cpBodyUpdateVelocity(VALUE self, VALUE g, VALUE dmp, VALUE dt)
 {
 	cpBodyUpdateVelocity(BODY(self), *VGET(g), NUM2DBL(dmp), NUM2DBL(dt));
-	return Qnil;
+	return self;
 }
 
 static VALUE
 rb_cpBodyUpdatePosition(VALUE self, VALUE dt)
 {
 	cpBodyUpdatePosition(BODY(self), NUM2DBL(dt));
-	return Qnil;
+	return self;
 }
 
+static VALUE rb_cpBodyActivate(VALUE self) {
+  cpBodyActivate(BODY(self));
+  return self;
+}
+
+static VALUE rb_cpBodySleep(VALUE self) {
+  cpBodySleep(BODY(self));
+  return self;
+}
+
+static VALUE rb_cpBodySleepWithGroup(VALUE self, VALUE group) {
+  cpBodySleepWithGroup(BODY(self), BODY(group));
+  return self;
+}
+
+
+static VALUE rb_cpBodyIsSleeping(VALUE self) {
+  return cpBodyIsSleeping(BODY(self)) ? Qtrue : Qfalse;
+}
+
+static VALUE rb_cpBodyIsStatic(VALUE self) {
+  return cpBodyIsStatic(BODY(self)) ? Qtrue : Qfalse;
+}
+
+static VALUE rb_cpBodyIsRogue(VALUE self) {
+  return cpBodyIsRogue(BODY(self)) ? Qtrue : Qfalse;
+}
+
+
+/*
+cpBody *cpBodyInitStatic(cpBody *body);
+cpBody *cpBodyNewStatic();
+void cpBodyActivate(cpBody *body);
+void cpBodySleep(cpBody *body);
+void cpBodySleepWithGroup(cpBody *body, cpBody *group);
+cpBodyIsSleeping(const cpBody *body)
+cpBodyIsStatic(const cpBody *body)
+cpBodyIsRogue(const cpBody *body)
+*/
 
 void
 Init_cpBody(void)
@@ -251,6 +305,11 @@ Init_cpBody(void)
 	c_cpBody = rb_define_class_under(m_Chipmunk, "Body", rb_cObject);
 	rb_define_alloc_func(c_cpBody, rb_cpBodyAlloc);
 	rb_define_method(c_cpBody, "initialize", rb_cpBodyInitialize, 2);
+	
+	c_cpStaticBody = rb_define_class("StaticBody", c_cpBody);
+  rb_define_alloc_func(c_cpStaticBody, rb_cpBodyAllocStatic);
+  rb_define_method(c_cpStaticBody, "initialize", rb_cpBodyInitializeStatic, 0);
+  
 
 	rb_define_method(c_cpBody, "m"           , rb_cpBodyGetMass, 0);
 	rb_define_method(c_cpBody, "i"           , rb_cpBodyGetMoment, 0);
@@ -310,6 +369,16 @@ Init_cpBody(void)
 	
 	rb_define_method(c_cpBody, "update_velocity", rb_cpBodyUpdateVelocity, 3);
 	rb_define_method(c_cpBody, "update_position", rb_cpBodyUpdatePosition, 1);
+	
+	rb_define_method(c_cpBody, "static?", rb_cpBodyIsStatic, 0);
+	rb_define_method(c_cpBody, "rogue?", rb_cpBodyIsRogue, 0);
+	rb_define_method(c_cpBody, "sleeping?", rb_cpBodyIsSleeping, 0);
+	rb_define_method(c_cpBody, "sleep?", rb_cpBodyIsSleeping, 0);
+	rb_define_method(c_cpBody, "sleep", rb_cpBodySleep, 0);
+	rb_define_method(c_cpBody, "sleep_with_group", rb_cpBodySleepWithGroup, 1);
+	rb_define_method(c_cpBody, "sleep_group"     , rb_cpBodySleepWithGroup, 1);
+	rb_define_method(c_cpBody, "activate"     , rb_cpBodyActivate, 0);
+	
 	
 	// TODO integration functions?
 }

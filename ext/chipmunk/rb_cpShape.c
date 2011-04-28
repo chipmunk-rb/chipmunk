@@ -35,7 +35,7 @@ VALUE c_cpPolyShape;
 VALUE c_cpSegmentQueryInfo;
 
 //Helper that allocates and initializes a SegmenQueryInfo struct
-static VALUE
+VALUE
 rb_cpSegmentQueryInfoNew(VALUE shape, VALUE t, VALUE n) {
   return rb_struct_new(c_cpSegmentQueryInfo, shape, t, n);
 }
