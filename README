@@ -31,9 +31,9 @@ ABOUT THESE RUBY BINDINGS:
   is of the utmost importance, as it may be for games. 
   
   The intent is for these bindings to be mostly source code compatible with both 
-  Slembcke's and ffi's bindings. Where these two disagree, I will use a API that 
-  is pleasing to myself. If you have any problems with these bindings, please 
-  contact the maintainer at beoran@rubyforge.org.
+  Slembcke's and ffi's bindings. Main exceptions are where I dislike either API. 
+  In that case, I made an API that is pleasing to myself, and similar in naming 
+  to the C API adjusted to ruby conventions. If you have any problems with these bindings, please contact the maintainer at beoran@rubyforge.org.
   
 INCOMPATIBILITIES:
   There are no bindings to SpaceHash since I fail to see the use of it, but
