@@ -1,5 +1,5 @@
 require File.dirname(__FILE__)+'/spec_helper'
-describe 'ShapeStruct in chipmunk' do
+describe 'Shapes in chipmunk' do
   describe 'Circle class' do
     it 'can be created' do
       bod = CP::Body.new 90, 76
@@ -131,12 +131,25 @@ describe 'ShapeStruct in chipmunk' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
       info = s.segment_query(vec2(-100,10),vec2(0,10))
-      GC.start            
-      info.hit.should be_true
-      info.hit.should == s
+      GC.start
+      # beoran: originaly, in the ffi bindings it was info.hit
+      # but that's inconsistent with the C name, which is shape,
+      # so shape it is for me.
+      info.shape.should be_true
+      info.shape.should == s
       info.t.should be_close(0.827,0.001)
       info.n.x.should be_close(-0.866, 0.001)
       info.n.y.should be_close(0.5, 0.001)
+      info.class.should == CP::SegmentQueryInfo
+    end
+  end
+  
+  describe 'SegmentQueryInfo struct' do
+    it 'can be created manually' do
+      data = CP::SegmentQueryInfo.new(1, 2, 3)
+      data.shape.should == 1
+      data.t.should == 2
+      data.n.should == 3
     end
   end
 

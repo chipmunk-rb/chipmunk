@@ -74,6 +74,9 @@ GETTER_TEMPLATE(SPACE, c_cpSpace, cpSpace)
 GETTER_TEMPLATE(ARBITER, c_cpArbiter, cpArbiter)
 /* GETTER_TEMPLATE(SPACEHASH, c_cpSpaceHash, cpSpaceHash) */
 
+// Helper to wrap cpArbter objects.
+VALUE rb_cpArbiterWrap(cpArbiter *arb);
+
 void Init_chipmunk(void);
 void Init_cpVect();
 void Init_cpBB();
@@ -81,3 +84,8 @@ void Init_cpBody();
 void Init_cpShape();
 void Init_cpConstraint();
 void Init_cpSpace();
+
+
+
+
+

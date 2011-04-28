@@ -33,7 +33,7 @@ static ID id_separate;
 
 
 VALUE c_cpSpace;
-VALUE c_cpSegmentQueryInfo;
+
 
 static VALUE
 rb_cpSpaceAlloc(VALUE klass)
@@ -104,63 +104,58 @@ rb_cpSpaceGetGravity(VALUE self)
 }
 
 static VALUE
-rb_cpSpaceSetGravity(VALUE self, VALUE val)
-{
+rb_cpSpaceSetGravity(VALUE self, VALUE val) {
 	SPACE(self)->gravity = *VGET(val);
 	return val;
 }
 
 static int
-doNothingCallback(cpArbiter *arb, cpSpace *space, void *data)
-{
+doNothingCallback(cpArbiter *arb, cpSpace *space, void *data) {
 	return 0;
 }
 
 static int
-compatibilityCallback(cpArbiter *arb, cpSpace *space, void *data)
-{
+compatibilityCallback(cpArbiter *arb, cpSpace *space, void *data) {
 	CP_ARBITER_GET_SHAPES(arb, a, b);
 	return rb_funcall((VALUE)data, id_call, 2, (VALUE)a->data, (VALUE)b->data);
 }
 
 static int
-beginCallback(cpArbiter *arb, cpSpace *space, void *data)
-{
+beginCallback(cpArbiter *arb, cpSpace *space, void *data) {
 	CP_ARBITER_GET_SHAPES(arb, a, b);
-	return rb_funcall((VALUE)data, id_begin, 2, (VALUE)a->data, (VALUE)b->data);
+	return rb_funcall((VALUE)data, id_begin, 3, 
+         (VALUE)a->data, (VALUE)b->data, rb_cpArbiterWrap(arb));
 }
 
 static int
-preSolveCallback(cpArbiter *arb, cpSpace *space, void *data)
-{
+preSolveCallback(cpArbiter *arb, cpSpace *space, void *data) {
 	CP_ARBITER_GET_SHAPES(arb, a, b);
-	return rb_funcall((VALUE)data, id_pre_solve, 2, (VALUE)a->data, (VALUE)b->data);
+	return rb_funcall((VALUE)data, id_pre_solve, 3,
+         (VALUE)a->data, (VALUE)b->data, rb_cpArbiterWrap(arb));
 }
 
 static void
-postSolveCallback(cpArbiter *arb, cpSpace *space, void *data)
-{
+postSolveCallback(cpArbiter *arb, cpSpace *space, void *data) {
 	CP_ARBITER_GET_SHAPES(arb, a, b);
-	rb_funcall((VALUE)data, id_post_solve, 2, (VALUE)a->data, (VALUE)b->data);
+	rb_funcall((VALUE)data, id_post_solve, 3,
+         (VALUE)a->data, (VALUE)b->data, rb_cpArbiterWrap(arb));
 }
 
 static void
-separateCallback(cpArbiter *arb, cpSpace *space, void *data)
-{
+separateCallback(cpArbiter *arb, cpSpace *space, void *data) {
 	CP_ARBITER_GET_SHAPES(arb, a, b);
-	rb_funcall((VALUE)data, id_separate, 2, (VALUE)a->data, (VALUE)b->data);
+	rb_funcall((VALUE)data, id_separate, 3,
+         (VALUE)a->data, (VALUE)b->data, rb_cpArbiterWrap(arb));
 }
 
 static int
-respondsTo(VALUE obj, ID method)
-{
+respondsTo(VALUE obj, ID method) {
 	VALUE value = rb_funcall(obj, rb_intern("respond_to?"), 1, ID2SYM(method));
 	return RTEST(value);
 }
 
 static int
-isBlock(VALUE obj)
-{
+isBlock(VALUE obj) {
 	return respondsTo(obj, id_call);
 }
 
@@ -189,7 +184,6 @@ rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self)
 		
 		rb_hash_aset(blocks, rb_ary_new3(2, id_a, id_b), block);
 	} else if(RTEST(obj)) {
-		rb_notimplement(); // need to make it pass arbiters and crap
 		cpSpaceAddCollisionHandler(
 			SPACE(self), NUM2UINT(id_a), NUM2UINT(id_b),
 			(respondsTo(obj, id_begin)      ? beginCallback     : NULL),
@@ -232,7 +226,6 @@ rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self)
 	if(RTEST(obj) && RTEST(block)){
 		rb_raise(rb_eArgError, "Cannot specify both a handler object and a block.");
 	} else if(RTEST(block)){
-		rb_notimplement(); // need to make it pass arbiters and crap
 		cpSpaceSetDefaultCollisionHandler(
 			SPACE(self),
 			NULL,
@@ -422,12 +415,13 @@ rb_cpSpaceSegmentQueryFirst(int argc, VALUE *argv, VALUE self)
     get_layers(layers), get_group(group),
 		&info
 	);
+	// contrary to the standard chipmunk bindings, we also return a 
+	// struct here with then needed values.
+	if(info.shape) { 
+    return rb_cpSegmentQueryInfoNew((VALUE)info.shape->data, rb_float_new(info.t), VNEW(info.n)); 
+  }
+  return Qnil;
 	
-	if(info.shape){
-		return rb_ary_new3(3, (VALUE)info.shape->data, rb_float_new(info.t), VNEW(info.n));
-	} else {
-		return Qnil;
-	}
 }
 
 
@@ -516,6 +510,9 @@ Init_cpSpace(void)
 	rb_define_method(c_cpSpace, "gravity=", rb_cpSpaceSetGravity, 1);
 
 	rb_define_method(c_cpSpace, "add_collision_func", rb_cpSpaceAddCollisionHandler, -1);
+	
+	rb_define_method(c_cpSpace, "add_collision_handler", rb_cpSpaceAddCollisionHandler, -1);
+  
 	rb_define_method(c_cpSpace, "remove_collision_func", rb_cpSpaceRemoveCollisionHandler, 2);
 	rb_define_method(c_cpSpace, "set_default_collision_func", rb_cpSpaceSetDefaultCollisionHandler, -1);
 	
@@ -535,6 +532,7 @@ Init_cpSpace(void)
 	
 	rb_define_method(c_cpSpace, "point_query", rb_cpSpacePointQuery, -1);
 	rb_define_method(c_cpSpace, "point_query_first", rb_cpSpacePointQueryFirst, -1);
+	rb_define_method(c_cpSpace, "shape_point_query", rb_cpSpacePointQueryFirst, -1);
 	
   
 	rb_define_method(c_cpSpace, "segment_query", rb_cpSpaceSegmentQuery, -1);
@@ -546,9 +544,5 @@ Init_cpSpace(void)
 	
 	rb_define_method(c_cpSpace, "step", rb_cpSpaceStep, 1);
   
-  /* Use a struct for this. */
-  c_cpSegmentQueryInfo = rb_struct_define("SegmentQueryInfo",
-                         "hit", "t", "info", NULL);
-  rb_define_const(m_Chipmunk, "SegmentQueryInfo", c_cpSegmentQueryInfo);   
   
 }

@@ -1,5 +1,5 @@
 require File.dirname(__FILE__)+'/spec_helper'
-describe 'Shape in chipmunk' do
+describe 'Space in chipmunk' do
   it 'can be created' do
     s = CP::Space.new
   end
@@ -49,7 +49,7 @@ describe 'Shape in chipmunk' do
 
   class CollisionHandler
     attr_reader :begin_called
-    def begin(a,b,arbiter)
+    def begin(a, b, arbiter)
       @begin_called = [a,b]
     end
   end
@@ -171,8 +171,12 @@ describe 'Shape in chipmunk' do
 
     space.add_shape shapy
     
-    hash = space.active_shapes_hash
-    shapes = hash.query_by_bb BB.new(0,0,5,5)
+    # Doing it using the hash is not needed anymore. 
+    # hash = space.active_shapes_hash
+    # shapes = hash.query_by_bb BB.new(0,0,5,5)
+    bb      = BB.new(0,0,5,5)
+    shapes  = []
+    space.bb_query(bb) { |shape| shapes << shape }
     
     shapes.size.should == 1
     shapes.first.should == shapy

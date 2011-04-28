@@ -118,6 +118,7 @@ module CP
     def remove_objects(*objs)
       objs.each{|obj| remove_object(obj)}
     end
+    
   end
 end
 
