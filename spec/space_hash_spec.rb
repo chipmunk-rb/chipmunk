@@ -1,3 +1,6 @@
+=begin
+# Beoran: space has not supported for now.
+
 require File.dirname(__FILE__)+'/spec_helper'
 describe 'SpaceHashStruct in chipmunk' do
   describe 'SpaceHash class' do
@@ -52,3 +55,4 @@ describe 'SpaceHashStruct in chipmunk' do
 
   end
 end
+=end

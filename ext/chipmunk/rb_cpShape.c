@@ -80,6 +80,27 @@ rb_cpShapeSetCollType(VALUE self, VALUE val)
 }
 
 static VALUE
+rb_cpShapeGetData(VALUE self)
+{
+  return rb_iv_get(self, "data");
+}
+
+static VALUE
+rb_cpShapeSetData(VALUE self, VALUE val)
+{
+  rb_iv_set(self, "data", val);
+  SHAPE(self)->data = val;
+  return val;
+}
+
+static VALUE
+rb_cpShapeGetSelf(VALUE self)
+{
+  return self;
+}
+
+
+static VALUE
 rb_cpShapeGetGroup(VALUE self)
 {
 	return rb_iv_get(self, "group");
@@ -172,6 +193,62 @@ rb_cpShapeResetIdCounter(VALUE self)
 	return Qnil;
 }
 
+// Test if a point lies within a shape.
+static VALUE rb_cpShapePointQuery(VALUE self, VALUE point) {
+  cpBool res = cpShapePointQuery(SHAPE(self), *VGET(point));  
+  return  res ? Qtrue : Qfalse;
+}  
+
+/*
+static VALUE rb_cpShapeSegmentQuery(VALUE shape, VALUE a, VALUE b) { 
+
+  cpShapeSegmentQuery(cpShape *shape, cpVect a, cpVect b, cpSegmentQueryInfo *info)
+
+int cpShapeSegmentQuery(cpShape *shape, cpVect a, cpVect b, cpSegmentQueryInfo *info)
+
+static void
+segmentQueryCallback(cpShape *shape, cpFloat t, cpVect n, VALUE block)
+{
+  rb_funcall(block, id_call, 1, (VALUE)shape->data, rb_float_new(t), VNEW(n));
+}
+
+static VALUE
+rb_cpSpaceSegmentQuery(int argc, VALUE *argv, VALUE self)
+{
+  VALUE a, b, layers, group, block;
+  rb_scan_args(argc, argv, "22&", &a, &b, &layers, &group, &block);
+  
+  cpSpaceSegmentQuery(
+    SPACE(self), *VGET(a), *VGET(b),
+    get_layers(layers), get_group(group),
+    (cpSpaceSegmentQueryFunc)segmentQueryCallback, (void *)block
+  );
+  
+  return Qnil;
+}
+
+static VALUE
+rb_cpSpaceSegmentQueryFirst(int argc, VALUE *argv, VALUE self)
+{
+  VALUE a, b, layers, group, block;
+  cpSegmentQueryInfo info = {NULL, 1.0f, cpvzero};
+  
+  rb_scan_args(argc, argv, "22&", &a, &b, &layers, &group, &block);   
+  
+  cpSpaceSegmentQueryFirst(
+    SPACE(self), *VGET(a), *VGET(b), 
+    get_layers(layers), get_group(group),
+    &info
+  );
+  
+  if(info.shape){
+    return rb_ary_new3(3, (VALUE)info.shape->data, rb_float_new(info.t), VNEW(info.n));
+  } else {
+    return Qnil;
+  }
+}
+
+*/
 
 
 //cpCircle
@@ -272,14 +349,22 @@ Init_cpShape(void)
 	rb_define_method(m_cpShape, "collision_type", rb_cpShapeGetCollType, 0);
 	rb_define_method(m_cpShape, "collision_type=", rb_cpShapeSetCollType, 1);
 	
+  // this method only exists for Chipmunk-FFI compatibility as it seems useless 
+  // to me. 
+  rb_define_method(m_cpShape, "data", rb_cpShapeGetSelf, 0);
+  
+  rb_define_method(m_cpShape, "raw_data", rb_cpShapeGetData, 1);
+  rb_define_method(m_cpShape, "raw_data=", rb_cpShapeSetData, 1);
+   
 	rb_define_method(m_cpShape, "group", rb_cpShapeGetGroup, 0);
 	rb_define_method(m_cpShape, "group=", rb_cpShapeSetGroup, 1);
 	
 	rb_define_method(m_cpShape, "layers", rb_cpShapeGetLayers, 0);
 	rb_define_method(m_cpShape, "layers=", rb_cpShapeSetLayers, 1);
 	
-	rb_define_method(m_cpShape, "bb", rb_cpShapeGetBB, 0);
-	rb_define_method(m_cpShape, "cache_bb", rb_cpShapeCacheBB, 0);
+	rb_define_method(m_cpShape, "bb"         , rb_cpShapeCacheBB, 0);
+	rb_define_method(m_cpShape, "cache_bb"   , rb_cpShapeCacheBB, 0);
+  rb_define_method(m_cpShape, "get_bb"     , rb_cpShapeGetBB, 0); 
 	
 	rb_define_method(m_cpShape, "e", rb_cpShapeGetElasticity, 0);
 	rb_define_method(m_cpShape, "u", rb_cpShapeGetFriction, 0);
@@ -289,6 +374,9 @@ Init_cpShape(void)
 	
 	rb_define_method(m_cpShape, "surface_v", rb_cpShapeGetSurfaceV, 0);
 	rb_define_method(m_cpShape, "surface_v=", rb_cpShapeSetSurfaceV, 1);
+  
+  rb_define_method(m_cpShape, "point_query", rb_cpShapePointQuery, 1);
+   
 	
 	rb_define_singleton_method(m_cpShape, "reset_id_counter", rb_cpShapeResetIdCounter, 0);
 

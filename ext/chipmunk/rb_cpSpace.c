@@ -33,6 +33,7 @@ static ID id_separate;
 
 
 VALUE c_cpSpace;
+VALUE c_cpSegmentQueryInfo;
 
 static VALUE
 rb_cpSpaceAlloc(VALUE klass)
@@ -488,6 +489,7 @@ rb_cpSpaceStep(VALUE self, VALUE dt)
 
 
 
+
 void
 Init_cpSpace(void)
 {
@@ -534,6 +536,7 @@ Init_cpSpace(void)
 	rb_define_method(c_cpSpace, "point_query", rb_cpSpacePointQuery, -1);
 	rb_define_method(c_cpSpace, "point_query_first", rb_cpSpacePointQueryFirst, -1);
 	
+  
 	rb_define_method(c_cpSpace, "segment_query", rb_cpSpaceSegmentQuery, -1);
 	rb_define_method(c_cpSpace, "segment_query_first", rb_cpSpaceSegmentQueryFirst, -1);
   
@@ -542,4 +545,10 @@ Init_cpSpace(void)
   
 	
 	rb_define_method(c_cpSpace, "step", rb_cpSpaceStep, 1);
+  
+  /* Use a struct for this. */
+  c_cpSegmentQueryInfo = rb_struct_define("SegmentQueryInfo",
+                         "hit", "t", "info", NULL);
+  rb_define_const(m_Chipmunk, "SegmentQueryInfo", c_cpSegmentQueryInfo);   
+  
 }

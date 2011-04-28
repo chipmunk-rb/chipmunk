@@ -30,10 +30,14 @@ ABOUT THESE RUBY BINDINGS:
   intended to be an alternative to the chipmunk-ffi bindings when performance 
   is of the utmost importance, as it may be for games. 
   
-  The intent is for these bindings to be source code compatibe with both 
-  Slembcke's and ffi's bindings, with the former taking precedence on the 
-  latter. If you have any problems with these bindings, please contact the 
-  maintainer at beoran@rubyforge.org.
+  The intent is for these bindings to be mostly source code compatible with both 
+  Slembcke's and ffi's bindings. Where these two disagree, I will use a API that 
+  is pleasing to myself. If you have any problems with these bindings, please 
+  contact the maintainer at beoran@rubyforge.org.
+  
+INCOMPATIBILITIES:
+  There are no bindings to SpaceHash since I fail to see the use of it, but
+  if someone is using them, I'll probably implement them.
   
 CONTRACTING:
   Howling Moon Software (Slembke's company) is available for contracting if you 
