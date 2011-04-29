@@ -77,15 +77,15 @@ describe 'Shapes in chipmunk' do
     it 'can get its u' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
-      s.u.should be_close(0,0.001)
+      s.u.should be_within(0.001).of(0)
     end
 
     it 'can get its surf vec' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
       s.surface_v = vec2(4,5)
-      s.surface_v.x.should be_close(4,0.001)
-      s.surface_v.y.should be_close(5,0.001)
+      s.surface_v.x.should be_within(0.001).of(4)
+      s.surface_v.y.should be_within(0.001).of(5)
     end
 
     it 'can get its data' do
@@ -137,9 +137,9 @@ describe 'Shapes in chipmunk' do
       # so shape it is for me.
       info.shape.should be_true
       info.shape.should == s
-      info.t.should be_close(0.827,0.001)
-      info.n.x.should be_close(-0.866, 0.001)
-      info.n.y.should be_close(0.5, 0.001)
+      info.t.should be_within(0.001).of(0.827)
+      info.n.x.should be_within(0.001).of(-0.866)
+      info.n.y.should be_within(0.001).of(0.5)
       info.class.should == CP::SegmentQueryInfo
     end
   end

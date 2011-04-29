@@ -24,7 +24,7 @@ module CP
   ALL_ONES   = Vec2.new(1,1).freeze
 end  
  
-# Extra functionality added By Slembkce.
+# Extra functionality added by Slembkce and Beoran.
 
 module CP
   # Chipmunk Object
@@ -120,9 +120,14 @@ module CP
     end
     
   end
+  
+  class Vec2
+    ZERO = Vec2.new(0,0).freeze
+  end
+  
+  
 end
 
-require 'chipmunk'
 
 # Create derived static objects that know to add themselves as static.
 module CP

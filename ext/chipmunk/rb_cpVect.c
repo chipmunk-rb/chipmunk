@@ -215,6 +215,20 @@ rb_cpVectLerpconst(VALUE self, VALUE v, VALUE d)
 }
 
 static VALUE
+rb_cpVectSlerp(VALUE self, VALUE v, VALUE d)
+{
+  cpFloat df = NUM2DBL(d);
+  return VNEW(cpvslerp(*VGET(self), *VGET(v), df));
+}
+
+static VALUE
+rb_cpVectSlerpconst(VALUE self, VALUE v, VALUE d)
+{
+  cpFloat df = NUM2DBL(d);
+  return VNEW(cpvslerpconst(*VGET(self), *VGET(v), df));
+}
+
+static VALUE
 rb_cpVectProject(VALUE self, VALUE v)
 {
 	return VNEW(cpvproject(*VGET(self), *VGET(v)));
@@ -244,6 +258,12 @@ rb_cpVectDistsq(VALUE self, VALUE v)
   return rb_float_new(cpvdistsq(*VGET(self), *VGET(v)));
 }
 
+static VALUE
+rb_cpVectClamp(VALUE self, VALUE len)
+{
+  return VNEW(cpvclamp(*VGET(self), NUM2DBL(len)));
+}
+
 
 static VALUE
 rb_cpVectNear(VALUE self, VALUE v, VALUE d)
@@ -252,6 +272,18 @@ rb_cpVectNear(VALUE self, VALUE v, VALUE d)
 	cpVect delta = cpvsub(*VGET(self), *VGET(v));
 	return (cpvdot(delta, delta) <= dist*dist) ? Qtrue : Qfalse;
 }
+
+static VALUE
+rb_cpVectEql(VALUE self, VALUE other)
+{
+  return cpveql(*VGET(self), *VGET(other)) ? Qtrue : Qfalse;
+}
+
+// the usefulness of unary plus is debatable, but I'll include it for consistency.
+static VALUE rb_cpVectUnaryplus(VALUE  self) {
+  return self;
+}
+
 
 static VALUE
 rb_vec2(VALUE self, VALUE x, VALUE y)
@@ -278,6 +310,7 @@ Init_cpVect(void)
 	rb_define_method(c_cpVect, "to_angle", rb_cpVectToAngle, 0);
 	
 	rb_define_method(c_cpVect, "-@", rb_cpVectNegate, 0);
+  rb_define_method(c_cpVect, "+@", rb_cpVectUnaryplus, 0);
 	rb_define_method(c_cpVect, "+", rb_cpVectAdd, 1);
 	rb_define_method(c_cpVect, "-", rb_cpVectSub, 1);
 	rb_define_method(c_cpVect, "*", rb_cpVectSMult, 1);
@@ -294,13 +327,19 @@ Init_cpVect(void)
   rb_define_method(c_cpVect, "rperp", rb_cpVectRperp, 0);
   rb_define_method(c_cpVect, "lerp", rb_cpVectLerp, 2);
   rb_define_method(c_cpVect, "lerpconst", rb_cpVectLerpconst, 2);
+  rb_define_method(c_cpVect, "slerp", rb_cpVectSlerp, 2);
+  rb_define_method(c_cpVect, "slerpconst", rb_cpVectSlerpconst, 2);
+
 	rb_define_method(c_cpVect, "project", rb_cpVectProject, 1);
 	rb_define_method(c_cpVect, "rotate", rb_cpVectRotate, 1);
 	rb_define_method(c_cpVect, "unrotate", rb_cpVectUnRotate, 1);
-	rb_define_method(c_cpVect, "near?", rb_cpVectNear, 2);
+	rb_define_method(c_cpVect, "near?", rb_cpVectNear, 2);  
   
   rb_define_method(c_cpVect, "dist", rb_cpVectDist, 1);
   rb_define_method(c_cpVect, "distsq", rb_cpVectDistsq, 1);
+  
+  rb_define_method(c_cpVect, "==", rb_cpVectEql, 1);
+  rb_define_method(c_cpVect, "clamp", rb_cpVectClamp, 1);
   
 		
 	rb_define_global_function("vec2", rb_vec2, 2);

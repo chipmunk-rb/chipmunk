@@ -78,6 +78,23 @@ rb_momentForPoly(VALUE self, VALUE m, VALUE arr, VALUE offset)
 	return rb_float_new(inertia);
 }
 
+static VALUE rb_cpfclamp(VALUE self, VALUE f, VALUE min, VALUE max) {
+  cpFloat result = cpfclamp(NUM2DBL(f), NUM2DBL(min), NUM2DBL(max));
+  return rb_float_new(result);
+} 
+
+static VALUE rb_cpflerp(VALUE self, VALUE f1, VALUE f2, VALUE t) {
+  cpFloat result = cpflerp(NUM2DBL(f1), NUM2DBL(f2), NUM2DBL(t));
+  return rb_float_new(result);
+} 
+
+static VALUE rb_cpflerpconst(VALUE self, VALUE f1, VALUE f2, VALUE d) {
+  cpFloat result = cpflerpconst(NUM2DBL(f1), NUM2DBL(f2), NUM2DBL(d));
+  return rb_float_new(result);
+} 
+
+
+
 void
 Init_chipmunk(void)
 {
@@ -92,6 +109,9 @@ Init_chipmunk(void)
 	rb_define_module_function(m_Chipmunk, "bias_coef=", rb_set_cp_bias_coef, 1);
 	rb_define_module_function(m_Chipmunk, "collision_slop", rb_get_cp_collision_slop, 0);
 	rb_define_module_function(m_Chipmunk, "collision_slop=", rb_set_cp_collision_slop, 1);
+  rb_define_module_function(m_Chipmunk, "clamp", rb_cpfclamp, 3);
+  rb_define_module_function(m_Chipmunk, "flerp", rb_cpflerp, 3);
+  rb_define_module_function(m_Chipmunk, "flerpconst", rb_cpflerpconst, 3);
 	
 	rb_define_module_function(m_Chipmunk, "moment_for_circle", rb_momentForCircle, 4);
 	rb_define_module_function(m_Chipmunk, "moment_for_poly", rb_momentForPoly, 3);

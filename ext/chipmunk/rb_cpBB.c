@@ -27,6 +27,12 @@
 
 VALUE c_cpBB;
 
+static BBNEW(cpBB bb) {
+  cpBB *ptr = malloc(sizeof(cpBB));
+  *ptr = bb;
+  return Data_Wrap_Struct(c_cpBB, NULL, free, ptr); 
+}
+
 static VALUE
 rb_cpBBAlloc(VALUE klass)
 {
@@ -51,6 +57,32 @@ rb_cpBBintersects(VALUE self, VALUE other)
 {
 	int value = cpBBintersects(*BBGET(self), *BBGET(other));
 	return value ? Qtrue : Qfalse;
+}
+
+static VALUE
+rb_cpBBcontainsBB(VALUE self, VALUE other)
+{
+  int value = cpBBcontainsBB(*BBGET(self), *BBGET(other));
+  return value ? Qtrue : Qfalse;
+}
+
+static VALUE
+rb_cpBBcontainsVect(VALUE self, VALUE other)
+{
+  int value = cpBBcontainsVect(*BBGET(self), *VGET(other));
+  return value ? Qtrue : Qfalse;
+}
+
+static VALUE
+rb_cpBBcontains(VALUE self, VALUE other)
+{
+  if (rb_class_of(other) == c_cpBB) {  
+    return rb_cpBBcontainsBB(self, other);
+  } else if (rb_class_of(other) == c_cpVect) {
+    return rb_cpBBcontainsVect(self, other);
+  } 
+  rb_raise(rb_eArgError, "contains works only with a BB or A Vect2 argument");
+  return Qnil;
 }
 
 static VALUE
@@ -128,6 +160,17 @@ rb_cpBBToString(VALUE self)
 	return rb_str_new2(str);
 }
 
+static VALUE
+rb_cpBBmerge(VALUE self, VALUE other) {
+  return BBNEW(cpBBmerge(*BBGET(self), *BBGET(other)));
+}
+
+static VALUE
+rb_cpBBexpand(VALUE self, VALUE other) {
+  return BBNEW(cpBBexpand(*BBGET(self), *VGET(other)));
+}
+
+
 void
 Init_cpBB(void)
 {
@@ -146,10 +189,22 @@ Init_cpBB(void)
 	rb_define_method(c_cpBB, "t=", rb_cpBBSetT, 1);
 
 	rb_define_method(c_cpBB, "intersect?", rb_cpBBintersects, 1);
+  rb_define_method(c_cpBB, "intersects?", rb_cpBBintersects, 1); 
 	//containsBB
 	//containsVect
+  rb_define_method(c_cpBB, "contains?", rb_cpBBcontains, 1);
+  rb_define_method(c_cpBB, "contain?", rb_cpBBcontains, 1);
+   
+  rb_define_method(c_cpBB, "contains_bb?", rb_cpBBcontainsBB, 1);
+  rb_define_method(c_cpBB, "contain_bb?", rb_cpBBcontainsBB, 1);
+  rb_define_method(c_cpBB, "contains_vect?", rb_cpBBcontainsVect, 1);
+  rb_define_method(c_cpBB, "contain_vect?", rb_cpBBcontainsVect, 1);
+  
 	rb_define_method(c_cpBB, "clamp_vect", rb_cpBBClampVect, 1);
-	rb_define_method(c_cpBB, "wrap_vect", rb_cpBBWrapVect, 1);
+	rb_define_method(c_cpBB, "wrap_vect" , rb_cpBBWrapVect, 1);
+  rb_define_method(c_cpBB, "merge"     , rb_cpBBmerge, 1);
+  rb_define_method(c_cpBB, "expand"    , rb_cpBBexpand, 1);
+   
 	
 	rb_define_method(c_cpBB, "to_s", rb_cpBBToString, 0);
 }

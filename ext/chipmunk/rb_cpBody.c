@@ -60,6 +60,13 @@ rb_cpBodyInitializeStatic(VALUE self)
   return self;
 }
 
+static VALUE 
+rb_cpStaticBodyNew(VALUE klass) {
+  return rb_cpBodyAllocStatic(klass);
+}
+
+
+
 static VALUE
 rb_cpBodyGetMass(VALUE self)
 {
@@ -266,13 +273,38 @@ static VALUE rb_cpBodyActivate(VALUE self) {
   return self;
 }
 
+static cpBody * rb_cpBodySleepValidate(VALUE vbody) {
+  cpBody * body  = BODY(vbody);
+  cpSpace *space = body->space;  
+  if(!space) {
+    rb_raise(rb_eArgError, "Cannot put a body to sleep that has not been added to a space.");
+    return NULL;
+  }
+  if (cpBodyIsStatic(body) && cpBodyIsRogue(body)) { 
+    rb_raise(rb_eArgError, "Rogue AND static bodies cannot be put to sleep.");
+    return NULL;
+  }  
+  if(space->locked) { 
+     rb_raise(rb_eArgError, "Bodies can not be put to sleep during a query or a call to Space#add_collision_func. Put these calls into a post-step callback using Space#add_collision_handler.");
+     return NULL;
+  }
+  return body; 
+}
+
 static VALUE rb_cpBodySleep(VALUE self) {
-  cpBodySleep(BODY(self));
+  cpBody * body = rb_cpBodySleepValidate(self);
+  cpBodySleep(body);
   return self;
 }
 
-static VALUE rb_cpBodySleepWithGroup(VALUE self, VALUE group) {
-  cpBodySleepWithGroup(BODY(self), BODY(group));
+static VALUE rb_cpBodySleepWithGroup(VALUE self, VALUE vgroup) {
+  cpBody * group = rb_cpBodySleepValidate(vgroup);
+  cpBody * body = rb_cpBodySleepValidate(self);
+  
+  if (!cpBodyIsSleeping(group)) { 
+    rb_raise(rb_eArgError, "Cannot use a non-sleeping body as a group identifier.");
+  }  
+  cpBodySleepWithGroup(body, group);
   return self;
 }
 
@@ -282,16 +314,16 @@ static VALUE rb_cpBodyIsSleeping(VALUE self) {
 }
 
 static VALUE rb_cpBodyIsStatic(VALUE self) {
-  return cpBodyIsStatic(BODY(self)) ? Qtrue : Qfalse;
+  cpBody * body = BODY(self);
+  cpBool stat   = 0; 
+  // cpBodyInitStatic(body);
+  stat = cpBodyIsStatic(body);  
+  return stat ? Qtrue : Qfalse;
+  // 
 }
 
 static VALUE rb_cpBodyIsRogue(VALUE self) {
   return cpBodyIsRogue(BODY(self)) ? Qtrue : Qfalse;
-}
-
-static VALUE rb_cpBodyIdleTime(VALUE self) {
-  cpBody * body = BODY(self);
-  return rb_float_new(CP_PRIVATE(body->node).idleTime);
 }
 
 
@@ -313,10 +345,12 @@ Init_cpBody(void)
 	rb_define_alloc_func(c_cpBody, rb_cpBodyAlloc);
 	rb_define_method(c_cpBody, "initialize", rb_cpBodyInitialize, 2);
 	
-	c_cpStaticBody = rb_define_class_under(m_Chipmunk, "StaticBody", c_cpBody);
-  rb_define_alloc_func(c_cpStaticBody, rb_cpBodyAllocStatic);
-  rb_define_method(c_cpStaticBody, "initialize", rb_cpBodyInitializeStatic, 0);
-  
+	c_cpStaticBody = rb_define_class_under(m_Chipmunk, "StaticBody", c_cpBody);  
+  // rb_define_alloc_func will not work here, since superclass defines this.
+  // so, we define new here in stead.
+  rb_define_singleton_method(c_cpStaticBody, "new", rb_cpStaticBodyNew, 0);
+  rb_define_method(c_cpStaticBody, "initialize", rb_cpBodyInitializeStatic, 0);  
+  rb_define_singleton_method(c_cpBody, "new_static",  rb_cpStaticBodyNew, 0);
 
 	rb_define_method(c_cpBody, "m"           , rb_cpBodyGetMass, 0);
 	rb_define_method(c_cpBody, "i"           , rb_cpBodyGetMoment, 0);
@@ -381,11 +415,11 @@ Init_cpBody(void)
 	rb_define_method(c_cpBody, "rogue?", rb_cpBodyIsRogue, 0);
 	rb_define_method(c_cpBody, "sleeping?", rb_cpBodyIsSleeping, 0);
 	rb_define_method(c_cpBody, "sleep?", rb_cpBodyIsSleeping, 0);
-	rb_define_method(c_cpBody, "sleep", rb_cpBodySleep, 0);
+	rb_define_method(c_cpBody, "body_sleep"      , rb_cpBodySleep, 0);
 	rb_define_method(c_cpBody, "sleep_with_group", rb_cpBodySleepWithGroup, 1);
 	rb_define_method(c_cpBody, "sleep_group"     , rb_cpBodySleepWithGroup, 1);
-	rb_define_method(c_cpBody, "activate"     , rb_cpBodyActivate, 0);
-	rb_define_method(c_cpBody, "idletime"     , rb_cpBodyIdleTime, 0);
+	rb_define_method(c_cpBody, "activate"        , rb_cpBodyActivate, 0);
+	
 	
 	
 	

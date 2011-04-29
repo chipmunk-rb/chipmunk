@@ -7,17 +7,42 @@ describe 'A new Body' do
     b.i.should == 7
     b.static?.should be_false
     b.sleep?.should be_false
+    b.rogue?.should be_true
   end
   
   describe 'StaticBody class' do
-    it 'should be creatable' do
-      b = CP::StaticBody.new()
-      # fails somehow: 
-      b.m.should == CP::INFINITY
-      b.i.should == CP::INFINITY
-      p b.idletime
-      b.static?.should == true
+    it 'should be creatable using new_static' do
+      bs = CP::Body.new_static() 
+      bs.m.should == CP::INFINITY
+      bs.i.should == CP::INFINITY
+      bs.static?.should be_true
+      bs.rogue?.should be_true
     end
+    
+    it 'should be creatable using new' do
+      bs = CP::StaticBody.new() 
+      bs.m.should == CP::INFINITY
+      bs.i.should == CP::INFINITY
+      bs.static?.should be_true
+      bs.rogue?.should be_true
+    end
+  end
+
+  it 'can sleep' do
+    space = CP::Space.new
+    b     = CP::Body.new(5, 7)
+    b.sleep?.should be_false
+    # It's not allowed to make this body sleep yet.
+    lambda { b.body_sleep}.should raise_error
+    b.sleep?.should be_false
+    b.activate
+    b.sleep?.should be_false
+    # Now we add the body to the space, and making it sleep is fine.
+    space.add_body(b) 
+    lambda { b.body_sleep}.should_not raise_error
+    b.sleep?.should be_true
+    b.activate
+    b.sleep?.should be_false    
   end
 
 
@@ -25,7 +50,7 @@ describe 'A new Body' do
     b = CP::Body.new(5, 7)
     b.m = 900
     b.m.should == 900
-    b.m_inv.should be_close(1.0/900, 0.001)
+    b.m_inv.should be_within(0.001).of(1.0/900)
   end
 
   it 'can set its pos' do
@@ -52,7 +77,7 @@ describe 'A new Body' do
     b = CP::Body.new(5, 7)
     b.moment = 37
     b.moment.should == 37
-    b.moment_inv.should be_close(1.0/37, 0.001)
+    b.moment_inv.should be_within(0.001).of(1.0/37)
   end
 
   it 'can set its force' do
@@ -157,16 +182,16 @@ describe 'A new Body' do
     b = CP::Body.new(5, 7)
     b.apply_impulse(vec2(1,0), ZERO_VEC_2)
     b.update_position 25
-    b.p.x.should be_close(5,0.001)
-    b.p.y.should be_close(0,0.001)
+    b.p.x.should be_within(0.001).of(5)
+    b.p.y.should be_within(0.001).of(0)
   end
 
   it 'can update its velocity over a timestep' do
     b = CP::Body.new(5, 7)
     b.apply_impulse(vec2(1,0), ZERO_VEC_2)
     b.update_velocity vec2(0,0), 0.5, 25
-    b.v.x.should be_close(0.1,0.001)
-    b.v.y.should be_close(0,0.001)
+    b.v.x.should be_within(0.001).of(0.1)
+    b.v.y.should be_within(0.001).of(0)
   end
 
 end
