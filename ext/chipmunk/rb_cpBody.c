@@ -297,8 +297,8 @@ static VALUE rb_cpBodySleep(VALUE self) {
 }
 
 static VALUE rb_cpBodySleepWithGroup(VALUE self, VALUE vgroup) {
-  cpBody * group = rb_cpBodySleepValidate(vgroup);
-  cpBody * body = rb_cpBodySleepValidate(self);
+  cpBody * group = NIL_P(vgroup) ? NULL : rb_cpBodySleepValidate(vgroup);
+  cpBody * body  = rb_cpBodySleepValidate(self);
   
   if (!cpBodyIsSleeping(group)) { 
     rb_raise(rb_eArgError, "Cannot use a non-sleeping body as a group identifier.");
