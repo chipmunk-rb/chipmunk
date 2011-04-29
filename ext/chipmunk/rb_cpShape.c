@@ -242,6 +242,8 @@ rb_cpCircleInitialize(VALUE self, VALUE body, VALUE radius, VALUE offset)
 
 
 
+
+
 //cpSegment
 static VALUE
 rb_cpSegmentAlloc(VALUE klass)
@@ -296,7 +298,43 @@ rb_cpPolyInitialize(VALUE self, VALUE body, VALUE arr, VALUE offset)
 	return self;
 }
 
+// some getters
+static VALUE rb_cpCircleShapeGetOffset(VALUE self) {
+  return VNEW(cpCircleShapeGetOffset(SHAPE(self)));
+}
 
+static VALUE rb_cpCircleShapeGetRadius(VALUE self) {  
+  return rb_float_new(cpCircleShapeGetRadius(SHAPE(self)));
+}
+
+static VALUE rb_cpSegmentShapeGetA(VALUE self) {
+  return VNEW(cpSegmentShapeGetA(SHAPE(self)));
+}
+
+static VALUE rb_cpSegmentShapeGetB(VALUE self) {  
+  return VNEW(cpSegmentShapeGetB(SHAPE(self)));
+}
+
+static VALUE rb_cpSegmentShapeGetRadius(VALUE self) {
+  return rb_float_new(cpSegmentShapeGetRadius(SHAPE(self)));
+}
+
+static VALUE rb_cpSegmentShapeGetNormal(VALUE self) {
+  return VNEW(cpSegmentShapeGetNormal(SHAPE(self)));
+}
+
+static VALUE rb_cpPolyShapeGetNumVerts(VALUE self) {
+  return INT2NUM(cpPolyShapeGetNumVerts(SHAPE(self)));
+}
+
+static VALUE rb_cpPolyShapeGetVert(VALUE self, VALUE vindex) {
+  cpShape *shape     = SHAPE(self);
+  int index          = NUM2INT(vindex);  
+  if ((index < 0) || (index >= cpPolyShapeGetNumVerts(shape))) {  
+    return Qnil;
+  }  
+  return VNEW(cpPolyShapeGetVert(shape, index));
+}
 
 
 
@@ -334,7 +372,7 @@ Init_cpShape(void)
 	
 	rb_define_method(m_cpShape, "bb"         , rb_cpShapeCacheBB, 0);
 	rb_define_method(m_cpShape, "cache_bb"   , rb_cpShapeCacheBB, 0);
-  rb_define_method(m_cpShape, "get_bb"     , rb_cpShapeGetBB, 0); 
+  rb_define_method(m_cpShape, "raw_bb"     , rb_cpShapeGetBB, 0); 
 	
 	rb_define_method(m_cpShape, "e", rb_cpShapeGetElasticity, 0);
 	rb_define_method(m_cpShape, "u", rb_cpShapeGetFriction, 0);
@@ -351,7 +389,7 @@ Init_cpShape(void)
    
 	
 	rb_define_singleton_method(m_cpShape, "reset_id_counter", rb_cpShapeResetIdCounter, 0);
-
+ 
 	
 	c_cpCircleShape = rb_define_class_under(m_cpShape, "Circle", rb_cObject);
 	rb_include_module(c_cpCircleShape, m_cpShape);
@@ -369,11 +407,29 @@ Init_cpShape(void)
 	rb_include_module(c_cpPolyShape, m_cpShape);
 	rb_define_alloc_func(c_cpPolyShape, rb_cpPolyAlloc);
 	rb_define_method(c_cpPolyShape, "initialize", rb_cpPolyInitialize, 3);
+  
+  rb_define_method(c_cpCircleShape, "offset", rb_cpCircleShapeGetOffset, 0);
+  rb_define_method(c_cpCircleShape, "radius", rb_cpCircleShapeGetRadius, 0);
+  rb_define_method(c_cpCircleShape, "r"     , rb_cpCircleShapeGetRadius, 0);
+  
+  rb_define_method(c_cpSegmentShape, "a"      , rb_cpSegmentShapeGetA, 0);
+  rb_define_method(c_cpSegmentShape, "b"      , rb_cpSegmentShapeGetB, 0);
+  rb_define_method(c_cpSegmentShape, "radius" , rb_cpSegmentShapeGetRadius, 0);
+  rb_define_method(c_cpSegmentShape, "r"      , rb_cpSegmentShapeGetRadius, 0);
+  rb_define_method(c_cpSegmentShape, "normal" , rb_cpSegmentShapeGetNormal, 0);
+  rb_define_method(c_cpSegmentShape, "n"      , rb_cpSegmentShapeGetNormal, 0);
+  
+  rb_define_method(c_cpPolyShape   , "num_verts" , rb_cpPolyShapeGetNumVerts, 0);  
+  rb_define_method(c_cpPolyShape   , "vert"      , rb_cpPolyShapeGetVert, 1);
+  // also include an array-ish interface
+  rb_define_method(c_cpPolyShape   , "length"    , rb_cpPolyShapeGetNumVerts, 0);
+  rb_define_method(c_cpPolyShape   , "size"      , rb_cpPolyShapeGetNumVerts, 0);
+  rb_define_method(c_cpPolyShape   , "[]"        , rb_cpPolyShapeGetVert, 1);
 	
   /* Use a struct for this small class. More efficient. */
   c_cpSegmentQueryInfo = rb_struct_define("SegmentQueryInfo",
                          "shape", "t", "n", NULL);
   rb_define_const(m_Chipmunk, "SegmentQueryInfo", c_cpSegmentQueryInfo);   
-
+  
 }
 // 

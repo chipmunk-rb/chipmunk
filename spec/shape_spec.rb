@@ -30,12 +30,25 @@ describe 'Shapes in chipmunk' do
       bb.r.should == 40
       bb.t.should == 40
     end
+    
+    it 'can get a BB that is not updated' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+      bb = s.raw_bb
+      bb.should_not be_nil
+      # raw bb is only useful for performance reasons.
+      bb.l.should == 0 
+      bb.b.should == 0
+      bb.r.should == 0
+      bb.t.should == 0
+    end
+
 
     it 'can get its layers' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
       # he sets layers to -1 on an unsigned int
-      s.layers.should == 2**32-1
+      s.layers.should == CP::ALL_LAYERS
     end
     
     it 'can get its group' do
@@ -142,6 +155,21 @@ describe 'Shapes in chipmunk' do
       info.n.y.should be_within(0.001).of(0.5)
       info.class.should == CP::SegmentQueryInfo
     end
+    
+    it 'can get its radius' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
+      s.radius.should == 20
+    end
+      
+    it 'can get its offset' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
+      v = s.offset       
+      v.x.should == 0
+      v.y.should == 0
+    end
+    
   end
   
   describe 'SegmentQueryInfo struct' do
@@ -150,7 +178,7 @@ describe 'Shapes in chipmunk' do
       data.shape.should == 1
       data.t.should == 2
       data.n.should == 3
-    end
+    end    
   end
 
   describe 'Segment class' do
@@ -158,13 +186,69 @@ describe 'Shapes in chipmunk' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Segment.new bod, vec2(1,1), vec2(2,2), 5
     end
+    
+    it 'can get its a' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Segment.new bod, vec2(1,2), vec2(3,4), 5
+      v = s.a
+      v.x.should == 1
+      v.y.should == 2
+    end
+    
+    it 'can get its b' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Segment.new bod, vec2(1,2), vec2(3,4), 5
+      v = s.b
+      v.x.should == 3
+      v.y.should == 4
+    end
+    
+    it 'can get its radius' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Segment.new bod, vec2(1,2), vec2(3,4), 5
+      r = s.radius
+      r.should == 5
+    end
+    
+    it 'can get its normal' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Segment.new bod, vec2(1,2), vec2(3,4), 5
+      v = s.normal
+      v.x.should be_within(0.001).of(-0.70710) 
+      v.y.should be_within(0.001).of( 0.70710)
+    end
+    
+    
   end
+  
   describe 'Poly class' do
     it 'can be created' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], CP::ZERO_VEC_2
     end
+    
+    it 'can get its amount of vertices' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], CP::ZERO_VEC_2
+      s.size.should == 3
+    end
+    
+    it 'can get vertices' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], CP::ZERO_VEC_2
+      v = s[1]
+      v.x.should == 2
+      v.y.should == 2
+    end
+    
+    it 'returns nil if vertex is out of range' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], CP::ZERO_VEC_2
+      v = s[22]
+      v.should be_nil
+    end
   end
+  
   
   describe 'Shape class' do
     it 'can have an arbitrary object connected to it' do
@@ -173,7 +257,12 @@ describe 'Shapes in chipmunk' do
       o  = "Hello"
       s.object = o
       s.object.should == o
-    end  
+    end
+      
+    it 'can reset the id counter' do
+      lambda { CP::Shape.reset_id_counter }.should_not raise_error 
+    end
+  
   end
 
 

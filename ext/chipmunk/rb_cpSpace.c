@@ -59,6 +59,30 @@ rb_cpSpaceInitialize(VALUE self)
 }
 
 static VALUE
+rb_cpSpaceGetSleepTimeThreshold(VALUE self) {
+  return INT2NUM(SPACE(self)->sleepTimeThreshold);
+}
+
+static VALUE
+rb_cpSpaceSetSleepTimeThreshold(VALUE self, VALUE val) {
+  SPACE(self)->sleepTimeThreshold = NUM2INT(val);
+  return val;
+}
+
+static VALUE
+rb_cpSpaceGetIdleSpeedThreshold(VALUE self) {
+  return INT2NUM(SPACE(self)->idleSpeedThreshold);
+}
+
+static VALUE
+rb_cpSpaceSetIdleSpeedThreshold(VALUE self, VALUE val) {
+  SPACE(self)->idleSpeedThreshold = NUM2INT(val);
+  return val;
+}
+
+
+
+static VALUE
 rb_cpSpaceGetIterations(VALUE self)
 {
 	return INT2NUM(SPACE(self)->iterations);
@@ -114,38 +138,58 @@ doNothingCallback(cpArbiter *arb, cpSpace *space, void *data) {
 	return 0;
 }
 
+// This callback function centralizes all collision callbacks.
+// it also adds flexibility by changing theway the callback is called on the 
+// arity of the callback block or method. With arity0, no args are pased,
+// with arity 1, the arbiter, 
+// with arity 2, body_a and body_b,
+// with arity 3 or more -> body_a, body_b, arbiter 
+static int do_callback(void * data, ID method, cpArbiter *arb) {
+  int res = 0;
+  CP_ARBITER_GET_SHAPES(arb, a, b);
+  VALUE object = (VALUE) data; 
+  VALUE va     = (VALUE)a->data;
+  VALUE vb     = (VALUE)b->data;
+  VALUE varb   = rb_cpArbiterWrap(arb);
+  int arity    = rb_obj_method_arity(object, method);
+  switch(arity) {
+    case 0:
+      return CP_BOOL_INT(rb_funcall(object, method, 0)); 
+    case 1: 
+      return CP_BOOL_INT(rb_funcall(object, method, 1, varb));
+    case 2: 
+      return CP_BOOL_INT(rb_funcall(object, method, 2, va, vb));
+    case 3:
+    default:  
+      return CP_BOOL_INT(rb_funcall(object, method, 3, va, vb, varb));
+  }    
+  // we never get here
+}  
+
+
 static int
 compatibilityCallback(cpArbiter *arb, cpSpace *space, void *data) {
-	CP_ARBITER_GET_SHAPES(arb, a, b);
-	return rb_funcall((VALUE)data, id_call, 2, (VALUE)a->data, (VALUE)b->data);
+  return do_callback(data, id_call, arb);
 }
 
 static int
 beginCallback(cpArbiter *arb, cpSpace *space, void *data) {
-	CP_ARBITER_GET_SHAPES(arb, a, b);
-	return rb_funcall((VALUE)data, id_begin, 3, 
-         (VALUE)a->data, (VALUE)b->data, rb_cpArbiterWrap(arb));
+  return do_callback(data, id_begin, arb);
 }
 
 static int
 preSolveCallback(cpArbiter *arb, cpSpace *space, void *data) {
-	CP_ARBITER_GET_SHAPES(arb, a, b);
-	return rb_funcall((VALUE)data, id_pre_solve, 3,
-         (VALUE)a->data, (VALUE)b->data, rb_cpArbiterWrap(arb));
+  return do_callback(data, id_pre_solve, arb);
 }
 
 static void
 postSolveCallback(cpArbiter *arb, cpSpace *space, void *data) {
-	CP_ARBITER_GET_SHAPES(arb, a, b);
-	rb_funcall((VALUE)data, id_post_solve, 3,
-         (VALUE)a->data, (VALUE)b->data, rb_cpArbiterWrap(arb));
+	do_callback(data, id_post_solve, arb);
 }
 
 static void
 separateCallback(cpArbiter *arb, cpSpace *space, void *data) {
-	CP_ARBITER_GET_SHAPES(arb, a, b);
-	rb_funcall((VALUE)data, id_separate, 3,
-         (VALUE)a->data, (VALUE)b->data, rb_cpArbiterWrap(arb));
+  do_callback(data, id_separate, arb);
 }
 
 static int
@@ -491,6 +535,14 @@ rb_cpSpaceSetData(VALUE self, VALUE val) {
 }
 
 
+static VALUE
+rb_cpSpaceActivateShapesTouchingShape(VALUE self, VALUE shape)
+{
+  cpSpaceActivateShapesTouchingShape(SPACE(self), SHAPE(shape));
+  return self;
+}
+
+
 
 
 void
@@ -556,6 +608,32 @@ Init_cpSpace(void)
   rb_define_method(c_cpSpace, "object" , rb_cpSpaceGetData, 0);
   rb_define_method(c_cpSpace, "object=", rb_cpSpaceSetData, 1);
   
+  rb_define_method(c_cpSpace, "sleep_time_threshold=", 
+                   rb_cpSpaceSetSleepTimeThreshold, 1);
+  rb_define_method(c_cpSpace, "sleep_time_threshold", 
+                   rb_cpSpaceGetSleepTimeThreshold, 0);
+  rb_define_method(c_cpSpace, "idle_speed_threshold=", 
+                   rb_cpSpaceSetIdleSpeedThreshold, 1);
+  rb_define_method(c_cpSpace, "idle_speed_threshold", 
+                   rb_cpSpaceGetIdleSpeedThreshold, 0);
+  
+  // also define slghtly less verbose API
+  rb_define_method(c_cpSpace, "sleep_time=", 
+                   rb_cpSpaceSetSleepTimeThreshold, 1);
+  rb_define_method(c_cpSpace, "sleep_time", 
+                   rb_cpSpaceGetSleepTimeThreshold, 0);
+  rb_define_method(c_cpSpace, "idle_speed=", 
+                   rb_cpSpaceSetIdleSpeedThreshold, 1);
+  rb_define_method(c_cpSpace, "idle_speed", 
+                   rb_cpSpaceGetIdleSpeedThreshold, 0);
+                   
+  rb_define_method(c_cpSpace, "activate_shapes_touching_shape", 
+                   rb_cpSpaceActivateShapesTouchingShape, 1);
+                   
+  // this is nicer, though :)                 
+  rb_define_method(c_cpSpace, "activate_touching", 
+                   rb_cpSpaceActivateShapesTouchingShape, 1);
+                   
   
   
 }

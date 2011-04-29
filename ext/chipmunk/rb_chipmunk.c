@@ -31,30 +31,38 @@ VALUE m_Chipmunk;
 ID id_parent;
 
 static VALUE
-rb_get_cp_bias_coef(VALUE self)
-{
+rb_get_cp_bias_coef(VALUE self) {
 	return rb_float_new(cp_bias_coef);
 }
 
 static VALUE
-rb_set_cp_bias_coef(VALUE self, VALUE num)
-{
+rb_set_cp_bias_coef(VALUE self, VALUE num) {
 	cp_bias_coef = NUM2DBL(num);
 	return num;
 }
 
 static VALUE
-rb_get_cp_collision_slop(VALUE self)
-{
+rb_get_cp_collision_slop(VALUE self) {
 	return rb_float_new(cp_collision_slop);
 }
 
 static VALUE
-rb_set_cp_collision_slop(VALUE self, VALUE num)
-{
+rb_set_cp_collision_slop(VALUE self, VALUE num) {
 	cp_collision_slop = NUM2DBL(num);
 	return num;
 }
+
+static VALUE
+rb_set_cp_contact_persistence(VALUE self, VALUE num) {
+  cp_contact_persistence = NUM2DBL(num);
+  return num;
+}
+
+static VALUE
+rb_get_cp_contact_persistence(VALUE self) {   
+  return rb_float_new(cp_contact_persistence);
+}
+
 
 static VALUE
 rb_cpMomentForCircle(VALUE self, VALUE m, VALUE r1, VALUE r2, VALUE offset)
@@ -160,6 +168,11 @@ Init_chipmunk(void)
 	rb_define_module_function(m_Chipmunk, "bias_coef=", rb_set_cp_bias_coef, 1);
 	rb_define_module_function(m_Chipmunk, "collision_slop", rb_get_cp_collision_slop, 0);
 	rb_define_module_function(m_Chipmunk, "collision_slop=", rb_set_cp_collision_slop, 1);
+  rb_define_module_function(m_Chipmunk, "contact_persistence", rb_get_cp_contact_persistence, 0);
+  rb_define_module_function(m_Chipmunk, "contact_persistence=", rb_set_cp_contact_persistence, 1);
+  
+  
+  
   rb_define_module_function(m_Chipmunk, "clamp", rb_cpfclamp, 3);
   rb_define_module_function(m_Chipmunk, "flerp", rb_cpflerp, 3);
   rb_define_module_function(m_Chipmunk, "flerpconst", rb_cpflerpconst, 3);
@@ -184,6 +197,9 @@ Init_chipmunk(void)
   rb_define_module_function(m_Chipmunk, "poly_area", rb_cpAreaForPoly, 1);
   rb_define_module_function(m_Chipmunk, "segment_area", rb_cpAreaForSegment, 3);
   rb_define_module_function(m_Chipmunk, "box_area", rb_cpAreaForBox, 2);
+  
+  rb_define_const(m_Chipmunk, "ALL_LAYERS", UINT2NUM((unsigned int)CP_ALL_LAYERS));
+  rb_define_const(m_Chipmunk, "NO_GROUP"  , UINT2NUM(CP_NO_GROUP));
 
   rb_eval_string("Float::INFINITY = 1.0/0.0 unless Float.const_defined? :INFINITY");
   rb_eval_string("CP::INFINITY = 1.0/0.0 unless CP.const_defined? :INFINITY"); 
@@ -194,4 +210,5 @@ Init_chipmunk(void)
 	Init_cpShape();
 	Init_cpConstraint();
 	Init_cpSpace();
+  Init_cpArbiter();  
 }

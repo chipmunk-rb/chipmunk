@@ -244,6 +244,11 @@ MAKE_FLT_ACCESSORS(cpRatchetJoint, Angle);
 MAKE_FLT_ACCESSORS(cpRatchetJoint, Phase);
 MAKE_FLT_ACCESSORS(cpRatchetJoint, Ratchet);
 
+static VALUE
+rb_cpConstraintGetImpulse(VALUE self) {
+  return rb_float_new(cpConstraintGetImpulse(CONSTRAINT(self)));
+} 
+
 
 #define STRINGIFY(v) #v
 #define ACCESSOR_METHODS(s, m, name) \
@@ -272,8 +277,9 @@ Init_cpConstraint(void)
 	rb_define_method(m_cpConstraint, "bias_coef", rb_cpConstraint_get_biasCoef, 0);
 	rb_define_method(m_cpConstraint, "bias_coef=", rb_cpConstraint_set_biasCoef, 1);
 	rb_define_method(m_cpConstraint, "max_bias", rb_cpConstraint_get_maxBias, 0);
-	rb_define_method(m_cpConstraint, "max_bias=", rb_cpConstraint_set_maxBias, 1);
-	
+	rb_define_method(m_cpConstraint, "max_bias=" , rb_cpConstraint_set_maxBias, 1);
+	rb_define_method(m_cpConstraint, "impulse"   , rb_cpConstraintGetImpulse, 0);
+  
 	
 	VALUE c_cpDampedRotarySpring = make_class("DampedRotarySpring", rb_cpDampedRotarySpring_alloc, rb_cpDampedRotarySpring_init, 5);
 	ACCESSOR_METHODS(cpDampedRotarySpring, RestAngle, rest_angle)

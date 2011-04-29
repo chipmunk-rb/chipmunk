@@ -404,6 +404,13 @@ rb_cpBodySetData(VALUE self, VALUE val) {
 }
 
 
+static VALUE
+rb_cpBodySlew(VALUE self, VALUE pos, VALUE dt) {
+  cpBodySlew(BODY(self), *VGET(pos), NUM2DBL(dt));
+  return self;
+}
+
+
 void
 Init_cpBody(void)
 {
@@ -476,12 +483,15 @@ Init_cpBody(void)
 	
 	rb_define_method(c_cpBody, "update_velocity", rb_cpBodyUpdateVelocity, 3);
 	rb_define_method(c_cpBody, "update_position", rb_cpBodyUpdatePosition, 1);
+  rb_define_method(c_cpBody, "slew"           , rb_cpBodySlew          , 2); 
 	
 	rb_define_method(c_cpBody, "static?", rb_cpBodyIsStatic, 0);
 	rb_define_method(c_cpBody, "rogue?", rb_cpBodyIsRogue, 0);
 	rb_define_method(c_cpBody, "sleeping?", rb_cpBodyIsSleeping, 0);
 	rb_define_method(c_cpBody, "sleep?", rb_cpBodyIsSleeping, 0);
-	rb_define_method(c_cpBody, "body_sleep"      , rb_cpBodySleep, 0);
+  rb_define_method(c_cpBody, "sleep_with_self" , rb_cpBodySleep, 0);
+  rb_define_method(c_cpBody, "sleep_self"      , rb_cpBodySleep, 0);
+  rb_define_method(c_cpBody, "sleep_alone"     , rb_cpBodySleep, 0);  
 	rb_define_method(c_cpBody, "sleep_with_group", rb_cpBodySleepWithGroup, 1);
 	rb_define_method(c_cpBody, "sleep_group"     , rb_cpBodySleepWithGroup, 1);
 	rb_define_method(c_cpBody, "activate"        , rb_cpBodyActivate   , 0);

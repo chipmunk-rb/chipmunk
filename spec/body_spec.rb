@@ -28,22 +28,36 @@ describe 'A new Body' do
     end
   end
 
-  it 'can sleep' do
+  it 'can sleep and be activated again' do
     space = CP::Space.new
     b     = CP::Body.new(5, 7)
     b.sleep?.should be_false
     # It's not allowed to make this body sleep yet.
-    lambda { b.body_sleep}.should raise_error
+    lambda { b.body_alone}.should raise_error
     b.sleep?.should be_false
     b.activate
     b.sleep?.should be_false
     # Now we add the body to the space, and making it sleep is fine.
     space.add_body(b) 
-    lambda { b.body_sleep}.should_not raise_error
+    lambda { b.sleep_alone}.should_not raise_error
     b.sleep?.should be_true
     b.activate
     b.sleep?.should be_false    
   end
+  
+  it 'can sleep with a group and be activated again' do
+    space = CP::Space.new
+    group = CP::Body.new(5, 7)
+    b     = CP::Body.new(7, 11)
+    space.add_body(group)
+    space.add_body(b)
+    group.sleep_alone
+    lambda { b.sleep_with_group(group)}.should_not raise_error
+    b.sleep?.should be_true
+    group.activate
+    b.sleep?.should be_false    
+  end
+
 
 
   it 'can set its mass' do
@@ -178,7 +192,7 @@ describe 'A new Body' do
     b.v.y.should == 0
   end
 
-  it 'should be able to update its position' do
+  it 'can update its position' do
     b = CP::Body.new(5, 7)
     b.apply_impulse(vec2(1,0), ZERO_VEC_2)
     b.update_position 25
@@ -193,6 +207,14 @@ describe 'A new Body' do
     b.v.x.should be_within(0.001).of(0.1)
     b.v.y.should be_within(0.001).of(0)
   end
+  
+  it 'can slew to a position' do
+    b = CP::Body.new(5, 7)
+    b.slew(vec2(100, 40), 25)
+    b.v.x.should be_within(0.001).of(4.0)
+    b.v.y.should be_within(0.001).of(1.6)
+  end  
+  
   
   it 'can have a specific velocity_func callback set' do
     b       = CP::Body.new(5, 7)

@@ -90,6 +90,14 @@ void Init_cpShape();
 void Init_cpConstraint();
 void Init_cpSpace();
 
+// transforms a boolean VALUE to an int
+#define CP_BOOL_INT(VAL) (((VAL) == Qnil) || ((VAL) == Qfalse) ? 0 : 1)
+
+// transforms a C value (pointer or int) to Qtrue of Qfalse
+// For consistency with RBH_BOOL_INT. 
+#define CP_INT_BOOL(VAL) ((VAL) ? Qtrue : Qfalse)
+ 
+
 
 
 

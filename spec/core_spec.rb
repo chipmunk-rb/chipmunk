@@ -6,6 +6,16 @@ describe 'CP module' do
     v.split(".").size.should == 3
   end
   
+  it 'has the ALL_LAYERS constant' do
+    v = CP::ALL_LAYERS
+    v.should_not == 0
+  end
+  
+  it 'has the NO_GROUP constant' do
+    v = CP::NO_GROUP
+    v.should == 0
+  end
+  
   it 'can clamp floats' do
     CP.clamp(2.0, 1.0, 3.0).should == 2.0
     CP.clamp(0.0, 1.0, 3.0).should == 1.0
@@ -62,6 +72,15 @@ describe 'CP module' do
   it 'can calculate areas for a box' do
     are = CP.area_for_box(3, 2)
     are.should be_within(0.001).of(6.0)
+  end
+  
+  it 'allows global parameters for Chipmunk to be read and set' do
+    CP.bias_coef = 0.2
+    CP.bias_coef.should == 0.2
+    CP.collision_slop = 0.3
+    CP.collision_slop.should == 0.3
+    CP.contact_persistence = 4
+    CP.contact_persistence.should == 4  
   end
 
   

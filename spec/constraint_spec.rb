@@ -2,13 +2,47 @@ require File.dirname(__FILE__)+'/spec_helper'
 
 
 describe 'Constraints in chipmunk' do
+  describe 'Constraints module' do
+    
+    before(:each) do
+      @boda = Body.new 90, 46
+      @bodb = Body.new 9, 6
+      @con  = CP::Constraint::PinJoint.new(@boda,@bodb,ZERO_VEC_2,ZERO_VEC_2)    
+    end
+    
+    it 'can access body_a' do
+      @con.body_a.should == @boda
+    end
+    
+    it 'can access body_b' do
+      @con.body_b.should == @bodb
+    end
+    
+    it 'can access max_force' do
+      @con.max_force.should == CP::INFINITY
+    end
+    
+    it 'can access bias_coef' do
+      @con.bias_coef.should be_within(0.0001).of(0.10) 
+    end
+    
+    it 'can access max_bias' do
+      @con.max_bias.should == CP::INFINITY 
+    end    
+    
+    it 'can access its impulse' do
+      @con.impulse.should == 0.0 
+    end  
+  end
+  
   describe 'PinJoint class' do
     it 'can be created' do
       boda = Body.new 90, 46
       bodb = Body.new 9, 6
       CP::Constraint::PinJoint.new(boda,bodb,ZERO_VEC_2,ZERO_VEC_2)
     end
-  end
+  end  
+  
 
   describe 'SlideJoint class' do
     it 'can be created' do
@@ -41,6 +75,15 @@ describe 'Constraints in chipmunk' do
       CP::Constraint::DampedSpring.new(boda,bodb,ZERO_VEC_2,ZERO_VEC_2,3,4,5)
     end
   end
+  
+  describe 'DampedRotarySpring class' do
+    it 'can be created' do
+      boda = Body.new 90, 46
+      bodb = Body.new 9, 6
+      CP::Constraint::DampedRotarySpring.new(boda,bodb,0,1.0,0.5)
+    end
+  end
+  
 
   describe 'RotaryLimitJoint class' do
     it 'can be created' do
