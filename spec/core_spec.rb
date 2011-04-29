@@ -82,6 +82,25 @@ describe 'CP module' do
     CP.contact_persistence = 4
     CP.contact_persistence.should == 4  
   end
-
+  
+  it 'can calculate the centroid for a polygon' do
+    verts = []
+    verts << vec2(1,1)
+    verts << vec2(1,2)
+    verts << vec2(2,2)
+    res = CP.centroid_for_poly(verts)
+    res.x.should be_within(0.001).of(1.333)
+    res.y.should be_within(0.001).of(1.666)
+  end
+    
+  it 'can recenter a polygon' do
+    verts = []
+    verts << vec2(1,1)
+    verts << vec2(1,2)
+    verts << vec2(2,2)
+    res = CP.recenter_poly(verts)
+    res.size.should == 3
+  end
+  
   
 end

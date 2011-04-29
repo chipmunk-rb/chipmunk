@@ -240,7 +240,10 @@ Init_cpArbiter(void)
   rb_define_method(c_cpArbiter, "to_s", rb_cpArbiterToString, 0);
   
   rb_define_method(c_cpArbiter, "first_contact?", rb_cpArbiterIsFirstContact, 0);
-  rb_define_method(c_cpArbiter, "count"  , rb_cpArbiterGetCount, 0);
+  rb_define_method(c_cpArbiter, "count"    , rb_cpArbiterGetCount, 0);
+  rb_define_method(c_cpArbiter, "contacts" , rb_cpArbiterGetCount, 0);
+  rb_define_method(c_cpArbiter, "size"     , rb_cpArbiterGetCount, 0);
+  rb_define_method(c_cpArbiter, "length"   , rb_cpArbiterGetCount, 0);
   rb_define_method(c_cpArbiter, "each_contact"  , rb_cpArbiterEachContact   , 0);
   
   rb_define_method(c_cpArbiter, "shapes"        , rb_cpArbiterGetShapes     , 0);

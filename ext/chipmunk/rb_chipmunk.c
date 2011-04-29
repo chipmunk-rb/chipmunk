@@ -150,6 +150,37 @@ static VALUE rb_cpflerpconst(VALUE self, VALUE f1, VALUE f2, VALUE d) {
   return rb_float_new(result);
 } 
 
+static VALUE
+rb_cpCentroidForPoly(VALUE self,  VALUE arr)
+{
+  Check_Type(arr, T_ARRAY);
+  int numVerts = RARRAY_LEN(arr);
+  VALUE *ary_ptr = RARRAY_PTR(arr);
+  cpVect verts[numVerts];
+  
+  for(int i=0; i<numVerts; i++)
+    verts[i] = *VGET(ary_ptr[i]);
+  
+  return VNEW(cpCentroidForPoly(numVerts, verts));
+}
+
+static VALUE
+rb_cpRecenterPoly(VALUE self,  VALUE arr)
+{
+  Check_Type(arr, T_ARRAY);
+  int numVerts = RARRAY_LEN(arr);
+  VALUE *ary_ptr = RARRAY_PTR(arr);
+  cpVect verts[numVerts];
+  
+  for(int i=0; i<numVerts; i++)
+    verts[i] = *VGET(ary_ptr[i]);
+    
+  cpRecenterPoly(numVerts, verts);
+  
+  for(int i=0; i<numVerts; i++)
+    ary_ptr[i] = VNEW(verts[i]);
+  return arr;
+}
 
 
 
@@ -190,6 +221,11 @@ Init_chipmunk(void)
  
   rb_define_module_function(m_Chipmunk, "area_for_circle", rb_cpAreaForCircle, 2);
   rb_define_module_function(m_Chipmunk, "area_for_poly", rb_cpAreaForPoly, 1);
+  rb_define_module_function(m_Chipmunk, "centroid_for_poly",
+    rb_cpCentroidForPoly, 1);
+  rb_define_module_function(m_Chipmunk, "recenter_poly",
+    rb_cpRecenterPoly, 1);
+    
   rb_define_module_function(m_Chipmunk, "area_for_segment", rb_cpAreaForSegment, 3);
   rb_define_module_function(m_Chipmunk, "area_for_box", rb_cpAreaForBox, 2);
   

@@ -143,7 +143,7 @@ describe 'Space in chipmunk' do
 #       p arbiter.normal(0)
 #       p arbiter.impulse(0)
       arbiter.first_contact?.should == true
-      arbiter.num_contacts.should == 1
+      arbiter.contacts.should == 1
       arr = []
       arbiter.each_contact { |c| arr << c }
       arr.size.should == 1 
