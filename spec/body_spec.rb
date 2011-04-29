@@ -12,7 +12,11 @@ describe 'A new Body' do
   describe 'StaticBody class' do
     it 'should be creatable' do
       b = CP::StaticBody.new()
-      # fails somehow: b.static?.should == true
+      # fails somehow: 
+      b.m.should == CP::INFINITY
+      b.i.should == CP::INFINITY
+      p b.idletime
+      b.static?.should == true
     end
   end
 

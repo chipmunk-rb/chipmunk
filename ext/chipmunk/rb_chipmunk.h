@@ -31,6 +31,7 @@ extern VALUE c_cpPolyShape;
 extern VALUE m_cpConstraint;
 extern VALUE c_cpSpace;
 extern VALUE c_cpArbiter;
+extern VALUE c_cpStaticBody;
 extern VALUE c_cpSegmentQueryInfo;
 
 extern ID id_parent;
@@ -68,6 +69,7 @@ func_name(VALUE self)\
 GETTER_TEMPLATE(VGET , c_cpVect , cpVect )
 GETTER_TEMPLATE(BBGET, c_cpBB   , cpBB   )
 GETTER_TEMPLATE(BODY , c_cpBody , cpBody )
+GETTER_TEMPLATE(STATICBODY , c_cpStaticBody , cpBody)
 GETTER_TEMPLATE(SHAPE, m_cpShape, cpShape)
 GETTER_TEMPLATE(CONSTRAINT, m_cpConstraint, cpConstraint)
 GETTER_TEMPLATE(SPACE, c_cpSpace, cpSpace)

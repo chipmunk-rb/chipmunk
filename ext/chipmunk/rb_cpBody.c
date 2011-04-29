@@ -47,14 +47,16 @@ static VALUE
 rb_cpBodyAllocStatic(VALUE klass)
 {
   cpBody *body = cpBodyNewStatic();
+  if (!cpBodyIsStatic(body)) return Qnil;
   return Data_Wrap_Struct(klass, NULL, cpBodyFree, body);
 }
 
 static VALUE
 rb_cpBodyInitializeStatic(VALUE self)
 {
-  cpBody *body = BODY(self);
+  cpBody *body = STATICBODY(self);
   cpBodyInitStatic(body);
+  if (!cpBodyIsStatic(body)) return Qnil;
   return self;
 }
 
@@ -287,6 +289,11 @@ static VALUE rb_cpBodyIsRogue(VALUE self) {
   return cpBodyIsRogue(BODY(self)) ? Qtrue : Qfalse;
 }
 
+static VALUE rb_cpBodyIdleTime(VALUE self) {
+  cpBody * body = BODY(self);
+  return rb_float_new(CP_PRIVATE(body->node).idleTime);
+}
+
 
 /*
 cpBody *cpBodyInitStatic(cpBody *body);
@@ -306,7 +313,7 @@ Init_cpBody(void)
 	rb_define_alloc_func(c_cpBody, rb_cpBodyAlloc);
 	rb_define_method(c_cpBody, "initialize", rb_cpBodyInitialize, 2);
 	
-	c_cpStaticBody = rb_define_class("StaticBody", c_cpBody);
+	c_cpStaticBody = rb_define_class_under(m_Chipmunk, "StaticBody", c_cpBody);
   rb_define_alloc_func(c_cpStaticBody, rb_cpBodyAllocStatic);
   rb_define_method(c_cpStaticBody, "initialize", rb_cpBodyInitializeStatic, 0);
   
@@ -378,6 +385,8 @@ Init_cpBody(void)
 	rb_define_method(c_cpBody, "sleep_with_group", rb_cpBodySleepWithGroup, 1);
 	rb_define_method(c_cpBody, "sleep_group"     , rb_cpBodySleepWithGroup, 1);
 	rb_define_method(c_cpBody, "activate"     , rb_cpBodyActivate, 0);
+	rb_define_method(c_cpBody, "idletime"     , rb_cpBodyIdleTime, 0);
+	
 	
 	
 	// TODO integration functions?
