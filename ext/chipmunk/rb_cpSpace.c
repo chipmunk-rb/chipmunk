@@ -472,13 +472,22 @@ rb_cpSpaceShapeQuery(int argc, VALUE *argv, VALUE self)
   return Qnil;
 }
 
-
-
 static VALUE
 rb_cpSpaceStep(VALUE self, VALUE dt)
 {
 	cpSpaceStep(SPACE(self), NUM2DBL(dt));
 	return Qnil;
+}
+
+static VALUE
+rb_cpSpaceGetData(VALUE self) {
+  return rb_iv_get(self, "data");
+}
+
+static VALUE
+rb_cpSpaceSetData(VALUE self, VALUE val) {
+  rb_iv_set(self, "data", val);
+  return val;
 }
 
 
@@ -543,6 +552,10 @@ Init_cpSpace(void)
   
 	
 	rb_define_method(c_cpSpace, "step", rb_cpSpaceStep, 1);
+  
+  rb_define_method(c_cpSpace, "object" , rb_cpSpaceGetData, 0);
+  rb_define_method(c_cpSpace, "object=", rb_cpSpaceSetData, 1);
+  
   
   
 }

@@ -57,14 +57,21 @@ rb_set_cp_collision_slop(VALUE self, VALUE num)
 }
 
 static VALUE
-rb_momentForCircle(VALUE self, VALUE m, VALUE r1, VALUE r2, VALUE offset)
+rb_cpMomentForCircle(VALUE self, VALUE m, VALUE r1, VALUE r2, VALUE offset)
 {
 	cpFloat i = cpMomentForCircle(NUM2DBL(m), NUM2DBL(r1), NUM2DBL(r2), *VGET(offset));
 	return rb_float_new(i);
 }
 
 static VALUE
-rb_momentForPoly(VALUE self, VALUE m, VALUE arr, VALUE offset)
+rb_cpMomentForSegment(VALUE self, VALUE m, VALUE v1, VALUE v2)
+{
+  cpFloat i = cpMomentForSegment(NUM2DBL(m), *VGET(v1), *VGET(v2));
+  return rb_float_new(i);
+}
+
+static VALUE
+rb_cpMomentForPoly(VALUE self, VALUE m, VALUE arr, VALUE offset)
 {
 	Check_Type(arr, T_ARRAY);
 	int numVerts = RARRAY_LEN(arr);
@@ -77,6 +84,48 @@ rb_momentForPoly(VALUE self, VALUE m, VALUE arr, VALUE offset)
 	cpFloat inertia = cpMomentForPoly(NUM2DBL(m), numVerts, verts, *VGET(offset));
 	return rb_float_new(inertia);
 }
+
+static VALUE
+rb_cpMomentForBox(VALUE self, VALUE m, VALUE w, VALUE h) {
+  cpFloat i = cpMomentForBox(NUM2DBL(m), NUM2DBL(w), NUM2DBL(h));
+  return rb_float_new(i);
+}
+
+static VALUE
+rb_cpAreaForCircle(VALUE self, VALUE r1, VALUE r2)
+{
+  cpFloat i = cpAreaForCircle(NUM2DBL(r1), NUM2DBL(r2));
+  return rb_float_new(i);
+}
+
+static VALUE
+rb_cpAreaForSegment(VALUE self, VALUE v1, VALUE v2, VALUE r)
+{
+  cpFloat i = cpAreaForSegment(*VGET(v1), *VGET(v2), NUM2DBL(r));
+  return rb_float_new(i);
+}
+
+static VALUE
+rb_cpAreaForPoly(VALUE self, VALUE arr)
+{
+  Check_Type(arr, T_ARRAY);
+  int numVerts = RARRAY_LEN(arr);
+  VALUE *ary_ptr = RARRAY_PTR(arr);
+  cpVect verts[numVerts];
+  
+  for(int i=0; i<numVerts; i++)
+    verts[i] = *VGET(ary_ptr[i]);
+  
+  cpFloat area = cpAreaForPoly(numVerts, verts);
+  return rb_float_new(area);
+}
+
+static VALUE
+rb_cpAreaForBox(VALUE self, VALUE w, VALUE h) {
+  cpFloat i = NUM2DBL(w) * NUM2DBL(h);
+  return rb_float_new(i);
+}
+
 
 static VALUE rb_cpfclamp(VALUE self, VALUE f, VALUE min, VALUE max) {
   cpFloat result = cpfclamp(NUM2DBL(f), NUM2DBL(min), NUM2DBL(max));
@@ -92,6 +141,8 @@ static VALUE rb_cpflerpconst(VALUE self, VALUE f1, VALUE f2, VALUE d) {
   cpFloat result = cpflerpconst(NUM2DBL(f1), NUM2DBL(f2), NUM2DBL(d));
   return rb_float_new(result);
 } 
+
+
 
 
 
@@ -113,9 +164,27 @@ Init_chipmunk(void)
   rb_define_module_function(m_Chipmunk, "flerp", rb_cpflerp, 3);
   rb_define_module_function(m_Chipmunk, "flerpconst", rb_cpflerpconst, 3);
 	
-	rb_define_module_function(m_Chipmunk, "moment_for_circle", rb_momentForCircle, 4);
-	rb_define_module_function(m_Chipmunk, "moment_for_poly", rb_momentForPoly, 3);
-	// TODO add seg moment function	
+	rb_define_module_function(m_Chipmunk, "moment_for_circle", rb_cpMomentForCircle, 4);
+	rb_define_module_function(m_Chipmunk, "moment_for_poly", rb_cpMomentForPoly, 3);
+  rb_define_module_function(m_Chipmunk, "moment_for_segment", rb_cpMomentForSegment, 3);
+  rb_define_module_function(m_Chipmunk, "moment_for_box", rb_cpMomentForBox, 3);
+  
+  rb_define_module_function(m_Chipmunk, "circle_moment", rb_cpMomentForCircle, 4);
+  rb_define_module_function(m_Chipmunk, "poly_moment", rb_cpMomentForPoly, 3);
+  rb_define_module_function(m_Chipmunk, "segment_moment", rb_cpMomentForSegment, 3);
+  rb_define_module_function(m_Chipmunk, "box_moment", rb_cpMomentForBox, 3);
+ 
+ 
+  rb_define_module_function(m_Chipmunk, "area_for_circle", rb_cpAreaForCircle, 2);
+  rb_define_module_function(m_Chipmunk, "area_for_poly", rb_cpAreaForPoly, 1);
+  rb_define_module_function(m_Chipmunk, "area_for_segment", rb_cpAreaForSegment, 3);
+  rb_define_module_function(m_Chipmunk, "area_for_box", rb_cpAreaForBox, 2);
+  
+  rb_define_module_function(m_Chipmunk, "circle_area", rb_cpAreaForCircle, 2);
+  rb_define_module_function(m_Chipmunk, "poly_area", rb_cpAreaForPoly, 1);
+  rb_define_module_function(m_Chipmunk, "segment_area", rb_cpAreaForSegment, 3);
+  rb_define_module_function(m_Chipmunk, "box_area", rb_cpAreaForBox, 2);
+
   rb_eval_string("Float::INFINITY = 1.0/0.0 unless Float.const_defined? :INFINITY");
   rb_eval_string("CP::INFINITY = 1.0/0.0 unless CP.const_defined? :INFINITY"); 
   

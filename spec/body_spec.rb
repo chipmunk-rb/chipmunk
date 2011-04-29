@@ -193,5 +193,52 @@ describe 'A new Body' do
     b.v.x.should be_within(0.001).of(0.1)
     b.v.y.should be_within(0.001).of(0)
   end
+  
+  it 'can have a specific velocity_func callback set' do
+    b       = CP::Body.new(5, 7)
+    called  = false
+    # xxx: doesn't seem to get called, though.
+    res = b.velocity_func do |body, gravity, damping, dt|
+      body.should_not be_nil
+      gravity.should_not be_nil
+      damping.should_not be_nil
+      dt.should_not be_nil
+    end
+    res.should_not be_nil
+    b.apply_impulse(vec2(1,0), ZERO_VEC_2)
+    b.update_velocity vec2(0,0), 0.5, 25
+    b.v.x.should be_within(0.001).of(0.1)
+    b.v.y.should be_within(0.001).of(0)
+    # Restore velocity callback.
+    res = b.velocity_func
+    res.should be_nil
+  end
+  
+  it 'can have a specific position_func callback set' do
+    b       = CP::Body.new(5, 7)
+    called  = false
+    # xxx: doesn't seem to get called, though.
+    res = b.position_func do |body,  dt|
+      body.should_not be_nil
+      dt.should_not be_nil
+    end
+    res.should_not be_nil
+    b.apply_impulse(vec2(1,0), ZERO_VEC_2)
+    b.update_velocity vec2(0,0), 0.5, 25
+    b.v.x.should be_within(0.001).of(0.1)
+    b.v.y.should be_within(0.001).of(0)
+    # Restore position callback.
+    res = b.position_func
+    res.should be_nil
+  end
+  
+  it 'can have an arbitrary object connected to it' do
+    b  = CP::Body.new(5, 7)
+    o  = "Hello"
+    b.object = o
+    b.object.should == o
+  end
+  
+  
 
 end

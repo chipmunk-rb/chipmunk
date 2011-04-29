@@ -322,9 +322,9 @@ Init_cpShape(void)
   // this method only exists for Chipmunk-FFI compatibility as it seems useless 
   // to me. 
   rb_define_method(m_cpShape, "data", rb_cpShapeGetSelf, 0);
-  
-  rb_define_method(m_cpShape, "raw_data", rb_cpShapeGetData, 1);
-  rb_define_method(m_cpShape, "raw_data=", rb_cpShapeSetData, 1);
+  // So we use this as the object setter
+  rb_define_method(m_cpShape, "object" , rb_cpShapeGetData, 0);
+  rb_define_method(m_cpShape, "object=", rb_cpShapeSetData, 1);
    
 	rb_define_method(m_cpShape, "group", rb_cpShapeGetGroup, 0);
 	rb_define_method(m_cpShape, "group=", rb_cpShapeSetGroup, 1);

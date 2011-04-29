@@ -165,6 +165,16 @@ describe 'Shapes in chipmunk' do
       s = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], CP::ZERO_VEC_2
     end
   end
+  
+  describe 'Shape class' do
+    it 'can have an arbitrary object connected to it' do
+      b  = CP::Body.new(5, 7)
+      s  = CP::Shape::Segment.new b, vec2(1,1), vec2(2,2), 5
+      o  = "Hello"
+      s.object = o
+      s.object.should == o
+    end  
+  end
 
 
 end

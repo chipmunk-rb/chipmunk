@@ -31,7 +31,7 @@ VALUE c_cpStaticBody;
 static VALUE
 rb_cpBodyAlloc(VALUE klass)
 {
-	cpBody *body = cpBodyNew(1.0f, 1.0f);
+	cpBody *body = cpBodyNew(1.0f, 1.0f);   
 	return Data_Wrap_Struct(klass, NULL, cpBodyFree, body);
 }
 
@@ -40,6 +40,7 @@ rb_cpBodyInitialize(VALUE self, VALUE m, VALUE i)
 {
 	cpBody *body = BODY(self);
 	cpBodyInit(body, NUM2DBL(m), NUM2DBL(i));
+  body->data   = (void *)self; 
 	return self;
 }
 
@@ -47,8 +48,7 @@ static VALUE
 rb_cpBodyAllocStatic(VALUE klass)
 {
   cpBody *body = cpBodyNewStatic();
-  if (!cpBodyIsStatic(body)) return Qnil;
-  return Data_Wrap_Struct(klass, NULL, cpBodyFree, body);
+  return Data_Wrap_Struct(c_cpStaticBody, NULL, cpBodyFree, body);
 }
 
 static VALUE
@@ -56,15 +56,14 @@ rb_cpBodyInitializeStatic(VALUE self)
 {
   cpBody *body = STATICBODY(self);
   cpBodyInitStatic(body);
-  if (!cpBodyIsStatic(body)) return Qnil;
+  body->data   = (void *)self;
   return self;
 }
 
 static VALUE 
 rb_cpStaticBodyNew(VALUE klass) {
-  return rb_cpBodyAllocStatic(klass);
+  return rb_cpBodyInitializeStatic(rb_cpBodyAllocStatic(klass));
 }
-
 
 
 static VALUE
@@ -326,17 +325,84 @@ static VALUE rb_cpBodyIsRogue(VALUE self) {
   return cpBodyIsRogue(BODY(self)) ? Qtrue : Qfalse;
 }
 
+ID id_velocity_func;
+ID id_speed_func;
+
+static int
+respondsTo(VALUE obj, ID method) {
+  VALUE value = rb_funcall(obj, rb_intern("respond_to?"), 1, ID2SYM(method));
+  return RTEST(value);
+}
 
 /*
-cpBody *cpBodyInitStatic(cpBody *body);
-cpBody *cpBodyNewStatic();
-void cpBodyActivate(cpBody *body);
-void cpBodySleep(cpBody *body);
-void cpBodySleepWithGroup(cpBody *body, cpBody *group);
-cpBodyIsSleeping(const cpBody *body)
-cpBodyIsStatic(const cpBody *body)
-cpBodyIsRogue(const cpBody *body)
+
+typedef void (*cpBodyVelocityFunc)(struct cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt);
+typedef void (*cpBodyPositionFunc)(struct cpBody *body, cpFloat dt);
 */
+
+static void
+bodyVelocityCallback(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt) {
+  VALUE vbody     = (VALUE)(body->data); 
+  VALUE block     = rb_iv_get(vbody, "velocity_func");
+  VALUE vgravity  = VNEW(gravity);
+  VALUE vdamping  = rb_float_new(damping);
+  VALUE vdt       = rb_float_new(dt);
+  rb_funcall(block, rb_intern("call"), 4, vbody, vgravity, vdamping, vdt);
+}
+
+static VALUE 
+rb_cpBodySetVelocityFunc(int argc, VALUE *argv, VALUE self)
+{
+  VALUE block;
+  cpBody * body = BODY(self);  
+  rb_scan_args(argc, argv, "&", &block);
+  // Restore defaults if no block
+  if (NIL_P(block)) {
+    body->velocity_func = cpBodyUpdateVelocityDefault;
+    return Qnil;
+  }
+  // set block for use in callback
+  rb_iv_set(self, "velocity_func", block);
+  body->velocity_func = bodyVelocityCallback;
+  return self;
+}
+
+static void
+bodyPositionCallback(cpBody *body, cpFloat dt) {
+  VALUE vbody     = (VALUE)(body->data); 
+  VALUE block     = rb_iv_get(vbody, "position_func");
+  VALUE vdt       = rb_float_new(dt);
+  rb_funcall(block, rb_intern("call"), 2, vbody, vdt);
+}
+
+static VALUE 
+rb_cpBodySetPositionFunc(int argc, VALUE *argv, VALUE self)
+{
+  VALUE block;
+  cpBody * body = BODY(self);  
+  rb_scan_args(argc, argv, "&", &block);
+  // Restore defaults if no block
+  if (NIL_P(block)) {
+    body->velocity_func = cpBodyUpdateVelocityDefault;
+    return Qnil;
+  }
+  // set block for use in callback
+  rb_iv_set(self, "position_func", block);
+  body->position_func = bodyPositionCallback;
+  return self;
+}
+
+static VALUE
+rb_cpBodyGetData(VALUE self) {
+  return rb_iv_get(self, "data");
+}
+
+static VALUE
+rb_cpBodySetData(VALUE self, VALUE val) {
+  rb_iv_set(self, "data", val);
+  return val;
+}
+
 
 void
 Init_cpBody(void)
@@ -418,10 +484,11 @@ Init_cpBody(void)
 	rb_define_method(c_cpBody, "body_sleep"      , rb_cpBodySleep, 0);
 	rb_define_method(c_cpBody, "sleep_with_group", rb_cpBodySleepWithGroup, 1);
 	rb_define_method(c_cpBody, "sleep_group"     , rb_cpBodySleepWithGroup, 1);
-	rb_define_method(c_cpBody, "activate"        , rb_cpBodyActivate, 0);
+	rb_define_method(c_cpBody, "activate"        , rb_cpBodyActivate   , 0);
+	rb_define_method(c_cpBody, "velocity_func"   , rb_cpBodySetVelocityFunc, -1);
+  rb_define_method(c_cpBody, "position_func"   , rb_cpBodySetPositionFunc, -1);
+  
+  rb_define_method(c_cpBody, "object="         , rb_cpBodySetData, 1);
+  rb_define_method(c_cpBody, "object"          , rb_cpBodyGetData, 0);
 	
-	
-	
-	
-	// TODO integration functions?
 }

@@ -27,7 +27,7 @@
 
 VALUE c_cpBB;
 
-static BBNEW(cpBB bb) {
+static VALUE BBNEW(cpBB bb) {
   cpBB *ptr = malloc(sizeof(cpBB));
   *ptr = bb;
   return Data_Wrap_Struct(c_cpBB, NULL, free, ptr); 

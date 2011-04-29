@@ -181,5 +181,14 @@ describe 'Space in chipmunk' do
     shapes.size.should == 1
     shapes.first.should == shapy
   end
+  
+  it 'can have an arbitrary object connected to it' do
+    b  = CP::Space.new
+    o  = "Hello"
+    b.object = o
+    b.object.should == o
+  end
+  
+
 
 end
