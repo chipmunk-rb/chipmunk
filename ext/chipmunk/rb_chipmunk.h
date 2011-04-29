@@ -77,7 +77,7 @@ GETTER_TEMPLATE(ARBITER, c_cpArbiter, cpArbiter)
 /* GETTER_TEMPLATE(SPACEHASH, c_cpSpaceHash, cpSpaceHash) */
 
 // Helper to wrap cpArbter objects.
-VALUE rb_cpArbiterWrap(cpArbiter *arb);
+VALUE ARBWRAP(cpArbiter *arb);
 
 //Helper that allocates and initializes a SegmenQueryInfo struct
 VALUE rb_cpSegmentQueryInfoNew(VALUE shape, VALUE t, VALUE n);
@@ -89,6 +89,7 @@ void Init_cpBody();
 void Init_cpShape();
 void Init_cpConstraint();
 void Init_cpSpace();
+void Init_cpArbiter(void);
 
 // transforms a boolean VALUE to an int
 #define CP_BOOL_INT(VAL) (((VAL) == Qnil) || ((VAL) == Qfalse) ? 0 : 1)

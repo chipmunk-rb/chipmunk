@@ -125,6 +125,17 @@ module CP
     ZERO = Vec2.new(0,0).freeze
   end
   
+  # define the helpers here( easier than in the extension.
+  class SegmentQueryInfo
+    def hit_point(start, stop)
+      return start.lerp(stop, self.t)
+    end
+    
+    def hit_dist(start, stop)
+      return start.dist(stop) * self.t
+    end
+  end  
+  
   
 end
 

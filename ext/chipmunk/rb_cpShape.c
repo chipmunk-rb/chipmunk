@@ -337,8 +337,6 @@ static VALUE rb_cpPolyShapeGetVert(VALUE self, VALUE vindex) {
 }
 
 
-
-
 void
 Init_cpShape(void)
 {

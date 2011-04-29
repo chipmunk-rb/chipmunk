@@ -58,6 +58,11 @@ rb_cpSpaceInitialize(VALUE self)
 	return self;
 }
 
+static VALUE 
+SPACEWRAP(cpSpace * space) {
+  return Data_Wrap_Struct(c_cpSpace, NULL, cpSpaceFree, space);
+}
+
 static VALUE
 rb_cpSpaceGetSleepTimeThreshold(VALUE self) {
   return INT2NUM(SPACE(self)->sleepTimeThreshold);
@@ -150,7 +155,7 @@ static int do_callback(void * data, ID method, cpArbiter *arb) {
   VALUE object = (VALUE) data; 
   VALUE va     = (VALUE)a->data;
   VALUE vb     = (VALUE)b->data;
-  VALUE varb   = rb_cpArbiterWrap(arb);
+  VALUE varb   = ARBWRAP(arb);
   int arity    = rb_obj_method_arity(object, method);
   switch(arity) {
     case 0:
@@ -191,6 +196,7 @@ static void
 separateCallback(cpArbiter *arb, cpSpace *space, void *data) {
   do_callback(data, id_separate, arb);
 }
+
 
 static int
 respondsTo(VALUE obj, ID method) {
@@ -300,6 +306,21 @@ rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self)
 	return Qnil;
 }
 
+static void
+poststepCallback(cpSpace *space, void *obj, void *data) {
+  rb_funcall((VALUE)data, id_call, 2, SPACEWRAP(space), (VALUE)obj);
+}
+
+
+static VALUE
+rb_cpSpaceAddPostStepCallback(int argc, VALUE *argv, VALUE self) {
+  VALUE obj, block;
+  rb_scan_args(argc, argv, "10&", &obj, &block);
+  cpSpaceAddPostStepCallback(SPACE(self),
+    poststepCallback, (void *) obj, (void *) block);
+  return self;  
+}
+
 static VALUE
 rb_cpSpaceAddShape(VALUE self, VALUE shape)
 {
@@ -380,6 +401,14 @@ rb_cpSpaceRehashStatic(VALUE self)
 	cpSpaceRehashStatic(SPACE(self));
 	return Qnil;
 }
+
+static VALUE
+rb_cpSpaceRehashShape(VALUE self, VALUE shape)
+{
+  cpSpaceRehashShape(SPACE(self), SHAPE(shape));
+  return Qnil;
+}
+
 
 static unsigned int get_layers(VALUE layers) {
   if (NIL_P(layers)) return ~0;
@@ -570,12 +599,37 @@ Init_cpSpace(void)
 	rb_define_method(c_cpSpace, "gravity", rb_cpSpaceGetGravity, 0);
 	rb_define_method(c_cpSpace, "gravity=", rb_cpSpaceSetGravity, 1);
 
-	rb_define_method(c_cpSpace, "add_collision_func", rb_cpSpaceAddCollisionHandler, -1);
+	rb_define_method(c_cpSpace, "add_collision_func",
+    rb_cpSpaceAddCollisionHandler, -1);
 	
-	rb_define_method(c_cpSpace, "add_collision_handler", rb_cpSpaceAddCollisionHandler, -1);
+	rb_define_method(c_cpSpace, "add_collision_handler",
+    rb_cpSpaceAddCollisionHandler, -1);
+	
+	rb_define_method(c_cpSpace, "on_collision", 
+    rb_cpSpaceAddCollisionHandler, -1);
   
-	rb_define_method(c_cpSpace, "remove_collision_func", rb_cpSpaceRemoveCollisionHandler, 2);
-	rb_define_method(c_cpSpace, "set_default_collision_func", rb_cpSpaceSetDefaultCollisionHandler, -1);
+	rb_define_method(c_cpSpace, "remove_collision_func",
+    rb_cpSpaceRemoveCollisionHandler, 2);
+
+  rb_define_method(c_cpSpace, "remove_collision_handler",
+    rb_cpSpaceRemoveCollisionHandler, 2);
+  rb_define_method(c_cpSpace, "remove_collision",
+    rb_cpSpaceRemoveCollisionHandler, 2);
+
+  rb_define_method(c_cpSpace, "set_default_collision_func",
+    rb_cpSpaceSetDefaultCollisionHandler, -1);
+	rb_define_method(c_cpSpace, "set_default_collision_handler",
+    rb_cpSpaceSetDefaultCollisionHandler, -1);
+  rb_define_method(c_cpSpace, "on_default_collision",
+    rb_cpSpaceSetDefaultCollisionHandler, -1);
+  	
+	rb_define_method(c_cpSpace, "add_post_step_callback",
+    rb_cpSpaceAddPostStepCallback, -1);
+  rb_define_method(c_cpSpace, "on_post_step",
+    rb_cpSpaceAddPostStepCallback, -1);
+	
+	
+  
 	
 	rb_define_method(c_cpSpace, "add_shape", rb_cpSpaceAddShape, 1);
 	rb_define_method(c_cpSpace, "add_static_shape", rb_cpSpaceAddStaticShape, 1);
@@ -590,6 +644,7 @@ Init_cpSpace(void)
 	rb_define_method(c_cpSpace, "resize_static_hash", rb_cpSpaceResizeStaticHash, 2);
 	rb_define_method(c_cpSpace, "resize_active_hash", rb_cpSpaceResizeActiveHash, 2);
 	rb_define_method(c_cpSpace, "rehash_static", rb_cpSpaceRehashStatic, 0);
+	rb_define_method(c_cpSpace, "rehash_shape", rb_cpSpaceRehashShape, 1);
 	
 	rb_define_method(c_cpSpace, "point_query", rb_cpSpacePointQuery, -1);
 	rb_define_method(c_cpSpace, "point_query_first", rb_cpSpacePointQueryFirst, -1);

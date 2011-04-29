@@ -41,7 +41,7 @@ VALUE c_cpArbiter;
 * does NOT need any garbage collection.
 */
 
-VALUE rb_cpArbiterWrap(cpArbiter *arb)
+VALUE ARBWRAP(cpArbiter *arb)
 {
   return Data_Wrap_Struct(c_cpArbiter, NULL, NULL, arb);
 }
@@ -132,8 +132,8 @@ rb_cpArbiterSetE(VALUE self, VALUE e) {
 }  
 
 static VALUE 
-rb_cpArbiterGetNumContacts(VALUE self) {
-  return INT2NUM(ARBITER(self)->numContacts);
+rb_cpArbiterGetCount(VALUE self) {
+  return INT2NUM(cpArbiterGetCount(ARBITER(self)));
 }  
  
 static VALUE 
@@ -153,11 +153,16 @@ rb_cpArbiterIsFirstContact(VALUE self) {
   return bool ? Qtrue : Qfalse;
 }
 
+static int arbiterBadIndex(cpArbiter *arb, int i)  {
+  return ((i<0) || (i >= cpArbiterGetCount(arb)));
+}  
+
+
 static VALUE
 rb_cpArbiterGetNormal(VALUE self, VALUE index) {
   cpArbiter *arb = ARBITER(self);
   int i          = NUM2LONG(index);    
-  if (i >= arb->numContacts) { 
+  if (arbiterBadIndex(arb, i)) {
     rb_raise(rb_eIndexError, "No such normal.");
   }
   return VNEW(cpArbiterGetNormal(arb, i));
@@ -167,11 +172,23 @@ static VALUE
 rb_cpArbiterGetPoint(VALUE self, VALUE index) {
   cpArbiter *arb = ARBITER(self);
   int i          = NUM2LONG(index);
-  if (i >= arb->numContacts) { 
+  if (arbiterBadIndex(arb, i)) {
     rb_raise(rb_eIndexError, "No such contact point.");
   }    
   return VNEW(cpArbiterGetPoint(arb, i));
 }
+
+static VALUE
+rb_cpArbiterGetDepth(VALUE self, VALUE index) {
+  cpArbiter *arb = ARBITER(self);
+  int i          = NUM2LONG(index);    
+  if (arbiterBadIndex(arb, i)) {
+    rb_raise(rb_eIndexError, "No such depth.");
+  }
+  // there"s a typo in the cpArbiter.h class.
+  return rb_float_new(cpArbiteGetDepth(arb, i));
+}
+
 
 static VALUE
 rb_cpArbiterToString(VALUE self)
@@ -187,7 +204,7 @@ rb_cpArbiterEachContact(VALUE self)
 { 
   cpArbiter *arb = ARBITER(self);
   int i = 0;
-  for( i = 0; i < arb->numContacts; i++) {
+  for( i = 0; i < cpArbiterGetCount(arb); i++) {
     VALUE index = INT2NUM(i);
     VALUE contact, normal;
     normal  = rb_cpArbiterGetNormal(self, index);
@@ -215,13 +232,15 @@ Init_cpArbiter(void)
   rb_define_method(c_cpArbiter, "e=", rb_cpArbiterSetE, 1);
   rb_define_method(c_cpArbiter, "u=", rb_cpArbiterSetU, 1);
 
-  rb_define_method(c_cpArbiter, "point"   , rb_cpArbiterGetPoint    , 1);
+  rb_define_method(c_cpArbiter, "point"   , rb_cpArbiterGetPoint    , 1);  
   rb_define_method(c_cpArbiter, "normal"  , rb_cpArbiterGetNormal   , 1);
-  rb_define_method(c_cpArbiter, "impulse" , rb_cpArbiterGetImpulse  , 1);
+  rb_define_method(c_cpArbiter, "normal"  , rb_cpArbiterGetDepth    , 1);
+  rb_define_method(c_cpArbiter, "impulse" , rb_cpArbiterGetImpulse  , -1);
+  
   rb_define_method(c_cpArbiter, "to_s", rb_cpArbiterToString, 0);
   
   rb_define_method(c_cpArbiter, "first_contact?", rb_cpArbiterIsFirstContact, 0);
-  rb_define_method(c_cpArbiter, "num_contacts"  , rb_cpArbiterGetNumContacts, 0);
+  rb_define_method(c_cpArbiter, "count"  , rb_cpArbiterGetCount, 0);
   rb_define_method(c_cpArbiter, "each_contact"  , rb_cpArbiterEachContact   , 0);
   
   rb_define_method(c_cpArbiter, "shapes"        , rb_cpArbiterGetShapes     , 0);
