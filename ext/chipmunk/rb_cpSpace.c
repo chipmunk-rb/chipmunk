@@ -572,6 +572,14 @@ rb_cpSpaceActivateShapesTouchingShape(VALUE self, VALUE shape)
 }
 
 
+/** in chipmunk 6
+static VALUE
+rb_cpSpaceUseSpatialHash(VALUE self, VALUE dim, VALUE count) {
+  cpSpaceUseSpatialHash(SPACE(self), NUM2DBL(dim), NUM2INT(count));
+  return Qnil;
+}
+*/
+
 
 
 void
