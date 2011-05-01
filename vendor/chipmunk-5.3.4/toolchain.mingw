@@ -1,0 +1,15 @@
+SET(CMAKE_SYSTEM_NAME Windows)
+SET(CMAKE_C_COMPILER   i586-mingw32msvc-gcc)
+
+SET(CMAKE_CXX_COMPILER i586-mingw32msvc-g++)
+
+# Define paths to search for libraries
+SET(CMAKE_FIND_ROOT_PATH /usr/i586-mingw32msvc/)
+SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+
+# Don't search in native paths, just the specified root paths
+SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+SET(CMAKE_INSTALL_PREFIX /usr/i586-mingw32msvc/)
+SET(BUILD_DEMOS OFF)
+SET(BUILD_SHARED ON)
