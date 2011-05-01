@@ -6,13 +6,13 @@ require 'rake/clean'
 begin
     require 'rake/extensiontask'
 rescue LoadError
-#    puts "rake-compiler not found...installing the rake-compiler gem..."
+    puts "rake-compiler not found! Please install the rake-compiler gem!"
 #    `/bin/bash -l -c "gem1.9 install rake-compiler"`
 #    require 'rake/extensiontask'
 #    puts "...done!"
 end
  
-CHIPMUNK_VERSION = "5.3.4a"
+CHIPMUNK_VERSION = "5.3.4.0"
  
 dlext = Config::CONFIG['DLEXT']
  
@@ -22,14 +22,14 @@ CLOBBER.include("**/*.#{dlext}", "**/*~", "**/*#*", "**/*.log", "**/*.o", "doc/*
  
 def apply_spec_defaults(s)
     s.name = "chipmunk"
-    s.summary = "ruby bindings for the chipmunk 5.1.0 physics engine"
-    s.description = s.summary
+    s.summary = "Enhanced ruby bindings for the chipmunk 5.3.4 game physics engine."
+    s.description = s.summary + " "
     s.version = CHIPMUNK_VERSION
     s.author = "Scott Lembcke, Beoran, John Mair (banisterfiend)"
     s.email = 'beoran@rubyforge.com'
     s.date = Time.now.strftime '%Y-%m-%d'
     s.require_path = 'lib'
-    s.homepage = "http://code.google.com/p/chipmunk-physics/"
+    s.homepage = "https://github.com/beoran/chipmunk"
 end
  
  

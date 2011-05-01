@@ -14,9 +14,9 @@ set(CMAKE_BUILD_TYPE Release)
 # other options for the build, you can i.e. activate the ruby bindings by passing
 #   -D BUILD_RUBY_EXT=ON
 # to cmake. Other options analog
-option(BUILD_DEMOS "Build the demo applications" ON)
+option(BUILD_DEMOS "Build the demo applications" OFF)
 option(INSTALL_DEMOS "Install the demo applications" OFF)
-option(BUILD_SHARED "Build and install the shared library" OFF)
+option(BUILD_SHARED "Build and install the shared library" ON)
 option(BUILD_STATIC "Build as static library" ON)
 option(INSTALL_STATIC "Install the static library" ON)
 option(BUILD_RUBY_EXT "Build and install the Ruby extension" OFF)

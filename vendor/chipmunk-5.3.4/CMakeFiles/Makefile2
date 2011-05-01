@@ -47,10 +47,10 @@ RM = /usr/local/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4
+CMAKE_SOURCE_DIR = /home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4
+CMAKE_BINARY_DIR = /home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4
 
 #=============================================================================
 # Directory level rules for directory src
@@ -76,7 +76,7 @@ src/preinstall:
 src/CMakeFiles/chipmunk.dir/all:
 	$(MAKE) -f src/CMakeFiles/chipmunk.dir/build.make src/CMakeFiles/chipmunk.dir/depend
 	$(MAKE) -f src/CMakeFiles/chipmunk.dir/build.make src/CMakeFiles/chipmunk.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/CMakeFiles  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/CMakeFiles  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26
 	@echo "Built target chipmunk"
 .PHONY : src/CMakeFiles/chipmunk.dir/all
 
@@ -86,9 +86,9 @@ all: src/CMakeFiles/chipmunk.dir/all
 
 # Build rule for subdir invocation for target.
 src/CMakeFiles/chipmunk.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/CMakeFiles 26
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/CMakeFiles 26
 	$(MAKE) -f CMakeFiles/Makefile2 src/CMakeFiles/chipmunk.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/CMakeFiles 0
 .PHONY : src/CMakeFiles/chipmunk.dir/rule
 
 # Convenience name for target.
@@ -111,7 +111,7 @@ clean: src/CMakeFiles/chipmunk.dir/clean
 src/CMakeFiles/chipmunk_static.dir/all:
 	$(MAKE) -f src/CMakeFiles/chipmunk_static.dir/build.make src/CMakeFiles/chipmunk_static.dir/depend
 	$(MAKE) -f src/CMakeFiles/chipmunk_static.dir/build.make src/CMakeFiles/chipmunk_static.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/CMakeFiles  27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/CMakeFiles  27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52
 	@echo "Built target chipmunk_static"
 .PHONY : src/CMakeFiles/chipmunk_static.dir/all
 
@@ -121,9 +121,9 @@ all: src/CMakeFiles/chipmunk_static.dir/all
 
 # Build rule for subdir invocation for target.
 src/CMakeFiles/chipmunk_static.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/CMakeFiles 26
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/CMakeFiles 26
 	$(MAKE) -f CMakeFiles/Makefile2 src/CMakeFiles/chipmunk_static.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/CMakeFiles 0
 .PHONY : src/CMakeFiles/chipmunk_static.dir/rule
 
 # Convenience name for target.

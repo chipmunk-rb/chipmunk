@@ -1,4 +1,4 @@
-# Install script for directory: /home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/src
+# Install script for directory: /home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/src
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,8 +39,8 @@ IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
          RPATH "")
   ENDIF(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libchipmunk.so.5.3.4")
   FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/src/libchipmunk.so.5.3.4"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/src/libchipmunk.so"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/src/libchipmunk.so.5.3.4"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/src/libchipmunk.so"
     )
   IF(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libchipmunk.so.5.3.4")
     IF(CMAKE_INSTALL_DO_STRIP)
@@ -50,44 +50,44 @@ IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/src/libchipmunk.a")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/src/libchipmunk.a")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/chipmunk" TYPE FILE FILES
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpHashSet.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/chipmunk_private.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/chipmunk_types.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/chipmunk_unsafe.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpSpace.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpArbiter.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/chipmunk_ffi.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpBody.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpVect.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpSpaceHash.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpCollision.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpShape.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpBB.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpArray.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/chipmunk.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpPolyShape.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpHashSet.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/chipmunk_private.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/chipmunk_types.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/chipmunk_unsafe.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpSpace.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpArbiter.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/chipmunk_ffi.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpBody.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpVect.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpSpaceHash.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpCollision.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpShape.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpBB.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpArray.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/chipmunk.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/cpPolyShape.h"
     )
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/chipmunk/constraints" TYPE FILE FILES
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpSimpleMotor.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpRotaryLimitJoint.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpGrooveJoint.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpDampedRotarySpring.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpPivotJoint.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpDampedSpring.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpPinJoint.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/util.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpSlideJoint.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpConstraint.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpRatchetJoint.h"
-    "/home/bjorn/my/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpGearJoint.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpSimpleMotor.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpRotaryLimitJoint.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpGrooveJoint.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpDampedRotarySpring.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpPivotJoint.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpDampedSpring.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpPinJoint.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/util.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpSlideJoint.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpConstraint.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpRatchetJoint.h"
+    "/home/bjorn/src/chipmunk/vendor/chipmunk-5.3.4/include/chipmunk/constraints/cpGearJoint.h"
     )
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 

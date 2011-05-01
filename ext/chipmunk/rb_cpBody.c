@@ -358,7 +358,7 @@ rb_cpBodySetVelocityFunc(int argc, VALUE *argv, VALUE self)
   rb_scan_args(argc, argv, "&", &block);
   // Restore defaults if no block
   if (NIL_P(block)) {
-    body->velocity_func = cpBodyUpdateVelocityDefault;
+    body->velocity_func = cpBodyUpdateVelocity; //Default;
     return Qnil;
   }
   // set block for use in callback
@@ -383,7 +383,7 @@ rb_cpBodySetPositionFunc(int argc, VALUE *argv, VALUE self)
   rb_scan_args(argc, argv, "&", &block);
   // Restore defaults if no block
   if (NIL_P(block)) {
-    body->velocity_func = cpBodyUpdateVelocityDefault;
+    body->position_func = cpBodyUpdatePosition; //Default;
     return Qnil;
   }
   // set block for use in callback

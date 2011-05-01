@@ -210,21 +210,21 @@ rb_cpVectLerp(VALUE self, VALUE v, VALUE d)
 static VALUE
 rb_cpVectLerpconst(VALUE self, VALUE v, VALUE d)
 {
-  cpFloat df = NUM2DBL(d);
+  cpFloat df = (cpFloat) NUM2DBL(d);
   return VNEW(cpvlerpconst(*VGET(self), *VGET(v), df));
 }
 
 static VALUE
 rb_cpVectSlerp(VALUE self, VALUE v, VALUE d)
 {
-  cpFloat df = NUM2DBL(d);
+  cpFloat df = (cpFloat) NUM2DBL(d);
   return VNEW(cpvslerp(*VGET(self), *VGET(v), df));
 }
 
 static VALUE
 rb_cpVectSlerpconst(VALUE self, VALUE v, VALUE d)
 {
-  cpFloat df = NUM2DBL(d);
+  cpFloat df = (cpFloat) NUM2DBL(d);
   return VNEW(cpvslerpconst(*VGET(self), *VGET(v), df));
 }
 

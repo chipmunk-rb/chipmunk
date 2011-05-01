@@ -35,6 +35,9 @@ ABOUT THESE RUBY BINDINGS:
   In that case, I made an API that is pleasing to myself, and similar in naming 
   to the C API adjusted to ruby conventions. If you have any problems with these bindings, please contact the maintainer at beoran@rubyforge.org.
   
+DOCUMENTATION:
+  http://beoran.github.com/chipmunk/
+  
 INCOMPATIBILITIES:
   There are no bindings to SpaceHash since I fail to see the use of it, but
   if someone is using them, I'll probably implement them.

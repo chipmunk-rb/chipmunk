@@ -1,24 +1,34 @@
 require 'mkmf'
+
+RbConfig::MAKEFILE_CONFIG['CC'] = ENV['CC'] if ENV['CC']
+
 dir_config('chipmunk')
 
+MINGW = '/usr/i586-mingw32msvc'
 CHIPMUNK_HEADER   = 'chipmunk.h'
 CHIPMUNK_NAME     = 'chipmunk'
 CHIPMUNK_FUNCTION = 'cpMomentForPoly'
 CHIPMUNK_INCLUDE  = ['/usr/include', 
+                      File.join(MINGW, 'include'),
+                      File.join(MINGW, 'include', 'chipmunk'),
                      '/usr/local/include', 
                      '/usr/include/chipmunk',
                      '/usr/local/include/chipmunk'
                     ]
-CHIPMUNK_LIBDIR   = ['/usr/lib', '/usr/local/lib']
+CHIPMUNK_LIBDIR   = ['/usr/lib', 
+File.join(MINGW, 'lib'),
+'/usr/local/lib']
 
-find_header(CHIPMUNK_HEADER, *CHIPMUNK_INCLUDE)
-find_library(CHIPMUNK_NAME, CHIPMUNK_FUNCTION, *CHIPMUNK_LIBDIR)
+unless find_header(CHIPMUNK_HEADER, *CHIPMUNK_INCLUDE)
+  raise "Could not find Chipmunk headers!" 
+end
 
-=begin
-unless have_library('chipmunk', 'cpMomentForPoly')
+
+unless find_library(CHIPMUNK_NAME, CHIPMUNK_FUNCTION, *CHIPMUNK_LIBDIR)
   raise "Could not link to Chipmunk library!" 
 end
 
+=begin
 have_header('chipmunk.h', include_dirs)
 =end
  
