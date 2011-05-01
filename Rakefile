@@ -26,7 +26,7 @@ def apply_spec_defaults(s)
     s.description = s.summary + " "
     s.version = CHIPMUNK_VERSION
     s.author = "Scott Lembcke, Beoran, John Mair (banisterfiend)"
-    s.email = 'beoran@rubyforge.com'
+    s.email = 'beoran@rubyforge.org'
     s.date = Time.now.strftime '%Y-%m-%d'
     s.require_path = 'lib'
     s.homepage = "https://github.com/beoran/chipmunk"

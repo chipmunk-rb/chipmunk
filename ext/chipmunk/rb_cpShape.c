@@ -269,6 +269,21 @@ rb_cpSegmentInitialize(VALUE self, VALUE body, VALUE a, VALUE b, VALUE r)
 
 
 //cpPoly
+#define RBCP_ARRAY_POINTS(ARR, NUM, VERTS)        \
+        Check_Type(ARR, T_ARRAY);                 \
+        VALUE *__rbcp_ptr = RARRAY_PTR(ARR);      \
+        int NUM           = RARRAY_LEN(ARR);      \
+        cpVect VERTS[NUM];                        \
+        for(int i=0; i<NUM; i++)             \
+          VERTS[i] = *VGET(__rbcp_ptr[i]);
+
+
+static VALUE rb_cpPolyValidate(VALUE arr) {
+  RBCP_ARRAY_POINTS(arr, num, verts)
+  return CP_INT_BOOL(cpPolyValidate(verts, num));
+}
+
+
 static VALUE
 rb_cpPolyAlloc(VALUE klass)
 {
@@ -404,6 +419,8 @@ Init_cpShape(void)
 	c_cpPolyShape = rb_define_class_under(m_cpShape, "Poly", rb_cObject);
 	rb_include_module(c_cpPolyShape, m_cpShape);
 	rb_define_alloc_func(c_cpPolyShape, rb_cpPolyAlloc);
+	rb_define_singleton_method(c_cpPolyShape, "valid?", rb_cpPolyValidate, 1);
+	
 	rb_define_method(c_cpPolyShape, "initialize", rb_cpPolyInitialize, 3);
   
   rb_define_method(c_cpCircleShape, "offset", rb_cpCircleShapeGetOffset, 0);
