@@ -114,7 +114,6 @@ describe 'Shapes in chipmunk' do
     it 'can get its data' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
-      p s.data
       s.data.should == s
       # s.data.read_long.should == s.object_id
       # Chipmunk stores the shape object itself in data
