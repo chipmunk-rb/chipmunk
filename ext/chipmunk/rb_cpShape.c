@@ -335,6 +335,9 @@ rb_cpPolyInitialize(VALUE self, VALUE body, VALUE arr, VALUE offset)
 	
 	for(int i=0; i<numVerts; i++)
 		verts[i] = *VGET(ary_ptr[i]);
+	if(!cpPolyValidate(verts, numVerts)) {
+	  rb_raise(rb_eArgError, "The verts array does not from a valid polygon!");
+	}	
 	
 	cpPolyShapeInit(poly, BODY(body), numVerts, verts, *VGET(offset));
 	poly->shape.data = (void *)self;
