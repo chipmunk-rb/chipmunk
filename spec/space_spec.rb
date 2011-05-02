@@ -30,6 +30,15 @@ describe 'Space in chipmunk' do
     lambda { s.remove_shape shapy }.should_not raise_error
   end
   
+  it 'can have a shape removed from it twice' do
+    s     = CP::Space.new
+    bod   = CP::Body.new 90, 76
+    shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+    lambda { s.add_shape shapy }.should_not raise_error
+    lambda { s.remove_shape shapy }.should_not raise_error    
+    lambda { s.remove_shape shapy }.should_not raise_error
+  end
+  
   
   it 'can have a static shape added to it' do
     s     = CP::Space.new
@@ -45,6 +54,16 @@ describe 'Space in chipmunk' do
     lambda { s.add_static_shape shapy }.should_not raise_error
     lambda { s.remove_static_shape shapy }.should_not raise_error
   end
+  
+  it 'can have a static shape removed from it twice' do
+    s     = CP::Space.new
+    bod   = CP::StaticBody.new
+    shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2    
+    lambda { s.add_static_shape shapy }.should_not raise_error
+    lambda { s.remove_static_shape shapy }.should_not raise_error
+    lambda { s.remove_static_shape shapy }.should_not raise_error
+  end
+  
   
   it 'can have constraints added' do
     space = CP::Space.new
@@ -62,6 +81,17 @@ describe 'Space in chipmunk' do
     lambda { space.add_constraint pj }.should_not raise_error
     lambda { space.remove_constraint pj }.should_not raise_error
   end
+  
+  it 'can have constraints removed twice' do
+    space = CP::Space.new
+    boda = Body.new 90, 46
+    bodb = Body.new 9, 6
+    pj = CP::Constraint::PinJoint.new(boda,bodb,ZERO_VEC_2,ZERO_VEC_2)
+    lambda { space.add_constraint pj }.should_not raise_error
+    lambda { space.remove_constraint pj }.should_not raise_error
+    lambda { space.remove_constraint pj }.should_not raise_error
+  end
+
   
   it 'can have bodies added' do
     space = CP::Space.new
@@ -195,7 +225,7 @@ describe 'Space in chipmunk' do
 
     bods = []
     shapes = []
-    800.times do |i|   
+    100.times do |i|   
       bods[i] = CP::Body.new(90, 76)
       shapes[i] = CP::Shape::Circle.new(bods[i], 40, CP::ZERO_VEC_2)
       shapes[i].collision_type = "bar#{i}".to_sym

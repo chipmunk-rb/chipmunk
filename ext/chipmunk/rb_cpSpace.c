@@ -365,13 +365,16 @@ rb_cpSpaceAddConstraint(VALUE self, VALUE constraint)
 static VALUE
 rb_cpSpaceRemoveShape(VALUE self, VALUE shape)
 {
-	cpSpaceRemoveShape(SPACE(self), SHAPE(shape));
-	return rb_ary_delete(rb_iv_get(self, "active_shapes"), shape);
+	VALUE ok = rb_ary_delete(rb_iv_get(self, "active_shapes"), shape);
+	if(!NIL_P(ok)) { 
+		cpSpaceRemoveShape(SPACE(self), SHAPE(shape));
+	}	
+	return ok;
 }
 
 static VALUE
 rb_cpSpaceRemoveStaticShape(VALUE self, VALUE shape)
-{
+{	
 	cpSpaceRemoveStaticShape(SPACE(self), SHAPE(shape));
 	return rb_ary_delete(rb_iv_get(self, "static_shapes"), shape);
 }
