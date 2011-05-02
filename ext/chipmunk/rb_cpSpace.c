@@ -366,31 +366,32 @@ static VALUE
 rb_cpSpaceRemoveShape(VALUE self, VALUE shape)
 {
 	VALUE ok = rb_ary_delete(rb_iv_get(self, "active_shapes"), shape);
-	if(!NIL_P(ok)) { 
-		cpSpaceRemoveShape(SPACE(self), SHAPE(shape));
-	}	
+	if(!(NIL_P(ok))) cpSpaceRemoveShape(SPACE(self), SHAPE(shape));
 	return ok;
 }
 
 static VALUE
 rb_cpSpaceRemoveStaticShape(VALUE self, VALUE shape)
 {	
-	cpSpaceRemoveStaticShape(SPACE(self), SHAPE(shape));
-	return rb_ary_delete(rb_iv_get(self, "static_shapes"), shape);
+	VALUE ok = rb_ary_delete(rb_iv_get(self, "static_shapes"), shape);
+	if(!(NIL_P(ok))) cpSpaceRemoveStaticShape(SPACE(self), SHAPE(shape));
+	return ok;
 }
 
 static VALUE
 rb_cpSpaceRemoveBody(VALUE self, VALUE body)
 {
-	cpSpaceRemoveBody(SPACE(self), BODY(body));
-	return rb_ary_delete(rb_iv_get(self, "bodies"), body);
+	VALUE ok = rb_ary_delete(rb_iv_get(self, "bodies"), body);
+	if(!(NIL_P(ok))) cpSpaceRemoveBody(SPACE(self), BODY(body));
+	return ok;
 }
 
 static VALUE
 rb_cpSpaceRemoveConstraint(VALUE self, VALUE constraint)
 {
-	cpSpaceRemoveConstraint(SPACE(self), CONSTRAINT(constraint));
-	return rb_ary_delete(rb_iv_get(self, "constraints"), constraint);
+	VALUE ok = rb_ary_delete(rb_iv_get(self, "constraints"), constraint);
+	if(!(NIL_P(ok))) cpSpaceRemoveConstraint(SPACE(self), CONSTRAINT(constraint));
+	return ok;
 }
 
 static VALUE
