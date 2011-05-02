@@ -610,17 +610,24 @@ them.</p>
 move. There are two ways that Chipmunk knows a shape is static.</p>
 <p>The first is automatic. When adding or removing shapes attached to 
 static bodies, Chipmunk knows to handle them specially and you just use 
-the same functions as adding regular dynamic shapes, <code>CP::Space.add_shape()</code> and <code>CP::Space.remove_shape()</code>.</p>
-<p>The second way is to explicitly tag shapes as static using <code>CP::Space.add_static_shape()</code>.
+the same functions as adding regular dynamic shapes, <code>CP::Space.add_shape()
+</code> and <code>CP::Space.remove_shape()</code>.</p>
+<p>The second way is to explicitly tag shapes as static using
+<code>CP::Space.add_static_shape()</code>.
  This is rarely needed, but say for instance that you have a rogue body 
 that seldomly moves. In this case, adding a shape attached to it as a 
 static shape and updating it only when the body moves can increase 
-performance. Shapes added this way must be removed by calling <code>CP::Space.remove_static_shape()</code>.</p>
+performance. Shapes added this way must be removed by calling
+<code>CP::Space.remove_static_shape()</code>.</p>
 <p>Because static shapes aren’t updated automatically, you must let 
 Chipmunk know that it needs to update the static shapes. You can update 
-all of the static shapes at once using <code>CP::Space#rehash_static()</code> or individual shapes using <code>CP::Space#rehash_shape</code>. If you find yourself rehashing static bodies often, you should be adding them normally using <code>CP::Space#add_shape</code> instead.</p>
+all of the static shapes at once using <code>CP::Space#rehash_static()
+</code> or individual shapes using <code>CP::Space#rehash_shape</code>.
+If you find yourself rehashing static bodies often, you should be adding them
+normally using <code>CP::Space#add_shape</code> instead.</p>
 <h2>Sleeping</h2>
-<p>New in Chipmunk 5.3 is the ability of spaces to disable entire groups of objects that have stopped moving to save <span class="caps">CPU</span>
+<p>New in Chipmunk 5.3 is the ability of spaces to disable entire groups of
+objects that have stopped moving to save <span class="caps">CPU</span>
  time as well as battery life. In order to use this feature you must do 2
  things. The first is that you must attach all your static geometry to 
 static bodies. Objects cannot fall asleep if they are touching a 
@@ -657,12 +664,16 @@ void CP::Space#remove_shape(shape)
 void CP::Space#remove_static_shape(shape)
 void CP::Space#remove_body(body)
 void CP::Space#remove_constraint(constraint)</code></dt>
-<dd>These functions add and remove shapes, bodies and constraints from <code>space</code>.
- See the section on Static Shapes above for an explanation of what a 
-static shape is and how it differs from a normal shape. Also, you cannot
- call the any of these functions from within a callback other than a 
+<dd>These functions add and remove shapes, bodies and constraints from
+<code>space</code>. They return the object removed from the space, or <code>
+nil</code> if the object in question was already removed from or never had been
+added to the space. See the section on Static Shapes above for an explanation
+of what a static shape is and how it differs from a normal shape. Also, you
+cannot call the any of these functions from within a callback other than a 
 post-step callback (which is different than a post-solve callback!). 
-Attempting to add or remove objects from the space while <code>CP::Space#step</code> is still executing will throw an assertion. See the <a href="#Callbacks">callbacks section</a> for more information.</dd>
+Attempting to add or remove objects from the space while <code>CP::Space#step
+</code> is still executing will most likely crash your application!
+See the <a href="#Callbacks">callbacks section</a> for more information.</dd>
 </dl>
 <h2>Misc</h2>
 <dl>
@@ -1122,7 +1133,7 @@ tend to be very close together, and therefore more likely to be
 colliding. The downside is that in order to get the best performance out
  of a spatial hash, you have to tune the size of the grid cells and the 
 size of the hash table so you don’t get too many false positives. For 
-more information about tuning the hash see the <a href="#CP::Space">CP::Space</a> section.</p>
+more information about tuning the hash see the <a href="#Space">CP::Space</a> section.</p>
 <p>Things to keep in mind:</p>
 <ul>
 	<li>Using too small a grid size means that your objects will be split 
