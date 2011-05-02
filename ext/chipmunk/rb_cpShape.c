@@ -219,17 +219,27 @@ static VALUE rb_cpShapeSegmentQuery(VALUE self, VALUE a, VALUE b) {
 
 
 //cpCircle
+static void rb_cpCircleMark(void * data) {
+  cpCircleShape *circle = (cpCircleShape *) data; 
+}
+
 static VALUE
 rb_cpCircleAlloc(VALUE klass)
 {
 	cpCircleShape *circle = cpCircleShapeAlloc();
+  // note: in chipmunk 5.3.4, there is a bug wich will cause
+  // cpShapeFree to segfault if cpXXXShapeInit has not been called. 
 	return Data_Wrap_Struct(klass, NULL, cpShapeFree, circle);
 }
 
+
+#ifdef RBCP_INIT_VARARG
 static VALUE
-rb_cpCircleInitialize(VALUE self, VALUE body, VALUE radius, VALUE offset)
-{
-	cpCircleShape *circle = (cpCircleShape *)SHAPE(self);
+rb_cpCircleInitialize(int argc, VALUE * argv, VALUE self) {
+	VALUE body, radius, offset;
+  cpCircleShape *circle = NULL;
+  rb_scan_args(argc, argv, "20", &body, &radius, &offset);
+  circle = (cpCircleShape *)SHAPE(self);
 	
 	cpCircleShapeInit(circle, BODY(body), NUM2DBL(radius), *VGET(offset));
 	circle->shape.data = (void *)self;
@@ -239,6 +249,27 @@ rb_cpCircleInitialize(VALUE self, VALUE body, VALUE radius, VALUE offset)
 	
 	return self;
 }
+#else
+static VALUE
+rb_cpCircleInitialize(VALUE self, VALUE vbody, VALUE vradius, VALUE voffset) {
+  cpCircleShape *circle = NULL;
+  cpBody        *  body = NULL;
+  cpFloat        radius = 0.0;
+  cpVect         offset; 
+  circle = (cpCircleShape *)SHAPE(self);
+  body   = BODY(vbody);
+  radius = NUM2DBL(vradius);
+  offset = *VGET(voffset);  
+  
+  cpCircleShapeInit(circle, body, radius, offset);
+  circle->shape.data = (void *)self;
+  circle->shape.collision_type = Qnil;
+
+  rb_ivar_set(self, id_body, vbody);
+  
+  return self;
+}
+#endif
 
 
 
@@ -249,6 +280,7 @@ static VALUE
 rb_cpSegmentAlloc(VALUE klass)
 {
 	cpSegmentShape *seg = cpSegmentShapeAlloc();
+  
 	return Data_Wrap_Struct(klass, NULL, cpShapeFree, seg);
 }
 
@@ -278,7 +310,7 @@ rb_cpSegmentInitialize(VALUE self, VALUE body, VALUE a, VALUE b, VALUE r)
           VERTS[i] = *VGET(__rbcp_ptr[i]);
 
 
-static VALUE rb_cpPolyValidate(VALUE arr) {
+static VALUE rb_cpPolyValidate(VALUE self, VALUE arr) {
   RBCP_ARRAY_POINTS(arr, num, verts)
   return CP_INT_BOOL(cpPolyValidate(verts, num));
 }
@@ -407,8 +439,11 @@ Init_cpShape(void)
 	c_cpCircleShape = rb_define_class_under(m_cpShape, "Circle", rb_cObject);
 	rb_include_module(c_cpCircleShape, m_cpShape);
 	rb_define_alloc_func(c_cpCircleShape, rb_cpCircleAlloc);
+#ifdef RBCP_INIT_VARARG 
+	rb_define_method(c_cpCircleShape, "initialize", rb_cpCircleInitialize, -1);
+#else   
 	rb_define_method(c_cpCircleShape, "initialize", rb_cpCircleInitialize, 3);
-	
+#endif  
 	
 	c_cpSegmentShape = rb_define_class_under(m_cpShape, "Segment", rb_cObject);
 	rb_include_module(c_cpSegmentShape, m_cpShape);

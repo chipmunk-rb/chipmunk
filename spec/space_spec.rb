@@ -190,12 +190,12 @@ describe 'Space in chipmunk' do
     ch.post_solve_called[1].should == shapy_one
   end
 
-  it 'can have lots of shapes no GC corruption' do
+  it 'can have lots of shapes without GC corruption' do
     space = CP::Space.new
 
     bods = []
     shapes = []
-    5.times do |i|
+    800.times do |i|   
       bods[i] = CP::Body.new(90, 76)
       shapes[i] = CP::Shape::Circle.new(bods[i], 40, CP::ZERO_VEC_2)
       shapes[i].collision_type = "bar#{i}".to_sym

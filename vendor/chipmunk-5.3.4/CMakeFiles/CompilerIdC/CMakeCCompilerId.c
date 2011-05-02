@@ -9,6 +9,9 @@
 #if defined(__INTEL_COMPILER) || defined(__ICC)
 # define COMPILER_ID "Intel"
 
+#elif defined(__clang__)
+# define COMPILER_ID "Clang"
+
 #elif defined(__BORLANDC__)
 # define COMPILER_ID "Borland"
 
@@ -25,10 +28,19 @@
 # define COMPILER_ID "Compaq"
 
 #elif defined(__IBMC__)
-# define COMPILER_ID "VisualAge"
+# if defined(__COMPILER_VER__)
+#  define COMPILER_ID "zOS"
+# elif __IBMC__ >= 800
+#  define COMPILER_ID "XL"
+# else
+#  define COMPILER_ID "VisualAge"
+# endif
 
 #elif defined(__PGI)
 # define COMPILER_ID "PGI"
+
+#elif defined(__PATHSCALE__)
+# define COMPILER_ID "PathScale"
 
 #elif defined(__GNUC__)
 # define COMPILER_ID "GNU"
@@ -52,7 +64,7 @@
 #elif defined(SDCC)
 # define COMPILER_ID "SDCC"
 
-#elif defined(_COMPILER_VERSION)
+#elif defined(_SGI_COMPILER_VERSION) || defined(_COMPILER_VERSION)
 # define COMPILER_ID "MIPSpro"
 
 /* This compiler is either not known or is too old to define an
@@ -159,11 +171,36 @@ char* info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";
 
 #endif
 
+/* For windows compilers MSVC and Intel we can determine
+   the architecture of the compiler being used.  This is becase
+   the compilers do not have flags that can change the architecture,
+   but rather depend on which compiler is being used
+*/
+#if defined(_WIN32) && defined(_MSC_VER)
+# if defined(_M_IA64)
+#  define ARCHITECTURE_ID "IA64"
+
+# elif defined(_M_X64) || defined(_M_AMD64)
+#  define ARCHITECTURE_ID "x64" 
+
+# elif defined(_M_IX86)
+#  define ARCHITECTURE_ID "X86"
+
+# else /* unknown architecture */
+#  define ARCHITECTURE_ID ""
+# endif
+
+#else
+#  define ARCHITECTURE_ID ""
+#endif
+
 /* Construct the string literal in pieces to prevent the source from
    getting matched.  Store it in a pointer rather than an array
    because some compilers will just produce instructions to fill the
    array rather than assigning a pointer to a static array.  */
 char* info_platform = "INFO" ":" "platform[" PLATFORM_ID "]";
+char* info_arch = "INFO" ":" "arch[" ARCHITECTURE_ID "]";
+
 
 
 /*--------------------------------------------------------------------------*/
@@ -176,6 +213,7 @@ int main(int argc, char* argv[])
   int require = 0;
   require += info_compiler[argc];
   require += info_platform[argc];
+  require += info_arch[argc];
   (void)argv;
   return require;
 }

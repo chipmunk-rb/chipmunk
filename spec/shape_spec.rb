@@ -5,6 +5,16 @@ describe 'Shapes in chipmunk' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
     end
+    
+#     it 'does not crash if created incorrectly' do      
+#       lambda { s = CP::Shape::Circle.new }.should raise_error
+#     end
+
+#     it 'cannot be created' do
+#       bod = CP::Body.new 90, 76
+#       s = CP::Shape::Circle.new(bod) 
+#       # lambda {}.should raise_error
+#     end
 
     it 'can get its body' do
       bod = CP::Body.new 90, 76
@@ -222,6 +232,12 @@ describe 'Shapes in chipmunk' do
   end
   
   describe 'Poly class' do
+    it 'can validate polygon points' do
+      points  = [vec2(1,1), vec2(2,2),vec2(3,3)]
+      res     = CP::Shape::Poly.valid? points
+      res.should be_true
+    end
+    
     it 'can be created' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], CP::ZERO_VEC_2

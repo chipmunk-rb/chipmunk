@@ -61,7 +61,7 @@ func_name(VALUE self)\
 		VALUE klass_name = rb_funcall(klass, rb_intern("to_s"), 0);\
 		rb_raise(rb_eTypeError, "wrong argument type %s (expected %s)", rb_obj_classname(self), StringValuePtr(klass_name));\
 	}\
-	type *ptr;\
+	type *ptr = NULL;\
 	Data_Get_Struct(self, type, ptr);\
 	return ptr;\
 }\
