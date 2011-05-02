@@ -41,6 +41,10 @@ describe 'Constraints in chipmunk' do
       bodb = Body.new 9, 6
       CP::Constraint::PinJoint.new(boda,bodb,ZERO_VEC_2,ZERO_VEC_2)
     end
+    
+    it "won't crash when created incorrectly" do
+      lambda { CP::Constraint::PinJoint.new }.should raise_error
+    end
   end  
   
 

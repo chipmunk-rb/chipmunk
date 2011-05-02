@@ -36,14 +36,14 @@ static VALUE BBNEW(cpBB bb) {
 static VALUE
 rb_cpBBAlloc(VALUE klass)
 {
-	cpBB *bb = malloc(sizeof(cpBB));
+	cpBB *bb = calloc(sizeof(cpBB), 1);
 	return Data_Wrap_Struct(klass, NULL, free, bb);
 }
 
 static VALUE
 rb_cpBBInitialize(VALUE self, VALUE l, VALUE b, VALUE r, VALUE t)
 {
-	cpBB *bb = BBGET(self);
+	cpBB *bb = BBGET(self);	
 	bb->l = NUM2DBL(l);
 	bb->b = NUM2DBL(b);
 	bb->r = NUM2DBL(r);
