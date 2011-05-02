@@ -244,7 +244,7 @@ mass of a body. See below for function to help calculate the moment.</li>
 	<li><code>rot</code> – <code>CP::Vec2</code>: Cached unit length rotation vector.</li>
 	<li><code>v_limit</code> – <code>Float</code>: Maximum speed a body may have after updating it’s velocity.</li>
 	<li><code>w_limit</code> – <code>Float</code>: Maximum rotational speed a body may have after updating it’s velocity.</li>
-  <li><code>data</code> – <code>Object</code>: The ruby bindings use this field internally, so it is not available for you use. It returns <code>self</code>, but that is not guaranteed.</li>
+  <li><code>data</code> – <code>Object</code>: The Ruby bindings use this field internally, so it is not available for you use. It returns <code>self</code>, but that is not guaranteed.</li>
 	<li><code>object</code> – <code>Object</code>: A user definable 
 data object. If you set this to point at the game object the shapes is 
 for, then you can access your game object from Chipmunk callbacks.</li>
@@ -366,7 +366,7 @@ comes along to jump on it, it wakes up and starts falling. In this case,
 <dd>Equivalent to calling <code>CP::Body#sleep_with_group(nil)</code>. 
 It forces <code>body</code> to fall asleep and creates a new group for it. 
 The name <code>sleep_alone</code> was chosen because <code>sleep</code> is part 
-of ruby's Kernel module...
+of Ruby's Kernel module...
 </dd>
 <dt><code>void CP::Body#activate</code></dt>
 <dd>Wake <code>self</code> up so that it starts actively 
@@ -434,7 +434,7 @@ same non-zero group do not generate collisions. Useful when creating an
 object out of many shapes that you don’t want to self collide. Defaults 
 to <code>CP::NO_GROUP</code>.</li>
 	<li><code>layers</code> – <code>Fixnum</code>: Shapes only collide if they are in the same bit-planes. i.e. <code>(a-&gt;layers &amp; b-&gt;layers) != 0</code> By default, a shape occupies all bit-planes. <a href="http://en.wikipedia.org/wiki/Mask_%28computing%29#top">Wikipedia</a> has a nice article on bitmasks if you are unfamiliar with how to use them. Defaults to <code>CP::ALL_LAYERS</code>.</li>
-	<li><code>data</code> – <code>Object</code>: The ruby bindings use this field internally, so it is not available for you use. It returns <code>self</code>, but that is not guaranteed.</li>
+	<li><code>data</code> – <code>Object</code>: The Ruby bindings use this field internally, so it is not available for you use. It returns <code>self</code>, but that is not guaranteed.</li>
   <li><code>object</code> – <code>Object</code>: A user definable 
 data object. If you set this to point at the game object the shapes is 
 for, then you can access your game object from Chipmunk callbacks.</li>
@@ -658,7 +658,7 @@ lose 10% of it’s velocity per second. Defaults to 1. Like <code>gravity</code>
 threshold for a body to be considered idle. The default value of 0 means
  to let the space guess a good threshold based on gravity.</li>
 	<li><code>sleep_time</code> – <code>Float</code>: Time a group of bodies must remain idle in order to fall asleep. The default value of <code>INFINITY</code> disables the sleeping algorithm.</li>
-<!-- NOTE: this is not supported in the ruby Bindings
+<!-- NOTE: this is not supported in the Ruby Bindings
 <li><code>staticBody</code> – <code>CP::Body</code>: A statically allocated infinite mass body that the space uses to substitute for <span class="caps">NULL</span> bodies on shapes and constraints. Set the <code>space-&gt;staticBody.data</code> pointer to something helpful if you want to have some context from within callbacks.</li>
 -->
 </ul>
@@ -793,7 +793,7 @@ forces separately.</p>
 error corrected each step of the space. (Can cause issues if you don’t 
 use a constant time step) Defaults to 0.1.</li>
 	<li><code>maxBias</code> – <code>Float</code>: is the maximum speed at which the constraint can apply error correction. Defaults to <span class="caps">INFINITY</span>.</li>
-	<li><code>data</code> – <code>Object</code>: The ruby bindings use this field internally, so it is not available for you use. It returns <code>self</code>, but that is not guaranteed.</li>
+	<li><code>data</code> – <code>Object</code>: The Ruby bindings use this field internally, so it is not available for you use. It returns <code>self</code>, but that is not guaranteed.</li>
   <li><code>object</code> – <code>Object</code>: A user definable 
 data object. If you set this to point at the game object the shapes is 
 for, then you can access your game object from Chipmunk callbacks.</li>
@@ -1211,7 +1211,7 @@ be ignored based on specific conditions, like implementing one way
 platforms? Chipmunk has a number of powerful callback systems that you 
 can plug into to accomplish all of that.</p>
 <h2>Collision Handlers</h2>
-<p>The ruby bindings support 2 types of collision handlers, namely a simple block, or a collision handler object.<p>
+<p>The Ruby bindings support 2 types of collision handlers, namely a simple block, or a collision handler object.<p>
 
 <h3>Collision Handler Blocks</h3>
 <p>A collision handler block is a block that takes either 0, 1, 2, or 3 arguments. These arguments may include the two colliding shapes, and an arbiter that describes the details of the collision. See<a href="#CP::Arbiter">CP::Arbiter</a> for more info on arbiters.<p>
