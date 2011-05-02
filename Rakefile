@@ -75,7 +75,8 @@ else
     Rake::ExtensionTask.new('chipmunk', spec) do |ext|
         ext.config_script = 'extconf.rb'
         ext.cross_compile = true
-        ext.cross_platform = 'i386-mswin32'
+        ext.cross_platform = 'i586-mingw32'
+        # ext.cross_platform = 'i386-mswin32'
     end
  
     Rake::GemPackageTask.new(spec) do |pkg|

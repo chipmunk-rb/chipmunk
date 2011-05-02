@@ -25,11 +25,16 @@
 <a id="ChipmunkPhysics"></a>
 <h1>Chipmunk Physics 5.3.4 Ruby Bindings</h1>
 Chipmunk is a 2D rigid body physics library distributed under the <span class="caps">MIT</span> license by Scott Lembcke.
-This file contains the documentation of the Ruby bindings of Chipmunk
+This file contains the documentation of the 
+<a href="http://github.com/beoran/chipmunk">
+Ruby bindings of Chipmunk</a>
 by John Mair and Beoran. It describes how you can use Chipmunk in Ruby.
 It is based on the 
 <a href="http://files.slembcke.net/chipmunk/release/ChipmunkLatest-Docs/">
-original C documentation</a>. Look there for anything that's missing here. 
+original C documentation</a>.
+There is also the 
+<a href="http://code.google.com/p/chipmunk-physics/">
+original project page</a>. Look there for anything that's missing here. 
 
 <a id="ChipmunkBasics"></a>
 <h1>Chipmunk Basics</h1>
@@ -803,7 +808,7 @@ be inside of any shapes attached to the body and it often makes sense
 that they shouldn’t. Also, adding a constraint between two bodies 
 doesn’t prevent their collision shapes from colliding. In fact, this is 
 the primary reason that the collision group property exists.</p>
-<h2>Video Tour of Current Joint Types. (Requires connection to _you_tube)</h2>
+<h2>Video Tour of Current Joint Types. (Requires connection to YouTube)</h2>
 <p><object type='shockwave/flash' width="425" height="344"><param name="movie" value="http://www.youtube.com/v/ZgJJZTS0aMM&amp;hl=en_US&amp;fs=1?rel=0"><param name="allow_full_screen" value="true"><param name="allowscriptaccess" value="always"><embed src="chipmunk_documentation_files/ZgJJZTS0aMMhlen_USfs1.swf" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344"></object></p>
 <h2>Misc Functions</h2>
 <dl>
@@ -1038,11 +1043,11 @@ set the ratio in relation to a third body’s angular velocity. <code>phase</cod
 		<th>Type </th>
 	</tr>
 	<tr>
-		<td> Phase </td>
+		<td> phase </td>
 		<td> Float </td>
 	</tr>
 	<tr>
-		<td> Ratio </td>
+		<td> ratio </td>
 		<td> Float </td>
 	</tr>
 </tbody></table>
@@ -1061,7 +1066,7 @@ apply a nearly infinite torque to keep the bodies moving.</dd>
 		<th>Type </th>
 	</tr>
 	<tr>
-		<td> Rate </td>
+		<td> rate </td>
 		<td> Float </td>
 	</tr>
 </tbody></table>
@@ -1117,7 +1122,7 @@ tend to be very close together, and therefore more likely to be
 colliding. The downside is that in order to get the best performance out
  of a spatial hash, you have to tune the size of the grid cells and the 
 size of the hash table so you don’t get too many false positives. For 
-more information about tuning the hash see the <a href="#CP::Space">CP::Space</a> section.</p>
+more information about tuning the hash see the <a href="#Space">CP::Space</a> section.</p>
 <p>Things to keep in mind:</p>
 <ul>
 	<li>Using too small a grid size means that your objects will be split 
