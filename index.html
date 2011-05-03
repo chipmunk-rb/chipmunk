@@ -564,7 +564,34 @@ using incorrect <code>verts</code> will cause a crash.</dd>
 </dl>
 <h2>Modifying CP::Shapes</h2>
 <p>The short answer is that you can’t because the changes would be only 
-picked up as a change to the position of the shape’s surface. The long answer is that you can't because the unsafe C api that would allow you to do this is not wrapped in these Ruby binding.</p>
+picked up as a change to the position of the shape’s surface.
+The long answer is that with the following functions, since version 5.3.4.1
+of the bindings, you can, but the results will probably not be what you expect.
+</p>
+<p>The following operations are "unsafe", because they may reduce the physical
+accuracy or numerical stability of the simulation, but will not cause crashes.
+The prime example is mutating collision shapes. Chipmunk does not support
+this directly. Mutating shapes using this API will caused objects in contact
+to be pushed apart using Chipmunk's overlap solver, but not using real
+persistent velocities. Probably not what you meant, but perhaps close enough.
+</p>
+<dl>
+<dt><code>CP::Shape::Circle#set_radius!(r)</code></dt>
+<dd>Sets the radius of the circle to <code>r</code>.</dd>
+<dt><code>CP::Shape::Circle#set_offset!(offset)</code></dt>
+<dd>Sets the offset from center of the circle to <code>offset</code>.</dd>
+<dt><code>CP::Shape::Segment#set_radius!(r)</code></dt>
+<dd>Sets the radius of the segment to <code>r</code>.</dd>
+<dt><code>CP::Shape::Segment#set_endpoints!(veca, vecb)</code></dt>
+<dd>Sets the endpoints of the segment to <code>veca</code> and
+<code>vecb</code>.</dd>
+<dt><code>CP::Shape::Poly#set_verts!(verts, offset)</code></dt>
+<dd>Sets the verices and offset of the polygon. <code>verts</code> is
+an Array of <code>CP::Vec2</code> objects defining a convex hull with a
+clockwise winding, <code>offset</code> is the offset from the body’s center
+of gravity in body local coordinates. An exception will be thrown if the
+vertexes are not convex or do not have a clockwise winding.</dd>
+</dl>
 <h2>Notes</h2>
 <ul>
 	<li>You can attach multiple collision shapes to a rigid body. This 
