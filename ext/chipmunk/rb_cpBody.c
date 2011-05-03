@@ -40,7 +40,7 @@ rb_cpBodyInitialize(VALUE self, VALUE m, VALUE i)
 {
 	cpBody *body = BODY(self);
 	cpBodyInit(body, NUM2DBL(m), NUM2DBL(i));
-  body->data   = (void *)self; 
+	body->data   = (void *)self; 
 	return self;
 }
 
@@ -418,10 +418,11 @@ Init_cpBody(void)
 	rb_define_alloc_func(c_cpBody, rb_cpBodyAlloc);
 	rb_define_method(c_cpBody, "initialize", rb_cpBodyInitialize, 2);
 	
-	c_cpStaticBody = rb_define_class_under(m_Chipmunk, "StaticBody", c_cpBody);  
+	c_cpStaticBody = rb_define_class_under(m_Chipmunk, "StaticBody", c_cpBody);
+	rb_define_alloc_func(c_cpStaticBody, rb_cpBodyAlloc);
   // rb_define_alloc_func will not work here, since superclass defines this.
   // so, we define new here in stead.
-  rb_define_singleton_method(c_cpStaticBody, "new", rb_cpStaticBodyNew, 0);
+  // rb_define_singleton_method(c_cpStaticBody, "new", rb_cpStaticBodyNew, 0);
   rb_define_method(c_cpStaticBody, "initialize", rb_cpBodyInitializeStatic, 0);  
   rb_define_singleton_method(c_cpBody, "new_static",  rb_cpStaticBodyNew, 0);
 

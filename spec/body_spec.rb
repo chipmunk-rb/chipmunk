@@ -45,6 +45,14 @@ describe 'A new Body' do
     b.sleep?.should be_false    
   end
   
+  it "'s rogue status is adjusted correctly" do
+    b = CP::Body.new(5, 7)
+    space = CP::Space.new
+    b.rogue?.should be_true
+    space.add_body(b)
+    b.rogue?.should be_false    
+  end
+  
   it 'can sleep with a group and be activated again' do
     space = CP::Space.new
     group = CP::Body.new(5, 7)
@@ -57,8 +65,6 @@ describe 'A new Body' do
     group.activate
     b.sleep?.should be_false    
   end
-
-
 
   it 'can set its mass' do
     b = CP::Body.new(5, 7)
