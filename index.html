@@ -1241,7 +1241,7 @@ can plug into to accomplish all of that.</p>
 <p>The Ruby bindings support 2 types of collision handlers, namely a simple block, or a collision handler object.<p>
 
 <h3>Collision Handler Blocks</h3>
-<p>A collision handler block is a block that takes either 0, 1, 2, or 3 arguments. These arguments may include the two colliding shapes, and an arbiter that describes the details of the collision. See<a href="#CP::Arbiter">CP::Arbiter</a> for more info on arbiters.<p>
+<p>A collision handler block is a block that takes either 0, 1, 2, or 3 arguments. These arguments may include the two colliding shapes, and an arbiter that describes the details of the collision. See<a href="#Arbiter">CP::Arbiter</a> for more info on arbiters.<p>
 <p>Collision handler blocks are installed by calling <code>Space#add_collision_func(collision_type1, collision_type2) do ... end</code>. Depending on the arity of the handler block, different arguments will be passed:</p>
 <table>
   <caption>Arguments passed</caption>
@@ -1270,11 +1270,11 @@ shapes stop overlapping.</li>
 touching during this step. Return false from the callback to make 
 Chipmunk ignore the collision this step or true to process it normally. 
 Additionally, you may override collision values such as CP::Arbiter.e and 
-CP::Arbiter.u to provide custom friction or elasticity values. See <a href="#CP::Arbiter">CP::Arbiter</a> for more info.</li>
+CP::Arbiter.u to provide custom friction or elasticity values. See <a href="#Arbiter">CP::Arbiter</a> for more info.</li>
 	<li><strong>post_solve:</strong> Two shapes are touching and their 
 collision response has been processed. You can retrieve the collision 
 force at this time if you want to use it to calculate sound volumes or 
-damage amounts. See <a href="#CP::Arbiter">CP::Arbiter</a> for more info.</li>
+damage amounts. See <a href="#Arbiter">CP::Arbiter</a> for more info.</li>
 	<li><strong>separate</strong> Two shapes have just stopped touching for the first time this step.</li>
 </ul>
 <p>Depending on the arity of the mentioned methods, different arguments will be passed to them:</p>
@@ -1306,7 +1306,7 @@ class CollisionHandler
 end
 </pre>
 </code>
-<p>Collision callbacks are closely associated with <a href="#CP::Arbiter">CP::Arbiter</a> structs. You should familiarize yourself with those as well.</p>
+<p>Collision callbacks are closely associated with <a href="#Arbiter">CP::Arbiter</a> structs. You should familiarize yourself with those as well.</p>
 <p><strong>Note:</strong> Shapes tagged as sensors (<code>CP::Shape.sensor == true</code>)
  never generate collisions that get processed so collisions between 
 sensors shapes and other shapes will never call the post-solve callback.
@@ -1361,7 +1361,8 @@ even if they use a different callback function or data pointer.</p>
 Box2D called them that way back in 2006 when Scott Lembcke was looking 
 at the source for it’s solver. An arbiter is like a judge, a person 
 that has authority to settle disputes between two people. It was a fun, 
-fitting name and was shorter to type than CollisionPair which he had been using. :p</p>
+fitting name and was shorter to type than CollisionPair which he had been using.
+:p</p>
 <p>Originally arbiters were going to be an internal data type that 
 Chipmunk used that wouldn’t ever be sent to outside code. In Chipmunk 
 4.x and earlier, only a single callback hook was provided for handling 
@@ -1377,41 +1378,37 @@ used primarily for solving collision impulses. To external users, you
 can simply think of them as a weird type used in collision callbacks.</p>
 <h2>Memory Management</h2>
 <p>You should never need to create an arbiter, nor will you ever need to
- free one as they are handled by the space. More importantly, because 
+free one as they are handled by the space. More importantly, because 
 they are managed by the space you should never store a reference to an 
 arbiter as you don’t know when they will be destroyed. Use them within 
 the callback where they are given to you and then forget about them or 
-copy out the information you need. <strong>This is even so in these Ruby bindings!</strong>
+copy out the information you need. <strong>This is even so in these Ruby
+bindings!</strong>
 </p>
 <h2>Methods</h2>
 <dl>
 <dt><code>CP::Arbiter#shapes</code></dt>
-<dd>Returns an array with the shapes in the order that  they were defined in the collision handler associated with this 
-arbiter. If you defined the handler as <code>CP::Space#add_collision_handler(space, 1, 2, ...)</code>, you you will find that <code>a.collision_type == 1</code> and <code>b.collision_type == 2</code>.</dd>
-<dt><code>int CP::Arbiter.first_contact?</code></dt>
-<dd>Returns true if this is the first step that the shapes touched. You can use this from <code>pre_solve()</code> and <code>post_solve()</code> callbacks to know if a collision between two shapes is new without needing to flag a boolean in your <code>begin()</code> callback.</dd>
-<!-- not supported yet:
-<dt><code>typedef struct CP::_contact_point_set {
-	int count;
-	
-	struct {
-		CP::Vec2 point, normal;
-		Float dist;
-	} points[CP_MAX_CONTACTS_PER_ARBITER];
-} CP::_contact_point_set;
-
-static inline CP::_contact_point_set
-CP::_arbiter_get_contact_point_set(const CP::Arbiter *arb)</code></dt>
-<dd>Returns a <code>CP::_contact_point_set</code> structure. This is the new and preferred <span class="caps">API</span> for working with contact points instead of the <code>CP::_arbiter_get*()</code> functions as it is faster and slightly simpler.</dd>
-<dt><code>CP::_contact_point_set set = CP::_arbiter_get_contact_point_set(arbiter);
-for(int i=0; i&lt;set.count; i++){
-	// get and work with the collision point normal and penetration distance:
-	set.points[i].point
-	set.points[i].normal
-	set.points[i].dist
-}</code></dt>
--->
-
+<dd>Returns an array with the shapes in the order that they were defined in the
+collision handler associated with this arbiter. If you defined the handler as
+<code>CP::Space#add_collision_handler(space, 1, 2, ...)</code>,
+you you will find that <code>a.collision_type == 1</code> and
+<code>b.collision_type == 2</code>.</dd>
+<dt><code>CP::Arbiter#first_contact?</code></dt>
+<dd>Returns true if this is the first step that the shapes touched.
+You can use this from <code>pre_solve()</code> and <code>post_solve()</code>
+callbacks to know if a collision between two shapes is new without needing to
+flag a boolean in your <code>begin()</code> callback.</dd>
+<dt><code>CP::Arbiter#points</code></dt>
+<dd>Returns an Array of CP::ContactPoint with contact point information.
+<strong>Note:</strong>calling this function from the <code>separate()</code>
+callback is not allowed.</dd>
+<dt><code>
+CP::ContactPoint#point,
+CP::ContactPoint#normal,
+CP::ContactPoint#dist
+</code><dt>
+<dd>Accessors of the CP::ContactPoint struct, which return the Vec2 of the contact
+point, the Vec2 normal, and the penetration distance, respectively.</dd>
 <dt><code>CP::Arbiter.count</code> <code>CP::Arbiter.contacts</code></dt>
 <dd>Returns the number of contact points in this arbiter.</dd>
 <dt><code>CP::Arbiter.normal(i)</code></dt>
@@ -1420,12 +1417,16 @@ for(int i=0; i&lt;set.count; i++){
  collision normals will be the same for all collision points. You can 
 simply do <code>CP::Arbiter.normal(0)</code> and not have to check each contact point. <strong>Note:</strong> calling this function from the <code>separate()</code> callback is undefined.</dd>
 <dt><code>CP::Vec2 CP::Arbiter.point(i)</code></dt>
-<dd>Returns the position of the i’th collision point. <strong>Note:</strong> calling this function from the <code>separate()</code> callback is undefined.</dd>
-<dt><code>CP::Vec2 CP::Arbiter.depth(int i)</code></dt>
+<dd>Returns the position of the i’th collision point. <strong>Note:</strong>
+calling this function from the <code>separate()</code> callback is undefined.</dd>
+<dt><code>CP::Vec2 CP::Arbiter.depth(i)</code></dt>
 <dd>Returns the penetration depth of the i’th collision point.</dd>
 <dt><code>CP::Vec2 CP::Arbiter.impulse(friction = nil)
 </code></dt>
-<dd>Returns the impulse that was applied this step to resolve the collision. These functions should only be called from a <code>post_step()</code> callback, otherwise the result is undefined. <strong>Note:</strong>
+<dd>Returns the impulse that was applied this step to resolve the collision.
+If friction is not nil, this method takes the friction value into consideration.
+These functions should only be called from a <code>post_step()</code> callback,
+otherwise the result is undefined. <strong>Note:</strong>
  If you are using the deprecated elastic iterations setting on your 
 space, it will cause you to get incorrect results. Elastic iterations 
 should no longer be needed, and you should be able to safely turn them 
@@ -1434,17 +1435,19 @@ off.</dd>
 <h2>Attributes</h2>
 <p>It’s unlikely that you’ll need to interact with a <code>CP::Arbiter</code>
  struct directly as the collision helper functions should provide most 
-functionality that people will need. One exception is the <code>e</code>, and <code>u</code>
- attributes. By default, Chipmunk multiplies the friction and elasticity 
-values of to shapes together to determine what values to use when 
+functionality that people will need. One exception is the <code>e</code>,
+and <code>u</code> attributes. By default, Chipmunk multiplies the friction
+and elasticity values of to shapes together to determine what values to use when 
 solving the collision. This mostly works, but in many cases is simply 
 not flexible enough. If you are running into problems with that, you can
- change the values calculated for <code>e</code> and <code>u</code> in a preSolve callback. This is likely to change in the next major version of Chipmunk.</p>
+change the values calculated for <code>e</code> and <code>u</code> in a
+preSolve callback. This is likely to change in the next major version of
+Chipmunk.</p>
 <ul>
-	<li><code>contacts</code> – <code>Fixnum</code>: Number of contact points for this collision.</li>
-	<li><code>e</code> – <code>Float</code>: Calculated amount of elasticity to apply for this collision. Can be overriden from a <code>preSolve()</code> callback.</li>
-	<li><code>u</code> – <code>Float</code>: Calculated amount of friction to apply for this collision. Can be overriden from a <code>preSolve()</code> callback.</li>
-	<li><code>surface_v</code> – <code>CP::Vec2</code>: Calculated amount of surface velocity to apply for this collision. Can be overriden from a <code>pre_solve()</code> callback. (<em>Very</em> likely to change in the next major version of Chipmunk).</li>
+  <li><code>contacts</code> – <code>Fixnum</code>: Number of contact points for this collision.</li>
+  <li><code>e</code> – <code>Float</code>: Calculated amount of elasticity to apply for this collision. Can be overriden from a <code>preSolve()</code> callback.</li>
+  <li><code>u</code> – <code>Float</code>: Calculated amount of friction to apply for this collision. Can be overriden from a <code>preSolve()</code> callback.</li>
+  <li><code>surface_v</code> – <code>CP::Vec2</code>: Calculated amount of surface velocity to apply for this collision. Can be overriden from a <code>pre_solve()</code> callback. (<em>Very</em> likely to change in the next major version of Chipmunk).</li>
 </ul>
 <a id="Queries"></a>
 <h1>Queries</h1>
