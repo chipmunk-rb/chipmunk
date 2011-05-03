@@ -89,6 +89,10 @@ static inline cpVect VGET_ZERO(VALUE value) {
 //Helper that allocates and initializes a SegmenQueryInfo struct
 VALUE rb_cpSegmentQueryInfoNew(VALUE shape, VALUE t, VALUE n);
 
+// Helper that allocates and initializes a ContactPoint struct.
+VALUE rb_cpContactPointNew(VALUE point, VALUE normal, VALUE dist);
+
+
 void Init_chipmunk(void);
 void Init_cpVect();
 void Init_cpBB();
@@ -102,7 +106,7 @@ void Init_cpArbiter(void);
 #define CP_BOOL_INT(VAL) (((VAL) == Qnil) || ((VAL) == Qfalse) ? 0 : 1)
 
 // transforms a C value (pointer or int) to Qtrue of Qfalse
-// For consistency with RBH_BOOL_INT. 
+// For consistency with CP_BOOL_INT. 
 #define CP_INT_BOOL(VAL) ((VAL) ? Qtrue : Qfalse)
  
 

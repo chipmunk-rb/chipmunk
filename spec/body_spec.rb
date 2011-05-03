@@ -219,7 +219,13 @@ describe 'A new Body' do
     b.slew(vec2(100, 40), 25)
     b.v.x.should be_within(0.001).of(4.0)
     b.v.y.should be_within(0.001).of(1.6)
-  end  
+  end
+  
+  it 'can has a kinetic energy' do
+    b = CP::Body.new(5, 7)    
+    b.kinetic_energy.should == 0.0    
+  end
+  
   
   
   it 'can have a specific velocity_func callback set' do

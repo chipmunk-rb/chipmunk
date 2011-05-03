@@ -410,6 +410,11 @@ rb_cpBodySlew(VALUE self, VALUE pos, VALUE dt) {
   return self;
 }
 
+static VALUE
+rb_cpBodyKineticEnergy(VALUE self) {
+  return DBL2NUM(cpBodyKineticEnergy(BODY(self)));	
+}
+
 
 void
 Init_cpBody(void)
@@ -501,5 +506,7 @@ Init_cpBody(void)
   
   rb_define_method(c_cpBody, "object="         , rb_cpBodySetData, 1);
   rb_define_method(c_cpBody, "object"          , rb_cpBodyGetData, 0);
+  rb_define_method(c_cpBody, "kinetic_energy"  , rb_cpBodyKineticEnergy, 0);
+  
 	
 }

@@ -20,7 +20,7 @@ ABOUT CHIPMUNK:
   written in C by Slembcke. It's licensed under the unrestrictive, OSI approved 
   MIT license. 
   
-ABOUT THESE RUBY BINDINGS:  
+ABOUT THESE RUBY BINDINGS:    
   Although chipmunk comes with ruby bindings, they are not always up to date 
   with regards to the functionality of the C library, and historically, they
   have been incompatible with recent versions of Ruby. 
@@ -30,17 +30,23 @@ ABOUT THESE RUBY BINDINGS:
   intended to be an alternative to the chipmunk-ffi bindings when performance 
   is of the utmost importance, as it may be for games. 
   
-  The intent is for these bindings to be mostly source code compatible with both 
-  Slembcke's and ffi's bindings. Main exceptions are where I dislike either API. 
-  In that case, I made an API that is pleasing to myself, and similar in naming 
-  to the C API adjusted to ruby conventions. If you have any problems with these bindings, please contact the maintainer at beoran@rubyforge.org.
+  The intent is for these bindings to be mostly source code compatible with the
+  FFI bindings. Main exceptions are when it did not support the functionality I
+  added yet. All this is documented by specs and by the html documentation.
   
+  If you have any problems with these bindings, please contact the maintainer at
+  beoran@rubyforge.org, or report the issue on the issue tracker:  
+  https://github.com/beoran/chipmunk/issues
+    
 DOCUMENTATION:
+  Full handcrafted duumentation based on the C documentation is available at:
   http://beoran.github.com/chipmunk/
   
-INCOMPATIBILITIES:
-  There are no bindings to SpaceHash since I fail to see the use of it, but
-  if someone is using them, I'll probably implement them.
+KNOWN BUGS:
+  * There are no bindings to SpaceHash since I think they are not so useful
+    anymore since Chipmunk supports BB queries.
+  * Some methods may crash with a segentation violation in case they are not
+    used correctly, according to the underlying requirements of the C library.
   
 CONTRACTING:
   Howling Moon Software (Slembke's company) is available for contracting if you 
@@ -48,8 +54,11 @@ CONTRACTING:
   them through their webpage: http://howlingmoonsoftware.com/contracting.php
 
 TODO:
-  * More functionality. 
-  * Specs for the new functionality I've wrapped and will wrap.
+  * Allow several constructors to be more flexible and take nil as a default
+    argument.
+  * Try to prevent segfauts on incorrect use of certain methods, if possible.  
+  * Get ready for chipmunk 5.3.5 and 6.x when they come out.
+  * Some more specs.
   * Better documentation, perhaps based on C API documentation.
   
 

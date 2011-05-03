@@ -280,14 +280,13 @@ describe 'Shapes in chipmunk' do
     
     it 'can be created' do
       bod = CP::Body.new 90, 76
-      s = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], CP::ZERO_VEC_2
+      s   = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], CP::ZERO_VEC_2
     end
     
     it 'can be created with a nil offset' do
       bod = CP::Body.new 90, 76
-      s = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], nil      
+      s   = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], nil
     end
-
     
     it 'can get its amount of vertices' do
       bod = CP::Body.new 90, 76
@@ -319,6 +318,24 @@ describe 'Shapes in chipmunk' do
       v.x.should == 4
       v.y.should == 4      
     end
+    
+    # Note, this functionality is not officially part of the API,
+    # as it might change.
+    it "can collide with other shapes" do
+      bod1 = CP::Body.new 90, 76
+      bod2 = CP::Body.new 90, 76
+      s1 = CP::Shape::Circle.new bod1, 20, CP::ZERO_VEC_2
+      s2 = CP::Shape::Circle.new bod1, 20, vec2(1.0, 1.0)
+      contact = s1.collide!(s2)
+      contact.size.should > 0
+    end
+    
+=begin
+  Will be addd to the API later:
+  Poly#value_on_axis
+  Poly#contains?
+  Poly#contains_partial?
+=end
     
   end
   

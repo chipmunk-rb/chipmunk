@@ -422,6 +422,46 @@ static VALUE rb_cpPolyShapeSetVerts(VALUE self, VALUE arr, VALUE offset) {
   return self;
 }
 
+/* extra inline functions  from the headers */
+// Returns the minimum distance of the polygon to the axis.
+static VALUE
+rb_cpPolyShapeValueOnAxis(VALUE self, VALUE n, VALUE d) {
+  cpPolyShape * poly = (cpPolyShape *) SHAPE(self); 
+  return DBL2NUM(cpPolyShapeValueOnAxis(poly, *VGET(n), NUM2DBL(d)));
+}
+
+// Returns true if the polygon contains the vertex.
+static VALUE
+rb_cpPolyShapeContainsVert(VALUE self, VALUE v) {
+  cpPolyShape * poly = (cpPolyShape *) SHAPE(self);
+  return CP_INT_BOOL(cpPolyShapeContainsVert(poly, *VGET(v)));
+}
+
+// Same as cpPolyShapeContainsVert() but ignores faces pointing away from the normal.
+static VALUE
+rb_cpPolyShapeContainsVertPartial(VALUE self, VALUE v, VALUE n) {
+  cpPolyShape * poly = (cpPolyShape *) SHAPE(self);
+  return CP_INT_BOOL(cpPolyShapeContainsVertPartial(poly, *VGET(v), *VGET(n)));
+}
+
+
+/* collision.h */
+static VALUE
+rb_cpCollideShapes(VALUE self, VALUE other) {
+  cpContact           points[CP_MAX_CONTACTS_PER_ARBITER];
+  int 		      size  = cpCollideShapes(SHAPE(self), SHAPE(other), points);  
+  VALUE             result  = rb_ary_new();
+  for(int index = 0; index < size; index++) {
+    VALUE point   = VNEW(points[index].p);
+    VALUE normal  = VNEW(points[index].n);
+    VALUE dist    = DBL2NUM(points[index].dist);
+    VALUE contact = rb_cpContactPointNew(point, normal, dist);
+    rb_ary_push(result, contact);
+  }
+  return result;  
+}
+
+
 
 
 
@@ -514,6 +554,10 @@ Init_cpShape(void)
   rb_define_method(c_cpPolyShape   , "length"    , rb_cpPolyShapeGetNumVerts, 0);
   rb_define_method(c_cpPolyShape   , "size"      , rb_cpPolyShapeGetNumVerts, 0);
   rb_define_method(c_cpPolyShape   , "[]"        , rb_cpPolyShapeGetVert, 1);
+  // Not in API yet: 
+  rb_define_method(c_cpPolyShape   , "value_on_axis" , rb_cpPolyShapeValueOnAxis, 2);
+  rb_define_method(c_cpPolyShape   , "contains?" , rb_cpPolyShapeContainsVert, 1);
+  rb_define_method(c_cpPolyShape   , "contains_partial?" , rb_cpPolyShapeContainsVertPartial, 2);
 	
   /* Use a struct for this small class. More efficient. */
   c_cpSegmentQueryInfo = rb_struct_define("SegmentQueryInfo",
@@ -527,6 +571,7 @@ Init_cpShape(void)
   
   rb_define_method(c_cpPolyShape   , "set_verts!" , rb_cpPolyShapeSetVerts , 2);
   
+  rb_define_method(m_cpShape   , "collide!" , rb_cpCollideShapes, 1);
   
 }
 // 
