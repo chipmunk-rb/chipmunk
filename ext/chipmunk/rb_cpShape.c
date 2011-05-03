@@ -260,7 +260,7 @@ rb_cpCircleInitialize(VALUE self, VALUE vbody, VALUE vradius, VALUE voffset) {
   circle = (cpCircleShape *)SHAPE(self);
   body   = BODY(vbody);
   radius = NUM2DBL(vradius);
-  offset = *VGET(voffset);  
+  offset = VGET_ZERO(voffset);  
   
   cpCircleShapeInit(circle, body, radius, offset);
   circle->shape.data = (void *)self;
@@ -339,7 +339,7 @@ rb_cpPolyInitialize(VALUE self, VALUE body, VALUE arr, VALUE offset)
 	  rb_raise(rb_eArgError, "The verts array does not from a valid polygon!");
 	}	
 	
-	cpPolyShapeInit(poly, BODY(body), num, verts, *VGET(offset));
+	cpPolyShapeInit(poly, BODY(body), num, verts, VGET_ZERO(offset));
 	poly->shape.data = (void *)self;
 	poly->shape.collision_type = Qnil;
 
@@ -482,11 +482,7 @@ Init_cpShape(void)
 	c_cpCircleShape = rb_define_class_under(m_cpShape, "Circle", rb_cObject);
 	rb_include_module(c_cpCircleShape, m_cpShape);
 	rb_define_alloc_func(c_cpCircleShape, rb_cpCircleAlloc);
-#ifdef RBCP_INIT_VARARG 
-	rb_define_method(c_cpCircleShape, "initialize", rb_cpCircleInitialize, -1);
-#else   
 	rb_define_method(c_cpCircleShape, "initialize", rb_cpCircleInitialize, 3);
-#endif  
 	
 	c_cpSegmentShape = rb_define_class_under(m_cpShape, "Segment", rb_cObject);
 	rb_include_module(c_cpSegmentShape, m_cpShape);

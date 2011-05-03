@@ -496,11 +496,8 @@ rb_cpSpaceSegmentQueryFirst(int argc, VALUE *argv, VALUE self)
   
   rb_scan_args(argc, argv, "22&", &a, &b, &layers, &group, &block);  	
 	
-	cpSpaceSegmentQueryFirst(
-		SPACE(self), *VGET(a), *VGET(b), 
-    get_layers(layers), get_group(group),
-		&info
-	);
+  cpSpaceSegmentQueryFirst(SPACE(self), *VGET(a), *VGET(b), 
+    get_layers(layers), get_group(group), &info);
 	// contrary to the standard chipmunk bindings, we also return a 
 	// struct here with then needed values.
 	if(info.shape) { 

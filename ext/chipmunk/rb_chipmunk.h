@@ -79,6 +79,13 @@ GETTER_TEMPLATE(ARBITER, c_cpArbiter, cpArbiter)
 // Helper to wrap cpArbter objects.
 VALUE ARBWRAP(cpArbiter *arb);
 
+// Like vget, but returns a zero vector if value is nil, and
+// it also does not need to be dereferenced.
+static inline cpVect VGET_ZERO(VALUE value) {
+  if(NIL_P(value)) return cpvzero;
+  return *VGET(value);
+}
+
 //Helper that allocates and initializes a SegmenQueryInfo struct
 VALUE rb_cpSegmentQueryInfoNew(VALUE shape, VALUE t, VALUE n);
 

@@ -1,10 +1,22 @@
 require File.dirname(__FILE__)+'/spec_helper'
 describe 'Shapes in chipmunk' do
   describe 'Circle class' do
+    
     it 'can be created' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
     end
+    
+    it 'can be created with a nil offset' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 40, nil
+    end
+    
+    # this should work later with chipmunk 5.3.5    
+    #it 'can be created with a missing offset' do
+    #  bod = CP::Body.new 90, 76
+    #  s = CP::Shape::Circle.new bod, 40
+    #end
     
 #     it 'does not crash if created incorrectly' do      
 #       lambda { s = CP::Shape::Circle.new }.should raise_error
@@ -270,6 +282,12 @@ describe 'Shapes in chipmunk' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], CP::ZERO_VEC_2
     end
+    
+    it 'can be created with a nil offset' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], nil      
+    end
+
     
     it 'can get its amount of vertices' do
       bod = CP::Body.new 90, 76

@@ -107,6 +107,14 @@ rb_cpArbiterGetShapes(VALUE self) {
 }
 
 static VALUE
+rb_cpArbiterGetBodies(VALUE self) {
+  cpArbiter *arb = ARBITER(self);
+  CP_ARBITER_GET_BODIES(arb, a, b)    
+  return rb_ary_new3(2, (VALUE)a->data, (VALUE)b->data);
+}
+
+
+static VALUE
 rb_cpArbiterGetA(VALUE self) {
   cpArbiter *arb = ARBITER(self);
   CP_ARBITER_GET_SHAPES(arb, a, b)    
@@ -215,6 +223,28 @@ rb_cpArbiterEachContact(VALUE self)
   return self;
 }
 
+VALUE c_cpContactPoint;
+
+// Helper that allocates and initializes a ContactPoint struct.
+VALUE
+rb_cpContactPointNew(VALUE point, VALUE normal, VALUE dist) {
+  return rb_struct_new(c_cpContactPoint, point, normal, dist);
+}
+
+VALUE rb_cpArbiterGetContactPointSet(VALUE arbiter) {
+  cpArbiter       * arb     = ARBITER(arbiter);
+  cpContactPointSet set     = cpArbiterGetContactPointSet(arb);
+  VALUE             result  = rb_ary_new();
+  for(int index = 0; index < set.count; index++) {
+    VALUE point   = VNEW(set.points[index].point);
+    VALUE normal  = VNEW(set.points[index].normal);
+    VALUE dist    = DBL2NUM(set.points[index].dist);
+    VALUE contact = rb_cpContactPointNew(point, normal, dist);
+    rb_ary_push(result, contact);
+  }
+  return result;
+}
+
 
 
 void
@@ -247,7 +277,16 @@ Init_cpArbiter(void)
   rb_define_method(c_cpArbiter, "each_contact"  , rb_cpArbiterEachContact   , 0);
   
   rb_define_method(c_cpArbiter, "shapes"        , rb_cpArbiterGetShapes     , 0);
+  rb_define_method(c_cpArbiter, "bodies"        , rb_cpArbiterGetBodies     , 0);
   /* Ignore is new in the 5.x API, I think. */
-  rb_define_method(c_cpArbiter, "ignore"        , rb_cpArbiterIgnore        , 0);
+  rb_define_method(c_cpArbiter, "ignore"        , rb_cpArbiterIgnore            , 0);
+  rb_define_method(c_cpArbiter, "points"        , rb_cpArbiterGetContactPointSet, 0);
+  
+  
+  /* Use a struct for this small class. More efficient. */
+  c_cpContactPoint = rb_struct_define("ContactPoint",
+                                      "point", "normal", "dist", NULL);
+  rb_define_const(m_Chipmunk, "ContactPoint", c_cpContactPoint);
+
     
 }

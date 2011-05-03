@@ -177,7 +177,16 @@ describe 'Space in chipmunk' do
       arr = []
       arbiter.each_contact { |c| arr << c }
       arr.size.should == 1 
-      arbiter.shapes.size.should == 2 
+      shas = arbiter.shapes
+      shas.size.should == 2
+      shas[0].should == a
+      shas[1].should == b
+      bods = arbiter.bodies
+      bods.size.should == 2
+      bods[0].should == shas[0].body
+      bods[1].should == shas[1].body
+      points         = arbiter.points
+      points.size.should == arbiter.size      
       true
     end
     
@@ -217,7 +226,7 @@ describe 'Space in chipmunk' do
     ch.pre_solve_called[0].should == shapy
     ch.pre_solve_called[1].should == shapy_one
     ch.post_solve_called[0].should == shapy
-    ch.post_solve_called[1].should == shapy_one
+    ch.post_solve_called[1].should == shapy_one    
   end
 
   it 'can have lots of shapes without GC corruption' do
@@ -336,7 +345,14 @@ describe 'Space in chipmunk' do
     b.sleep_time.should == 1000.0
   end
   
-  
+  describe 'struct ContactPoint' do
+    it 'can be constructed manually' do
+      contact = CP::ContactPoint.new(vec2(0,0),vec2(1,0), -10)
+      contact.point.should == vec2(0,0)
+      contact.normal.should == vec2(1,0)
+      contact.dist.should == -10
+    end
+  end  
 
 
 end

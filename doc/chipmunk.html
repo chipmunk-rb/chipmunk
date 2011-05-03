@@ -529,7 +529,7 @@ local coordinates.</dd>
 </dl>
 <h2>Working With Segment Shapes</h2>
 <dl>
-<dt><code>CP::SegmentShape.new(body, veca, vecb, adius)</code></dt>
+<dt><code>CP::SegmentShape.new(body, veca, vecb, radius)</code></dt>
 <dd><code>body</code> is the body to attach the segment to, <code>veca</code>
 and <code>vecb</code> are the endpoints, and <code>radius</code> is the
 thickness of the segment.</dd>
@@ -591,8 +591,6 @@ of gravity in body local coordinates. An exception will be thrown if the
 vertexes are not convex or do not have a clockwise winding.</dd>
 </dl>
   
-can you can't because the unsafe C api that would allow
-you to do this is not wrapped in these Ruby binding.</p>
 <h2>Notes</h2>
 <ul>
 	<li>You can attach multiple collision shapes to a rigid body. This 
