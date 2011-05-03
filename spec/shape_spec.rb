@@ -179,6 +179,20 @@ describe 'Shapes in chipmunk' do
       v.y.should == 0
     end
     
+    it "can unsafely modify its radius" do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
+      s.set_radius! 7
+      s.r.should == 7
+    end
+
+    it "can unsafely modify its offset" do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
+      s.set_offset! vec2(1,2)
+      s.offset.should == vec2(1,2)
+    end
+
   end
   
   describe 'SegmentQueryInfo struct' do
@@ -227,6 +241,21 @@ describe 'Shapes in chipmunk' do
       v.y.should be_within(0.001).of( 0.70710)
     end
     
+    it "can unsafely modify its endpoints" do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Segment.new bod, vec2(1,2), vec2(3,4), 5
+      s.set_endpoints!(vec2(3,4), vec2(1,2))
+      s.a.should == vec2(3,4)
+      s.b.should == vec2(1,2)
+    end
+
+    it "can unsafely modify its radius" do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Segment.new bod, vec2(1,2), vec2(3,4), 5
+      s.set_radius! 7
+      s.r.should == 7
+    end
+
     
   end
   
@@ -262,6 +291,17 @@ describe 'Shapes in chipmunk' do
       v = s[22]
       v.should be_nil
     end
+    
+    it "can unsafely modify its vertices" do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], CP::ZERO_VEC_2
+      s.set_verts!([vec2(1,1), vec2(2,2), vec2(3,3), vec2(4,4)], CP::ZERO_VEC_2)
+      s.size.should == 4
+      v = s[3]
+      v.x.should == 4
+      v.y.should == 4      
+    end
+    
   end
   
   

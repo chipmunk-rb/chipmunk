@@ -521,26 +521,37 @@ simulation.</dd>
 <h2>Working With Circle Shapes</h2>
 <dl>
 <dt><code>CP::CircleShape.new(body, radius, offset)</code></dt>
-<dd><code>body</code> is the body to attach the circle to, <code>offset</code> is the offset from the body’s center of gravity in body local coordinates.</dd>
+<dd><code>body</code> is the body to attach the circle to,
+<code>offset</code> is the offset from the body’s center of gravity in body
+local coordinates.</dd>
 <dt><code>CP::CircleShape#offset, CP::CircleShape#radius</code></dt>
 <dd>Getters for circle shape properties.</dd>
 </dl>
 <h2>Working With Segment Shapes</h2>
 <dl>
 <dt><code>CP::SegmentShape.new(body, veca, vecb, adius)</code></dt>
-<dd><code>body</code> is the body to attach the segment to, <code>veca</code> and <code>vecb</code> are the endpoints, and <code>radius</code> is the thickness of the segment.</dd>
-<dt><code>CP::SegmentShape#a(CP::Shape *shape), CP::SegmentShape#b(CP::Shape *shape), CP::SegmentShape#normal(CP::Shape *shape), CP::SegmentShape#radius(CP::Shape *shape)</code></dt>
-<dd>Getters for segment shape properties. Passing a non-segment shape will throw an assertion.</dd>
+<dd><code>body</code> is the body to attach the segment to, <code>veca</code>
+and <code>vecb</code> are the endpoints, and <code>radius</code> is the
+thickness of the segment.</dd>
+<dt><code>
+CP::SegmentShape#a(CP::Shape *shape),
+CP::SegmentShape#b(CP::Shape *shape),
+CP::SegmentShape#normal(CP::Shape *shape),
+CP::SegmentShape#radius(CP::Shape *shape)
+</code></dt>
+<dd>Getters for segment shape properties.</dd>
 </dl>
 <h2>Working With Polygon Shapes</h2>
 <dl>
 <dt><code>CP::PolyShape.new(body, verts, offset)</code></dt>
-<dd><code>body</code> is the body to attach the poly to, <code>verts</code> is an array of <code>CP::Vec2</code> objects defining a convex hull with a clockwise winding, <code>offset</code>
- is the offset from the body’s center of gravity in body local 
-coordinates. An assertion will be thrown the vertexes are not convex or 
-do not have a clockwise winding.</dd>
+<dd><code>body</code> is the body to attach the poly to, <code>verts</code> is
+an Array of <code>CP::Vec2</code> objects defining a convex hull with a
+clockwise winding, <code>offset</code> is the offset from the body’s center
+of gravity in body local coordinates. An exception will be thrown the vertexes
+are not convex or do not have a clockwise winding.</dd>
 <dt><code>CP::PolyShape.num_verts, CP::PolyShape.vert(index)</code></dt>
-<dd>Getters for poly shape properties. Passing an index that does not exist will return nil.</dd>
+<dd>Getters for poly shape properties. Passing an index that does not exist
+will return nil.</dd>
 </dl>
 <h2>Poly Shape Helper Functions</h2>
 <dl>
@@ -551,7 +562,37 @@ do not have a clockwise winding.</dd>
 </dl>
 <h2>Modifying CP::Shapes</h2>
 <p>The short answer is that you can’t because the changes would be only 
-picked up as a change to the position of the shape’s surface. The long answer is that you can't because the unsafe C api that would allow you to do this is not wrapped in these Ruby binding.</p>
+picked up as a change to the position of the shape’s surface.
+The long answer is that with the following functions, since version 5.3.4.1
+of the bindings, you can, but the results will probably not be what you expect.
+</p>
+<p>The following operations are "unsafe", because they may reduce the physical
+accuracy or numerical stability of the simulation, but will not cause crashes.
+The prime example is mutating collision shapes. Chipmunk does not support
+this directly. Mutating shapes using this API will caused objects in contact
+to be pushed apart using Chipmunk's overlap solver, but not using real
+persistent velocities. Probably not what you meant, but perhaps close enough.
+</p>
+<dl>
+<dt><code>CP::Shape::Circle#set_radius!(r)</code></dt>
+<dd>Sets the radius of the circle to <code>r</code>.</dd>
+<dt><code>CP::Shape::Circle#set_offset!(offset)</code></dt>
+<dd>Sets the offset from center of the circle to <code>offset</code>.</dd>
+<dt><code>CP::Shape::Segment#set_radius!(r)</code></dt>
+<dd>Sets the radius of the segment to <code>r</code>.</dd>
+<dt><code>CP::Shape::Segment#set_endpoints!(veca, vecb)</code></dt>
+<dd>Sets the endpoints of the segment to <code>veca</code> and
+<code>vecb</code>.</dd>
+<dt><code>CP::Shape::Poly#set_verts!(verts, offset)</code></dt>
+<dd>Sets the verices and offset of the polygon. <code>verts</code> is
+an Array of <code>CP::Vec2</code> objects defining a convex hull with a
+clockwise winding, <code>offset</code> is the offset from the body’s center
+of gravity in body local coordinates. An exception will be thrown if the
+vertexes are not convex or do not have a clockwise winding.</dd>
+</dl>
+  
+can you can't because the unsafe C api that would allow
+you to do this is not wrapped in these Ruby binding.</p>
 <h2>Notes</h2>
 <ul>
 	<li>You can attach multiple collision shapes to a rigid body. This 

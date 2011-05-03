@@ -21,6 +21,7 @@
  
 #include <stdlib.h>
 #include "chipmunk.h"
+#include "chipmunk_unsafe.h"
 
 #include "ruby.h"
 #include "rb_chipmunk.h"
@@ -301,17 +302,21 @@ rb_cpSegmentInitialize(VALUE self, VALUE body, VALUE a, VALUE b, VALUE r)
 
 
 //cpPoly
-#define RBCP_ARRAY_POINTS(ARR, NUM, VERTS)        \
-        Check_Type(ARR, T_ARRAY);                 \
-        VALUE *__rbcp_ptr = RARRAY_PTR(ARR);      \
-        int NUM           = RARRAY_LEN(ARR);      \
-        cpVect VERTS[NUM];                        \
-        for(int i=0; i<NUM; i++)             \
+
+// Syntactic macro to handle fetching the vertices from a ruby array
+// to a C array. 
+#define RBCP_ARRAY_POINTS(ARR, NUM, VERTS)       	\
+        Check_Type(ARR, T_ARRAY);                 	\
+        VALUE *__rbcp_ptr = RARRAY_PTR(ARR);     	\
+        int NUM           = RARRAY_LEN(ARR);      	\
+        cpVect VERTS[NUM];                        	\
+        for(int i=0; i<NUM; i++)             	  	\
           VERTS[i] = *VGET(__rbcp_ptr[i]);
 
 
 static VALUE rb_cpPolyValidate(VALUE self, VALUE arr) {
-  RBCP_ARRAY_POINTS(arr, num, verts)
+  RBCP_ARRAY_POINTS(arr, num, verts);
+  
   return CP_INT_BOOL(cpPolyValidate(verts, num));
 }
 
@@ -325,21 +330,16 @@ rb_cpPolyAlloc(VALUE klass)
 
 static VALUE
 rb_cpPolyInitialize(VALUE self, VALUE body, VALUE arr, VALUE offset)
-{
+{	
 	cpPolyShape *poly = (cpPolyShape *)SHAPE(self);
 	
-	Check_Type(arr, T_ARRAY);
-	int numVerts = RARRAY_LEN(arr);
-	VALUE *ary_ptr = RARRAY_PTR(arr);
-	cpVect verts[numVerts];
-	
-	for(int i=0; i<numVerts; i++)
-		verts[i] = *VGET(ary_ptr[i]);
-	if(!cpPolyValidate(verts, numVerts)) {
+	RBCP_ARRAY_POINTS(arr, num, verts);
+
+	if(!cpPolyValidate(verts, num)) {
 	  rb_raise(rb_eArgError, "The verts array does not from a valid polygon!");
 	}	
 	
-	cpPolyShapeInit(poly, BODY(body), numVerts, verts, *VGET(offset));
+	cpPolyShapeInit(poly, BODY(body), num, verts, *VGET(offset));
 	poly->shape.data = (void *)self;
 	poly->shape.collision_type = Qnil;
 
@@ -385,6 +385,46 @@ static VALUE rb_cpPolyShapeGetVert(VALUE self, VALUE vindex) {
   }  
   return VNEW(cpPolyShapeGetVert(shape, index));
 }
+
+/* "unsafe" API. */
+
+static VALUE rb_cpCircleShapeSetRadius(VALUE self, VALUE radius) {
+  cpCircleShapeSetRadius(SHAPE(self), NUM2DBL(radius));
+  return self;
+}
+
+static VALUE rb_cpCircleShapeSetOffset(VALUE self, VALUE offset) {
+  cpCircleShapeSetOffset(SHAPE(self), *VGET(offset));
+  return self;
+}
+
+static VALUE rb_cpSegmentShapeSetEndpoints(VALUE self, VALUE a, VALUE b) {
+  cpSegmentShapeSetEndpoints(SHAPE(self), *VGET(a), *VGET(b));
+  return self;
+}
+
+static VALUE rb_cpSegmentShapeSetRadius(VALUE self, VALUE radius) {
+  cpSegmentShapeSetRadius(SHAPE(self), NUM2DBL(radius));
+  return self;
+}
+
+
+static VALUE rb_cpPolyShapeSetVerts(VALUE self, VALUE arr, VALUE offset) {
+  cpShape *poly = SHAPE(self);
+  
+  RBCP_ARRAY_POINTS(arr, num, verts);
+
+  if(!cpPolyValidate(verts, num)) {
+    rb_raise(rb_eArgError, "The verts array does not from a valid polygon!");
+  }	
+
+  cpPolyShapeSetVerts(poly, num, verts, *VGET(offset));
+  return self;
+}
+
+
+
+
 
 
 void
@@ -482,7 +522,15 @@ Init_cpShape(void)
   /* Use a struct for this small class. More efficient. */
   c_cpSegmentQueryInfo = rb_struct_define("SegmentQueryInfo",
                          "shape", "t", "n", NULL);
-  rb_define_const(m_Chipmunk, "SegmentQueryInfo", c_cpSegmentQueryInfo);   
+  rb_define_const(m_Chipmunk, "SegmentQueryInfo", c_cpSegmentQueryInfo);
+  /*"unsafe" API. */
+  rb_define_method(c_cpCircleShape  , "set_radius!", rb_cpCircleShapeSetRadius, 1);
+  rb_define_method(c_cpCircleShape  , "set_offset!", rb_cpCircleShapeSetOffset, 1);
+  rb_define_method(c_cpSegmentShape, "set_endpoints!", rb_cpSegmentShapeSetEndpoints, 2);
+  rb_define_method(c_cpSegmentShape, "set_radius!", rb_cpSegmentShapeSetRadius, 1);
+  
+  rb_define_method(c_cpPolyShape   , "set_verts!" , rb_cpPolyShapeSetVerts , 2);
+  
   
 }
 // 
