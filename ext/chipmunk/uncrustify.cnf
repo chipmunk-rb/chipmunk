@@ -376,10 +376,10 @@ sp_inside_fparen                         = ignore   # ignore/add/remove/force
 sp_square_fparen                         = ignore   # ignore/add/remove/force
 
 # Add or remove space between ')' and '{' of function
-sp_fparen_brace                          = ignore   # ignore/add/remove/force
+sp_fparen_brace                          = add   # ignore/add/remove/force
 
 # Add or remove space between function name and '(' on function calls
-sp_func_call_paren                       = ignore   # ignore/add/remove/force
+sp_func_call_paren                       = remove   # ignore/add/remove/force
 
 # Add or remove space between the user function name and '(' on function calls
 # You need to set a keyword to be a user function, like this: 'set func_call_user _' in the config file.
@@ -404,16 +404,16 @@ sp_throw_paren                           = ignore   # ignore/add/remove/force
 sp_macro                                 = ignore   # ignore/add/remove/force
 
 # Add or remove space between macro function ')' and value
-sp_macro_func                            = ignore   # ignore/add/remove/force
+sp_macro_func                            = add      # ignore/add/remove/force
 
 # Add or remove space between 'else' and '{' if on the same line
-sp_else_brace                            = ignore   # ignore/add/remove/force
+sp_else_brace                            = add      # ignore/add/remove/force
 
 # Add or remove space between '}' and 'else' if on the same line
-sp_brace_else                            = ignore   # ignore/add/remove/force
+sp_brace_else                            = add   # ignore/add/remove/force
 
 # Add or remove space between '}' and the name of a typedef on the same line
-sp_brace_typedef                         = ignore   # ignore/add/remove/force
+sp_brace_typedef                         = add   # ignore/add/remove/force
 
 # Add or remove space between 'catch' and '{' if on the same line
 sp_catch_brace                           = ignore   # ignore/add/remove/force
