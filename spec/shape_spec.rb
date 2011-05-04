@@ -12,11 +12,10 @@ describe 'Shapes in chipmunk' do
       s = CP::Shape::Circle.new bod, 40, nil
     end
     
-    # this should work later with chipmunk 5.3.5    
-    #it 'can be created with a missing offset' do
-    #  bod = CP::Body.new 90, 76
-    #  s = CP::Shape::Circle.new bod, 40
-    #end
+    it 'can be created with a missing offset' do
+       bod = CP::Body.new 90, 76
+         s = CP::Shape::Circle.new bod, 40
+    end
     
 #     it 'does not crash if created incorrectly' do      
 #       lambda { s = CP::Shape::Circle.new }.should raise_error
@@ -287,6 +286,12 @@ describe 'Shapes in chipmunk' do
       bod = CP::Body.new 90, 76
       s   = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)], nil
     end
+    
+    it 'can be created without an offset' do
+      bod = CP::Body.new 90, 76
+      s   = CP::Shape::Poly.new bod, [vec2(1,1), vec2(2,2),vec2(3,3)]
+    end
+    
     
     it 'can get its amount of vertices' do
       bod = CP::Body.new 90, 76
