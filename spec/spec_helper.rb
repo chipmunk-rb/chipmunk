@@ -1,5 +1,5 @@
 # require 'spec'
-$: << File.dirname(__FILE__)+'/../lib'
+$:.unshift File.join(File.dirname(File.dirname(__FILE__)), 'lib')
 
 require 'chipmunk'
 

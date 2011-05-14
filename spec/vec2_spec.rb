@@ -73,8 +73,8 @@ describe 'Vect in chipmunk' do
       v2 = v1 / 3
       v1.x.should == 9
       v1.y.should == 3
-      v2.x.should == 3
-      v2.y.should == 1
+      v2.x.should be_within(0.0001).of(3)
+      v2.y.should be_within(0.0001).of(1)
     end
     
     it 'can be negated using the unary minus operator' do
