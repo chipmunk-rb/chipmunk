@@ -156,8 +156,8 @@ rb_cpArbiterSetU(VALUE self, VALUE u) {
 
 static VALUE
 rb_cpArbiterIsFirstContact(VALUE self) {
-  int bool = cpArbiterIsFirstContact(ARBITER(self));
-  return bool ? Qtrue : Qfalse;
+  int b = cpArbiterIsFirstContact(ARBITER(self));
+  return b ? Qtrue : Qfalse;
 }
 
 static int
