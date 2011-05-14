@@ -13,6 +13,12 @@ rescue LoadError
 end
  
 CHIPMUNK_VERSION = "5.3.4.0"
+VENDORED_CHIPMUNK     = 'chipmunk-5.3.4'
+VENDORED_SRC_DIR      =  File.join('vendor', VENDORED_CHIPMUNK, 'src')
+VENDORED_SRC_DIR2     =  File.join('vendor', VENDORED_CHIPMUNK, 'src', 'constraints')
+VENDORED_INCLUDE_DIR  =  File.join('vendor', VENDORED_CHIPMUNK, 'include', 'chipmunk')
+
+
  
 dlext = Config::CONFIG['DLEXT']
  
@@ -49,11 +55,11 @@ if RUBY_PLATFORM =~ /darwin/
         ext.ext_dir   = "ext"
         ext.lib_dir   = "lib/#{RUBY_VERSION[0..2]}"
         ext.config_script = 'extconf.rb'
-        ext.config_options << 'macosx'
+        ext.config_options << '--enable-macosx'
     end
  
     task :compile_multi => :clean do
-        `/bin/bash -l -c "rvm 1.8.6,1.9.1 rake compile"`
+        `/bin/bash -l -c "rvm 1.8.6,1.9.2 rake compile"`
     end
  
     task :gem => :compile_multi
