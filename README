@@ -37,12 +37,19 @@ ABOUT THESE RUBY BINDINGS:
   If you have any problems with these bindings, please contact the maintainer at
   beoran@rubyforge.org, or report the issue on the issue tracker:  
   https://github.com/beoran/chipmunk/issues
+  
+INSTALLATION
+  First, the C chipmunk library needs too be installed correctly and separately.
+  Then a gem install chipmunk should do the trick.
     
 DOCUMENTATION:
   Full handcrafted duumentation based on the C documentation is available at:
   http://beoran.github.com/chipmunk/
   
 KNOWN BUGS:
+  * Previous versions of the gem vendored the C chipmunk library. I, (Beotran)
+    unvendored them because it was messy, but I'm still thinking about a 
+    cleaner way to do this.
   * There are no bindings to SpaceHash since I think they are not so useful
     anymore since Chipmunk supports BB queries.
   * Some methods may crash with a segentation violation in case they are not
