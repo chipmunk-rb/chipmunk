@@ -262,7 +262,7 @@ Init_cpArbiter(void) {
 
   rb_define_method(c_cpArbiter, "point", rb_cpArbiterGetPoint, 1);
   rb_define_method(c_cpArbiter, "normal", rb_cpArbiterGetNormal, 1);
-  rb_define_method(c_cpArbiter, "normal", rb_cpArbiterGetDepth, 1);
+  rb_define_method(c_cpArbiter, "depth", rb_cpArbiterGetDepth, 1);
   rb_define_method(c_cpArbiter, "impulse", rb_cpArbiterGetImpulse, -1);
 
   rb_define_method(c_cpArbiter, "to_s", rb_cpArbiterToString, 0);
