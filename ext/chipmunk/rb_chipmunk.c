@@ -54,13 +54,13 @@ rb_set_cp_collision_slop(VALUE self, VALUE num) {
 
 static VALUE
 rb_set_cp_contact_persistence(VALUE self, VALUE num) {
-  cp_contact_persistence = NUM2DBL(num);
+  cp_contact_persistence = NUM2UINT(num);
   return num;
 }
 
 static VALUE
 rb_get_cp_contact_persistence(VALUE self) {
-  return rb_float_new(cp_contact_persistence);
+  return UINT2NUM(cp_contact_persistence);
 }
 
 
@@ -79,11 +79,11 @@ rb_cpMomentForSegment(VALUE self, VALUE m, VALUE v1, VALUE v2) {
 static VALUE
 rb_cpMomentForPoly(VALUE self, VALUE m, VALUE arr, VALUE offset) {
   Check_Type(arr, T_ARRAY);
-  int numVerts    = RARRAY_LEN(arr);
+  long numVerts    = RARRAY_LEN(arr);
   VALUE *ary_ptr  = RARRAY_PTR(arr);
   cpVect verts[numVerts];
 
-  for(int i = 0; i < numVerts; i++)
+  for(long i = 0; i < numVerts; i++)
     verts[i] = *VGET(ary_ptr[i]);
 
   cpFloat inertia = cpMomentForPoly(NUM2DBL(m), numVerts, verts, *VGET(offset));
@@ -111,11 +111,11 @@ rb_cpAreaForSegment(VALUE self, VALUE v1, VALUE v2, VALUE r) {
 static VALUE
 rb_cpAreaForPoly(VALUE self, VALUE arr) {
   Check_Type(arr, T_ARRAY);
-  int numVerts   = RARRAY_LEN(arr);
+  long numVerts   = RARRAY_LEN(arr);
   VALUE *ary_ptr = RARRAY_PTR(arr);
   cpVect verts[numVerts];
 
-  for(int i = 0; i < numVerts; i++)
+  for(long i = 0; i < numVerts; i++)
     verts[i] = *VGET(ary_ptr[i]);
 
   cpFloat area   = cpAreaForPoly(numVerts, verts);
@@ -150,11 +150,11 @@ rb_cpflerpconst(VALUE self, VALUE f1, VALUE f2, VALUE d) {
 static VALUE
 rb_cpCentroidForPoly(VALUE self,  VALUE arr) {
   Check_Type(arr, T_ARRAY);
-  int numVerts   = RARRAY_LEN(arr);
+  long numVerts   = RARRAY_LEN(arr);
   VALUE *ary_ptr = RARRAY_PTR(arr);
   cpVect verts[numVerts];
 
-  for(int i = 0; i < numVerts; i++)
+  for(long i = 0; i < numVerts; i++)
     verts[i] = *VGET(ary_ptr[i]);
 
   return VNEW(cpCentroidForPoly(numVerts, verts));
@@ -163,16 +163,16 @@ rb_cpCentroidForPoly(VALUE self,  VALUE arr) {
 static VALUE
 rb_cpRecenterPoly(VALUE self,  VALUE arr) {
   Check_Type(arr, T_ARRAY);
-  int numVerts   = RARRAY_LEN(arr);
+  long numVerts   = RARRAY_LEN(arr);
   VALUE *ary_ptr = RARRAY_PTR(arr);
   cpVect verts[numVerts];
 
-  for(int i = 0; i < numVerts; i++)
+  for(long i = 0; i < numVerts; i++)
     verts[i] = *VGET(ary_ptr[i]);
 
   cpRecenterPoly(numVerts, verts);
 
-  for(int i = 0; i < numVerts; i++)
+  for(long i = 0; i < numVerts; i++)
     ary_ptr[i] = VNEW(verts[i]);
   return arr;
 }

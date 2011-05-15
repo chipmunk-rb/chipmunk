@@ -169,7 +169,7 @@ arbiterBadIndex(cpArbiter *arb, int i) {
 static VALUE
 rb_cpArbiterGetNormal(VALUE self, VALUE index) {
   cpArbiter *arb = ARBITER(self);
-  int i          = NUM2LONG(index);
+  int i          = NUM2INT(index);
   if (arbiterBadIndex(arb, i)) {
     rb_raise(rb_eIndexError, "No such normal.");
   }
@@ -179,7 +179,7 @@ rb_cpArbiterGetNormal(VALUE self, VALUE index) {
 static VALUE
 rb_cpArbiterGetPoint(VALUE self, VALUE index) {
   cpArbiter *arb = ARBITER(self);
-  int i          = NUM2LONG(index);
+  int i          = NUM2INT(index);
   if (arbiterBadIndex(arb, i)) {
     rb_raise(rb_eIndexError, "No such contact point.");
   }
@@ -189,7 +189,7 @@ rb_cpArbiterGetPoint(VALUE self, VALUE index) {
 static VALUE
 rb_cpArbiterGetDepth(VALUE self, VALUE index) {
   cpArbiter *arb = ARBITER(self);
-  int i          = NUM2LONG(index);
+  int i          = NUM2INT(index);
   if (arbiterBadIndex(arb, i)) {
     rb_raise(rb_eIndexError, "No such depth.");
   }

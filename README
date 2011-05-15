@@ -39,8 +39,8 @@ ABOUT THESE RUBY BINDINGS:
   https://github.com/beoran/chipmunk/issues
   
 INSTALLATION
-  First, the C chipmunk library needs too be installed correctly and separately.
-  Then a gem install chipmunk should do the trick.
+  Optionally, the C chipmunk library may be installed separately. These bindings
+  vendor Chipmunk, so a gem install chipmunk should do the trick.
     
 DOCUMENTATION:
   Full handcrafted duumentation based on the C documentation is available at:

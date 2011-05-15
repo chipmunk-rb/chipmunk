@@ -263,9 +263,9 @@ rb_cpSegmentInitialize(VALUE self, VALUE body, VALUE a, VALUE b, VALUE r) {
 #define RBCP_ARRAY_POINTS(ARR, NUM, VERTS) \
   Check_Type(ARR, T_ARRAY);                \
   VALUE *__rbcp_ptr = RARRAY_PTR(ARR);     \
-  int NUM           = RARRAY_LEN(ARR);     \
+  long NUM           = RARRAY_LEN(ARR);    \
   cpVect VERTS[NUM];                       \
-  for(int i = 0; i < NUM; i++)             \
+  for(long i = 0; i < NUM; i++)            \
     VERTS[i] = *VGET(__rbcp_ptr[i]);
 
 
