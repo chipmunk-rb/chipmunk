@@ -187,6 +187,8 @@ describe 'Space in chipmunk' do
       bods[1].should == shas[1].body
       points         = arbiter.points
       points.size.should == arbiter.size      
+      arbiter.normal(0).class.should == Vec2
+      d = arbiter.depth(0).class.should == Float
       true
     end
     
