@@ -3,7 +3,8 @@ Ruby Bindings to Chipmunk Physics Version 5.3.4
 (C) Scott Lembcke, Beoran and John Mair (banisterfiend)
 
 IMPORTANT NOTICE:
-These are bindings for MRI Ruby 1.8.x and 1.9.x to Chipmunk version 5.3.4
+These is version 5.3.4.2 of the bindings for MRI Ruby 1.8.x and 1.9.x to 
+Chipmunk version 5.3.4.
 
 (1) 1/10/09 Cross-Platform Gem built by John Mair (banisterfiend)
     * Just go: gem install chipmunk  
@@ -39,17 +40,22 @@ ABOUT THESE RUBY BINDINGS:
   https://github.com/beoran/chipmunk/issues
   
 INSTALLATION
-  Optionally, the C chipmunk library may be installed separately. These bindings
-  vendor Chipmunk, so a gem install chipmunk should do the trick.
+  These bindings vendor Chipmunk 5.3.4 with a few extra patches, so a gem 
+  install chipmunk should do the trick. Optionally, the C chipmunk library 
+  may be installed separately. To compile without vendoring, go to the 
+  ext/chipmunk directory and compile with ruby extconf.rb --disable-vendor ; 
+  make ; make install.
     
 DOCUMENTATION:
-  Full handcrafted duumentation based on the C documentation is available at:
+  Full handcrafted documentation based on the C documentation is available at:
   http://beoran.github.com/chipmunk/
   
+CHANGES:
+  * Since 5.3.4.1: Vendored chipmunk again, cleanly. Several bugfixes.
+  * Since 5.1.0  : Much more of Chipmunk's functionality is wrapped. Unvendored 
+    chipmunk. More specs and documentation.
+  
 KNOWN BUGS:
-  * Previous versions of the gem vendored the C chipmunk library. I, (Beotran)
-    unvendored them because it was messy, but I'm still thinking about a 
-    cleaner way to do this.
   * There are no bindings to SpaceHash since I think they are not so useful
     anymore since Chipmunk supports BB queries.
   * Some methods may crash with a segentation violation in case they are not
@@ -63,11 +69,9 @@ CONTRACTING:
 TODO:
   * Allow several constructors to be more flexible and take nil as a default
     argument.
-  * Try to prevent segfauts on incorrect use of certain methods, if possible.  
+  * Try to prevent segfauts on incorrect use of certain methods, if possible.
   * Get ready for chipmunk 5.3.5 and 6.x when they come out.
   * Some more specs.
-  * Better documentation, perhaps based on C API documentation.
-  
 
 INFO FOR MAINTAINERS:
 

@@ -1,7 +1,13 @@
 # Rakefile added by John Mair (banisterfiend)
  
-require 'rake/gempackagetask'
+# require 'rake/gempackagetask'
+require 'psych'
+require 'rake'
 require 'rake/clean'
+require 'rubygems'
+require 'rubygems/package_task'
+
+
  
 begin
     require 'rake/extensiontask'
@@ -12,7 +18,7 @@ rescue LoadError
 #    puts "...done!"
 end
  
-CHIPMUNK_VERSION = "5.3.4.0"
+CHIPMUNK_VERSION = "5.3.4.2"
 VENDORED_CHIPMUNK     = 'chipmunk-5.3.4'
 VENDORED_SRC_DIR      =  File.join('vendor', VENDORED_CHIPMUNK, 'src')
 VENDORED_SRC_DIR2     =  File.join('vendor', VENDORED_CHIPMUNK, 'src', 'constraints')
@@ -48,7 +54,8 @@ if RUBY_PLATFORM =~ /darwin/
     spec = Gem::Specification.new do |s|
         apply_spec_defaults(s)        
         s.platform = Gem::Platform::CURRENT
-        s.files = ["Rakefile", "README", "LICENSE", "lib/chipmunk.rb", "lib/1.8/chipmunk.#{dlext}", "lib/1.9/chipmunk.#{dlext}"] 
+        s.files = ["Rakefile", "README", "LICENSE", "lib/chipmunk.rb", "lib/1.8/chipmunk.#{dlext}", "lib/1.9/chipmunk.#{dlext}"] +
+            FileList["ext/**/extconf.rb", "ext/**/*.h", "ext/**/*.c"].to_a
     end
  
     Rake::ExtensionTask.new('chipmunk') do |ext|
@@ -63,7 +70,7 @@ if RUBY_PLATFORM =~ /darwin/
     end
  
     task :gem => :compile_multi
-    Rake::GemPackageTask.new(spec) do |pkg|
+    Gem::PackageTask.new(spec) do |pkg|
         pkg.need_zip = false
         pkg.need_tar = false
     end
@@ -85,7 +92,7 @@ else
         # ext.cross_platform = 'i386-mswin32'
     end
  
-    Rake::GemPackageTask.new(spec) do |pkg|
+    Gem::PackageTask.new(spec) do |pkg|
         pkg.need_zip = false
         pkg.need_tar = false
     end
