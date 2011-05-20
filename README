@@ -3,7 +3,7 @@ Ruby Bindings to Chipmunk Physics Version 5.3.4
 (C) Scott Lembcke, Beoran and John Mair (banisterfiend)
 
 IMPORTANT NOTICE:
-These is version 5.3.4.2 of the bindings for MRI Ruby 1.8.x and 1.9.x to 
+This is version 5.3.4.2 of the bindings for MRI Ruby 1.8.x and 1.9.x to 
 Chipmunk version 5.3.4.
 
 (1) 1/10/09 Cross-Platform Gem built by John Mair (banisterfiend)
