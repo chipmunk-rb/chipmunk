@@ -1,7 +1,6 @@
 # Rakefile added by John Mair (banisterfiend)
  
-# require 'rake/gempackagetask'
-require 'psych'
+# require 'psych'
 require 'rake'
 require 'rake/clean'
 require 'rubygems'
@@ -84,16 +83,18 @@ else
         s.files = ["Rakefile", "README", "LICENSE", "lib/chipmunk.rb"] +
             FileList["ext/**/extconf.rb", "ext/**/*.h", "ext/**/*.c"].to_a
     end
- 
-    Rake::ExtensionTask.new('chipmunk', spec) do |ext|
-        ext.config_script = 'extconf.rb'
-        ext.cross_compile = true
-        ext.cross_platform = 'i586-mingw32'
-        # ext.cross_platform = 'i386-mswin32'
-    end
- 
+    
+    # add your default gem packing task
     Gem::PackageTask.new(spec) do |pkg|
         pkg.need_zip = false
         pkg.need_tar = false
     end
+ 
+    Rake::ExtensionTask.new('chipmunk', spec) do |ext|
+      ext.config_script = 'extconf.rb'
+      ext.cross_compile = true
+      ext.cross_platform = 'i586-mingw32'
+        # ext.cross_platform = 'i386-mswin32'
+    end
+ 
 end

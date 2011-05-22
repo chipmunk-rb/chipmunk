@@ -40,6 +40,14 @@ ABOUT THESE RUBY BINDINGS:
   https://github.com/beoran/chipmunk/issues
   
 INSTALLATION
+  Clone this repository, go into the ext directory and do 
+  ruby extconf.rb ; make ; make install
+  
+  There is a gem available but due to incompatilties  in the latest versions of 
+  Rake, Rake-Compiler and rubygems, the gem method of installation may fail for 
+  you. This will be solved when these incompatinilities are solved by these 
+  upstream tools.
+
   These bindings vendor Chipmunk 5.3.4 with a few extra patches, so a gem 
   install chipmunk should do the trick. Optionally, the C chipmunk library 
   may be installed separately. To compile without vendoring, go to the 
@@ -72,6 +80,7 @@ TODO:
   * Try to prevent segfauts on incorrect use of certain methods, if possible.
   * Get ready for chipmunk 5.3.5 and 6.x when they come out.
   * Some more specs.
+  * Fix the gem when the upstream tools get fixed.
 
 INFO FOR MAINTAINERS:
 
