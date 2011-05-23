@@ -3,11 +3,11 @@ Ruby Bindings to Chipmunk Physics Version 5.3.4
 (C) Scott Lembcke, Beoran and John Mair (banisterfiend)
 
 IMPORTANT NOTICE:
-This is version 5.3.4.2 of the bindings for MRI Ruby 1.8.x and 1.9.x to 
+This is version 5.3.4.3 of the bindings for MRI Ruby 1.8.x and 1.9.x to
 Chipmunk version 5.3.4.
 
 (1) 1/10/09 Cross-Platform Gem built by John Mair (banisterfiend)
-    * Just go: gem install chipmunk  
+    * Just go: gem install chipmunk
 
 FORUM:
   http://www.slembcke.net/forums
@@ -17,61 +17,68 @@ CONTACT:
   beoran@rubyforge.org for these bindings to Ruby.
 
 ABOUT CHIPMUNK:
-  Chipmunk is a simple, lightweight and fast 2D rigid body physics library 
-  written in C by Slembcke. It's licensed under the unrestrictive, OSI approved 
-  MIT license. 
-  
-ABOUT THESE RUBY BINDINGS:    
-  Although chipmunk comes with ruby bindings, they are not always up to date 
+  Chipmunk is a simple, lightweight and fast 2D rigid body physics library
+  written in C by Slembcke. It's licensed under the unrestrictive, OSI approved
+  MIT license.
+
+ABOUT THESE RUBY BINDINGS:
+  Although chipmunk comes with ruby bindings, they are not always up to date
   with regards to the functionality of the C library, and historically, they
-  have been incompatible with recent versions of Ruby. 
-    
-  Therefore, these bindings are intended to as an enhanced version with more 
-  features and better compatibility with recent versions of Ruby. They are also 
-  intended to be an alternative to the chipmunk-ffi bindings when performance 
-  is of the utmost importance, as it may be for games. 
-  
+  have been incompatible with recent versions of Ruby.
+
+  Therefore, these bindings are intended to as an enhanced version with more
+  features and better compatibility with recent versions of Ruby. They are also
+  intended to be an alternative to the chipmunk-ffi bindings when performance
+  is of the utmost importance, as it may be for games.
+
   The intent is for these bindings to be mostly source code compatible with the
   FFI bindings. Main exceptions are when it did not support the functionality I
   added yet. All this is documented by specs and by the html documentation.
-  
+
   If you have any problems with these bindings, please contact the maintainer at
-  beoran@rubyforge.org, or report the issue on the issue tracker:  
+  beoran@rubyforge.org, or report the issue on the issue tracker:
   https://github.com/beoran/chipmunk/issues
-  
+
 INSTALLATION
-  Clone this repository, go into the ext directory and do 
+  Clone this repository, go into the ext directory and do:
+
   ruby extconf.rb ; make ; make install
-  
-  There is a gem available but due to incompatilties  in the latest versions of 
-  Rake, Rake-Compiler and rubygems, the gem method of installation may fail for 
-  you. This will be solved when these incompatinilities are solved by these 
+
+  There is also a gem available for Linux and OS/X, and a binary gem for Windows,
+  which you can try to install with:
+
+  gem install chipmunk
+
+  However, due to incompatilties in the latest versions of
+  Rake, Rake-Compiler and rubygems, the gem method of installation may fail for
+  you. This will be solved when these incompatibilities are solved by these
   upstream tools.
 
-  These bindings vendor Chipmunk 5.3.4 with a few extra patches, so a gem 
-  install chipmunk should do the trick. Optionally, the C chipmunk library 
-  may be installed separately. To compile without vendoring, go to the 
-  ext/chipmunk directory and compile with ruby extconf.rb --disable-vendor ; 
-  make ; make install.
-    
+  These bindings vendor Chipmunk 5.3.4 with a few extra patches, so you don't
+  need to have it installed. Optionally, the C chipmunk library may be installed
+  separately. To compile without vendoring, go to the ext/chipmunk directory and
+  compile with:
+  ruby extconf.rb --disable-vendor ;  make ; make install
+
+
 DOCUMENTATION:
   Full handcrafted documentation based on the C documentation is available at:
   http://beoran.github.com/chipmunk/
-  
+
 CHANGES:
   * Since 5.3.4.1: Vendored chipmunk again, cleanly. Several bugfixes.
-  * Since 5.1.0  : Much more of Chipmunk's functionality is wrapped. Unvendored 
+  * Since 5.1.0  : Much more of Chipmunk's functionality is wrapped. Unvendored
     chipmunk. More specs and documentation.
-  
+
 KNOWN BUGS:
   * There are no bindings to SpaceHash since I think they are not so useful
     anymore since Chipmunk supports BB queries.
   * Some methods may crash with a segentation violation in case they are not
     used correctly, according to the underlying requirements of the C library.
-  
+
 CONTRACTING:
-  Howling Moon Software (Slembke's company) is available for contracting if you 
-  want to make the physics in your game really stand out. Feel free to contact 
+  Howling Moon Software (Slembke's company) is available for contracting if you
+  want to make the physics in your game really stand out. Feel free to contact
   them through their webpage: http://howlingmoonsoftware.com/contracting.php
 
 TODO:
@@ -85,7 +92,7 @@ TODO:
 INFO FOR MAINTAINERS:
 
 (1) 1/10/09 Cross-Platform Gem built by John Mair (banisterfiend)
-    * Just go: gem install chipmunk  
+    * Just go: gem install chipmunk
 
 (2) Patched for 1.9.1 by Beoran (beoran@rubyforge.org)
 
