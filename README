@@ -55,11 +55,7 @@ INSTALLATION
   upstream tools.
 
   These bindings vendor Chipmunk 5.3.4 with a few extra patches, so you don't
-  need to have it installed. Optionally, the C chipmunk library may be installed
-  separately. To compile without vendoring, go to the ext/chipmunk directory and
-  compile with:
-  ruby extconf.rb --disable-vendor ;  make ; make install
-
+  need to have it installed.
 
 DOCUMENTATION:
   Full handcrafted documentation based on the C documentation is available at:
