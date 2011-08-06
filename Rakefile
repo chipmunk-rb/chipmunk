@@ -17,7 +17,7 @@ rescue LoadError
 #    puts "...done!"
 end
 
-CHIPMUNK_VERSION = "5.3.4.4"
+CHIPMUNK_VERSION = "5.3.4.5"
 VENDORED_CHIPMUNK     = 'chipmunk-5.3.4'
 VENDORED_SRC_DIR      =  File.join('vendor', VENDORED_CHIPMUNK, 'src')
 VENDORED_SRC_DIR2     =  File.join('vendor', VENDORED_CHIPMUNK, 'src', 'constraints')
@@ -43,6 +43,8 @@ def apply_spec_defaults(s)
     s.homepage = "https://github.com/beoran/chipmunk"
 end
 
+FILES = ["Rakefile", "README", "LICENSE", "lib/chipmunk.rb"] +
+       FileList["spec/*.rb", "ext/**/extconf.rb", "ext/**/*.h", "ext/**/*.c"].to_a
 
 # common tasks
 task :compile => :clean

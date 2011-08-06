@@ -243,7 +243,7 @@ rb_cpConstraintGetImpulse(VALUE self) {
 #define STRINGIFY(v) # v
 #define ACCESSOR_METHODS(s, m, name)                                   \
   rb_define_method(c_ ## s, STRINGIFY(name), rb_ ## s ## Get ## m, 0); \
-  rb_define_method(c_ ## s, STRINGIFY(name = ), rb_ ## s ## Set ## m, 1);
+  rb_define_method(c_ ## s, STRINGIFY(name=), rb_ ## s ## Set ## m, 1);
 
 static VALUE
 make_class(const char *name, void *alloc_func, void *init_func, int init_params) {

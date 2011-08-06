@@ -33,6 +33,11 @@ describe 'Constraints in chipmunk' do
     it 'can access its impulse' do
       @con.impulse.should == 0.0 
     end  
+
+    it 'can set its impulse' do
+      @con.impulse= 1.0 
+      @con.impulse.should == 1.0 
+    end  
   end
   
   describe 'PinJoint class' do
