@@ -39,6 +39,12 @@ ABOUT THESE RUBY BINDINGS:
   beoran@rubyforge.org, or report the issue on the issue tracker:
   https://github.com/beoran/chipmunk/issues
 
+REQUIREMENTS
+  * Ruby 1.8.x or 1.9.x.
+  * rspec for running the specs
+  * rake and rake-compiler for compiling the extension.
+  
+
 INSTALLATION
   Clone this repository, go into the ext directory and do:
 
