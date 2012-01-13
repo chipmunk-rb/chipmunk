@@ -41,7 +41,7 @@ ABOUT THESE RUBY BINDINGS:
 
 REQUIREMENTS
   * Ruby 1.8.x or 1.9.x.
-  * rspec for running the specs
+  * rspec for running the specs.
   * rake and rake-compiler for compiling the extension.
   
 
