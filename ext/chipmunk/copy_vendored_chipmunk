@@ -1,0 +1,8 @@
+#!/bin/bash
+VERSION=$1
+CPDIR=../../vendor/chipmunk-$VERSION
+cp $CPDIR/src/*.c .
+cp $CPDIR/src/*.h .
+cp $CPDIR/include/chipmunk/*.h .
+cp -a $CPDIR/include/chipmunk/constraints .
+

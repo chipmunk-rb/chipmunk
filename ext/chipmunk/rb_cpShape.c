@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include "chipmunk.h"
 #include "chipmunk_unsafe.h"
+// looks like certain functions I exposed are supposed to be private? 
+// #include "chipmunk_private.h"
 
 #include "ruby.h"
 #include "rb_chipmunk.h"
@@ -396,8 +398,12 @@ rb_cpPolyShapeSetVerts(VALUE self, VALUE arr, VALUE offset) {
 // Returns the minimum distance of the polygon to the axis.
 static VALUE
 rb_cpPolyShapeValueOnAxis(VALUE self, VALUE n, VALUE d) {
-  cpPolyShape * poly = (cpPolyShape *) SHAPE(self);
+  rb_raise("value_on_axis is depretcated and doesn't work anymore.");
+  return Qnil;
+  
+  /*cpPolyShape * poly = (cpPolyShape *) SHAPE(self);
   return DBL2NUM(cpPolyShapeValueOnAxis(poly, *VGET(n), NUM2DBL(d)));
+  */
 }
 
 // Returns true if the polygon contains the vertex.

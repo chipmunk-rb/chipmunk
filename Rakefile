@@ -17,8 +17,8 @@ rescue LoadError
 #    puts "...done!"
 end
 
-CHIPMUNK_VERSION = "5.3.4.5"
-VENDORED_CHIPMUNK     = 'chipmunk-5.3.4'
+CHIPMUNK_VERSION = "6.0.3.0"
+VENDORED_CHIPMUNK     = 'chipmunk-6.0.3'
 VENDORED_SRC_DIR      =  File.join('vendor', VENDORED_CHIPMUNK, 'src')
 VENDORED_SRC_DIR2     =  File.join('vendor', VENDORED_CHIPMUNK, 'src', 'constraints')
 VENDORED_INCLUDE_DIR  =  File.join('vendor', VENDORED_CHIPMUNK, 'include', 'chipmunk')
@@ -33,7 +33,7 @@ CLOBBER.include("**/*.#{dlext}", "**/*~", "**/*#*", "**/*.log", "**/*.o", "doc/*
 
 def apply_spec_defaults(s)
     s.name = "chipmunk"
-    s.summary = "Enhanced ruby bindings for the chipmunk 5.3.4 game physics engine."
+    s.summary = "Enhanced ruby bindings for the chipmunk 6.0.3 game physics engine."
     s.description = s.summary + " "
     s.version = CHIPMUNK_VERSION
     s.author = "Scott Lembcke, Beoran, John Mair (banisterfiend)"

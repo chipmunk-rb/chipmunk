@@ -3,8 +3,8 @@ Ruby Bindings to Chipmunk Physics Version 5.3.4
 (C) Scott Lembcke, Beoran and John Mair (banisterfiend)
 
 IMPORTANT NOTICE:
-This is version 5.3.4.3 of the bindings for MRI Ruby 1.8.x and 1.9.x to
-Chipmunk version 5.3.4.
+This is version 6.0.3.0 of the bindings for MRI Ruby 1.8.x and 1.9.x to
+Chipmunk version 6.0.3.
 
 (1) 1/10/09 Cross-Platform Gem built by John Mair (banisterfiend)
     * Just go: gem install chipmunk
@@ -43,7 +43,7 @@ REQUIREMENTS
   * Ruby 1.8.x or 1.9.x.
   * rspec for running the specs.
   * rake and rake-compiler for compiling the extension.
-  
+  * These bindings vendor Chipmunk 6.0.3 so you DON'T need to have it installed.
 
 INSTALLATION
   Clone this repository, go into the ext directory and do:
@@ -60,8 +60,7 @@ INSTALLATION
   you. This will be solved when these incompatibilities are solved by these
   upstream tools.
 
-  These bindings vendor Chipmunk 5.3.4 with a few extra patches, so you don't
-  need to have it installed.
+  These bindings vendor Chipmunk 6.0.3 so you don't need to have it installed.
 
 DOCUMENTATION:
   Full handcrafted documentation based on the C documentation is available at:
