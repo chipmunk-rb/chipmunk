@@ -398,7 +398,7 @@ rb_cpPolyShapeSetVerts(VALUE self, VALUE arr, VALUE offset) {
 // Returns the minimum distance of the polygon to the axis.
 static VALUE
 rb_cpPolyShapeValueOnAxis(VALUE self, VALUE n, VALUE d) {
-  rb_raise("value_on_axis is depretcated and doesn't work anymore.");
+  rb_raise(rb_eArgError, "value_on_axis is obsolete and doesn't work anymore.");
   return Qnil;
   
   /*cpPolyShape * poly = (cpPolyShape *) SHAPE(self);
@@ -409,21 +409,32 @@ rb_cpPolyShapeValueOnAxis(VALUE self, VALUE n, VALUE d) {
 // Returns true if the polygon contains the vertex.
 static VALUE
 rb_cpPolyShapeContainsVert(VALUE self, VALUE v) {
+  rb_raise(rb_eArgError, "contains is obsolete and doesn't work anymore.");
+  return Qnil;
+/*
   cpPolyShape * poly = (cpPolyShape *) SHAPE(self);
   return CP_INT_BOOL(cpPolyShapeContainsVert(poly, *VGET(v)));
+*/  
 }
 
 // Same as cpPolyShapeContainsVert() but ignores faces pointing away from the normal.
 static VALUE
 rb_cpPolyShapeContainsVertPartial(VALUE self, VALUE v, VALUE n) {
+  rb_raise(rb_eArgError, "contains_partial is obsolete and doesn't work anymore.");
+  return Qnil;
+/*
   cpPolyShape * poly = (cpPolyShape *) SHAPE(self);
   return CP_INT_BOOL(cpPolyShapeContainsVertPartial(poly, *VGET(v), *VGET(n)));
+*/  
 }
 
 
 /* collision.h */
 static VALUE
 rb_cpCollideShapes(VALUE self, VALUE other) {
+  rb_raise(rb_eArgError, "collide is obsolete and doesn't work anymore.");
+  return Qnil;
+/* cpCollideShapes became private
   cpContact points[CP_MAX_CONTACTS_PER_ARBITER];
   int size     = cpCollideShapes(SHAPE(self), SHAPE(other), points);
   VALUE result = rb_ary_new();
@@ -435,6 +446,7 @@ rb_cpCollideShapes(VALUE self, VALUE other) {
     rb_ary_push(result, contact);
   }
   return result;
+*/  
 }
 
 

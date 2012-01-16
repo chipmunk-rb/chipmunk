@@ -30,6 +30,7 @@ VALUE m_Chipmunk;
 
 ID id_parent;
 
+/*
 static VALUE
 rb_get_cp_bias_coef(VALUE self) {
   return rb_float_new(cp_bias_coef);
@@ -61,7 +62,7 @@ rb_set_cp_contact_persistence(VALUE self, VALUE num) {
 static VALUE
 rb_get_cp_contact_persistence(VALUE self) {
   return UINT2NUM(cp_contact_persistence);
-}
+}*/
 
 
 static VALUE
@@ -189,12 +190,14 @@ Init_chipmunk(void) {
 
 
   m_Chipmunk = rb_define_module("CP");
+  /* These have been moved to cpSpace in chipmunk 6.x
   rb_define_module_function(m_Chipmunk, "bias_coef", rb_get_cp_bias_coef, 0);
   rb_define_module_function(m_Chipmunk, "bias_coef=", rb_set_cp_bias_coef, 1);
   rb_define_module_function(m_Chipmunk, "collision_slop", rb_get_cp_collision_slop, 0);
   rb_define_module_function(m_Chipmunk, "collision_slop=", rb_set_cp_collision_slop, 1);
   rb_define_module_function(m_Chipmunk, "contact_persistence", rb_get_cp_contact_persistence, 0);
   rb_define_module_function(m_Chipmunk, "contact_persistence=", rb_set_cp_contact_persistence, 1);
+  */
 
 
 

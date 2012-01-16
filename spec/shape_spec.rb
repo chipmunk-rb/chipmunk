@@ -325,15 +325,15 @@ describe 'Shapes in chipmunk' do
     end
     
     # Note, this functionality is not officially part of the API,
-    # as it might change.
-    it "can collide with other shapes" do
-      bod1 = CP::Body.new 90, 76
-      bod2 = CP::Body.new 90, 76
-      s1 = CP::Shape::Circle.new bod1, 20, CP::ZERO_VEC_2
-      s2 = CP::Shape::Circle.new bod1, 20, vec2(1.0, 1.0)
-      contact = s1.collide!(s2)
-      contact.size.should > 0
-    end
+    # as it might change. Now, it's ibsolete with chipmunk 6.x
+#     it "can collide with other shapes" do
+#       bod1 = CP::Body.new 90, 76
+#       bod2 = CP::Body.new 90, 76
+#       s1 = CP::Shape::Circle.new bod1, 20, CP::ZERO_VEC_2
+#       s2 = CP::Shape::Circle.new bod1, 20, vec2(1.0, 1.0)
+#       contact = s1.collide!(s2)
+#       contact.size.should > 0
+#     end
     
 =begin
   Will be addd to the API later:

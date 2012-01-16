@@ -213,13 +213,14 @@ describe 'A new Body' do
     b.v.x.should be_within(0.001).of(0.1)
     b.v.y.should be_within(0.001).of(0)
   end
-  
-  it 'can slew to a position' do
-    b = CP::Body.new(5, 7)
-    b.slew(vec2(100, 40), 25)
-    b.v.x.should be_within(0.001).of(4.0)
-    b.v.y.should be_within(0.001).of(1.6)
-  end
+
+# Slew was made opsolete in chipmunk 6.x  
+#   it 'can slew to a position' do
+#     b = CP::Body.new(5, 7)
+#     b.slew(vec2(100, 40), 25)
+#     b.v.x.should be_within(0.001).of(4.0)
+#     b.v.y.should be_within(0.001).of(1.6)
+#   end
   
   it 'can has a kinetic energy' do
     b = CP::Body.new(5, 7)    

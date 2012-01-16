@@ -116,12 +116,13 @@ describe 'Space in chipmunk' do
     space.add_shape(shab)
     lambda { space.activate_touching(shaa) }.should_not raise_error  
   end
-   
-  it 'can resize its spacial hashes' do
+
+  # This api was made obsolete in chipmunk 6.x
+  it 'cannot resize its spacial hashes' do
     space = CP::Space.new
-    lambda { space.resize_static_hash(10.0, 2000) }.should_not raise_error
-    lambda { space.resize_active_hash(10.0, 2000) }.should_not raise_error
-    lambda { space.rehash_static() }.should_not raise_error
+    lambda { space.resize_static_hash(10.0, 2000) }.should raise_error
+    lambda { space.resize_active_hash(10.0, 2000) }.should raise_error
+    lambda { space.rehash_static() }.should raise_error
   end 
 
   it 'can be stepped' do

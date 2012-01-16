@@ -35,6 +35,10 @@ ABOUT THESE RUBY BINDINGS:
   FFI bindings. Main exceptions are when it did not support the functionality I
   added yet. All this is documented by specs and by the html documentation.
 
+  In version 6.0.3.0 of the bindings, some functionality that was available
+  in version 5.x was removed due to the fact that version 6.x of chipmunk itself
+  has made private some previously public API functions.
+
   If you have any problems with these bindings, please contact the maintainer at
   beoran@rubyforge.org, or report the issue on the issue tracker:
   https://github.com/beoran/chipmunk/issues
