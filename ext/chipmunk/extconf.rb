@@ -44,8 +44,10 @@ CHIPMUNK_LIBDIR   = ['/usr/lib', File.join(MINGW, 'lib'), '/usr/local/lib']
 have_header('chipmunk.h')
 
 if enable_config("macosx", false)
-    $CFLAGS += ' -arch ppc -arch i386 -arch x86_64'
-    $LDFLAGS += ' -arch x86_64 -arch i386 -arch ppc'
+    # $CFLAGS += ' -arch ppc -arch i386 -arch x86_64'
+    # $LDFLAGS += ' -arch x86_64 -arch i386 -arch ppc'
+    $CFLAGS += ' -arch i386 -arch x86_64'
+    $LDFLAGS += ' -arch x86_64 -arch i386'
 end
 
 if enable_config("64", false)
