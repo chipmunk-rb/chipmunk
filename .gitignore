@@ -1,6 +1,7 @@
 pkg
 *.swp
 *.swo
+*.o
 *.log
 doc
 coverage
@@ -12,3 +13,4 @@ tags
 ctags
 .bundle
 *.lock
+Makefile

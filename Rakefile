@@ -15,8 +15,8 @@ rescue LoadError
 #    puts "...done!"
 end
 
-CHIPMUNK_VERSION = "5.3.4.5"
-VENDORED_CHIPMUNK     = 'chipmunk-5.3.4'
+CHIPMUNK_VERSION = "6.1.3"
+VENDORED_CHIPMUNK     = 'chipmunk-6.1.3'
 VENDORED_SRC_DIR      =  File.join('vendor', VENDORED_CHIPMUNK, 'src')
 VENDORED_SRC_DIR2     =  File.join('vendor', VENDORED_CHIPMUNK, 'src', 'constraints')
 VENDORED_INCLUDE_DIR  =  File.join('vendor', VENDORED_CHIPMUNK, 'include', 'chipmunk')
@@ -56,7 +56,7 @@ if RUBY_PLATFORM =~ /darwin/
     end
 
     Rake::ExtensionTask.new('chipmunk') do |ext|
-        ext.ext_dir   = "ext"
+        ext.ext_dir   = "ext/chipmunk"
         ext.lib_dir   = "lib/#{RUBY_VERSION[0..2]}"
         ext.config_script = 'extconf.rb'
         ext.config_options << '--enable-macosx'
@@ -89,7 +89,7 @@ else
     end
 
     Rake::ExtensionTask.new('chipmunk', spec) do |ext|
-      ext.config_script = 'extconf.rb'
+      ext.config_script = 'chipmunk/extconf.rb'
       ext.cross_compile = true
       ext.cross_platform = 'i586-mingw32'
         # ext.cross_platform = 'i386-mswin32'
