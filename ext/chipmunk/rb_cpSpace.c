@@ -98,13 +98,21 @@ rb_cpSpaceSetIterations(VALUE self, VALUE val) {
 
 static VALUE
 rb_cpSpaceGetElasticIterations(VALUE self) {
+  rb_raise(rb_eArgError, "elastic_iterations is obsolete");
+  return Qnil;
+  /*
   return INT2NUM(SPACE(self)->elasticIterations);
+  */
 }
 
 static VALUE
 rb_cpSpaceSetElasticIterations(VALUE self, VALUE val) {
+  rb_raise(rb_eArgError, "elastic_iterations= is obsolete");
+  return Qnil;
+/*
   SPACE(self)->elasticIterations = NUM2INT(val);
   return val;
+*/  
 }
 
 static VALUE
@@ -378,25 +386,34 @@ rb_cpSpaceRemoveConstraint(VALUE self, VALUE constraint) {
 
 static VALUE
 rb_cpSpaceResizeStaticHash(VALUE self, VALUE dim, VALUE count) {
+  rb_raise(rb_eArgError, "resize_static_hash is obsolete");
+  return Qnil;
+  /*
   cpSpaceResizeStaticHash(SPACE(self), NUM2DBL(dim), NUM2INT(count));
   return Qnil;
+  */
 }
 
 static VALUE
 rb_cpSpaceResizeActiveHash(VALUE self, VALUE dim, VALUE count) {
-  cpSpaceResizeActiveHash(SPACE(self), NUM2DBL(dim), NUM2INT(count));
+  rb_raise(rb_eArgError, "resize_active_hash is obsolete");
   return Qnil;
+  /* cpSpaceResizeActiveHash(SPACE(self), NUM2DBL(dim), NUM2INT(count));  
+  return Qnil;
+  */
 }
 
 static VALUE
 rb_cpSpaceRehashStatic(VALUE self) {
-  cpSpaceRehashStatic(SPACE(self));
+  rb_raise(rb_eArgError, "rehash_static is obsolete");
+  /* cpSpaceRehashStatic(SPACE(self)); */
   return Qnil;
 }
 
 static VALUE
 rb_cpSpaceRehashShape(VALUE self, VALUE shape) {
-  cpSpaceRehashShape(SPACE(self), SHAPE(shape));
+  rb_raise(rb_eArgError, "rehash_shape is obsolete");
+  /* cpSpaceRehashShape(SPACE(self), SHAPE(shape)); */
   return Qnil;
 }
 
