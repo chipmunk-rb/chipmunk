@@ -6,8 +6,6 @@ require 'rake/clean'
 require 'rubygems'
 require 'rubygems/package_task'
 
-
-
 begin
     require 'rake/extensiontask'
 rescue LoadError
@@ -23,9 +21,7 @@ VENDORED_SRC_DIR      =  File.join('vendor', VENDORED_CHIPMUNK, 'src')
 VENDORED_SRC_DIR2     =  File.join('vendor', VENDORED_CHIPMUNK, 'src', 'constraints')
 VENDORED_INCLUDE_DIR  =  File.join('vendor', VENDORED_CHIPMUNK, 'include', 'chipmunk')
 
-
-
-dlext = Config::CONFIG['DLEXT']
+dlext = RbConfig::CONFIG['DLEXT']
 
 CLEAN.include("ext/**/*.#{dlext}", "ext/**/.log", "ext/**/.o", "ext/**/*~", "ext/**/*#*", "ext/**/.obj", "ext/**/.def", "ext/**/.pdb")
 CLOBBER.include("**/*.#{dlext}", "**/*~", "**/*#*", "**/*.log", "**/*.o", "doc/**")

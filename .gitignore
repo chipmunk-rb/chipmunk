@@ -1,0 +1,14 @@
+pkg
+*.swp
+*.swo
+*.log
+doc
+coverage
+complexity
+.DS_Store
+.yardoc
+tmp
+tags
+ctags
+.bundle
+*.lock
