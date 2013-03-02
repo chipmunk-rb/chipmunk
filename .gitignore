@@ -12,5 +12,6 @@ tmp
 tags
 ctags
 .bundle
+*.bundle
 *.lock
 Makefile
