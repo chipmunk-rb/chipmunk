@@ -277,7 +277,7 @@ describe 'Vect in chipmunk' do
     it 'can slerpconst' do
       v = CP::Vec2.new(0,1)
       other_v = CP::Vec2.new(1,0)
-      rv = v.slerpconst(other_v,Math::PI/2.0)
+      rv = v.slerpconst(other_v,Math::PI/4.0)
       rv.x.should be_within(0.001).of(0.7071)
       rv.y.should be_within(0.001).of(0.7071)
     end
