@@ -327,7 +327,7 @@ static VALUE
 rb_cpBodySetVelocityFunc(int argc, VALUE *argv, VALUE self) {
   VALUE block;
   cpBody * body = BODY(self);
-  rb_scan_args(argc, argv, "&", &block);
+  rb_scan_args(argc, argv, "0&", &block);
   // Restore defaults if no block
   if (NIL_P(block)) {
     body->velocity_func = cpBodyUpdateVelocity; //Default;
@@ -374,19 +374,10 @@ rb_cpBodySetData(VALUE self, VALUE val) {
   return val;
 }
 
-
-static VALUE
-rb_cpBodySlew(VALUE self, VALUE pos, VALUE dt) {
-  rb_raise(rb_eArgError, "slew is obsolete");
-  // cpBodySlew(BODY(self), *VGET(pos), NUM2DBL(dt));
-  return self;
-}
-
 static VALUE
 rb_cpBodyKineticEnergy(VALUE self) {
   return DBL2NUM(cpBodyKineticEnergy(BODY(self)));
 }
-
 
 void
 Init_cpBody(void) {
@@ -460,7 +451,6 @@ Init_cpBody(void) {
 
   rb_define_method(c_cpBody, "update_velocity", rb_cpBodyUpdateVelocity, 3);
   rb_define_method(c_cpBody, "update_position", rb_cpBodyUpdatePosition, 1);
-  rb_define_method(c_cpBody, "slew", rb_cpBodySlew, 2);
 
   rb_define_method(c_cpBody, "static?", rb_cpBodyIsStatic, 0);
   rb_define_method(c_cpBody, "rogue?", rb_cpBodyIsRogue, 0);

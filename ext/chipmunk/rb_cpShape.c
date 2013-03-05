@@ -262,10 +262,11 @@ rb_cpSegmentInitialize(VALUE self, VALUE body, VALUE a, VALUE b, VALUE r) {
 
 // Syntactic macro to handle fetching the vertices from a ruby array
 // to a C array.
+// TODO get rid of this cast by using stdint.h
 #define RBCP_ARRAY_POINTS(ARR, NUM, VERTS) \
   Check_Type(ARR, T_ARRAY);                \
   VALUE *__rbcp_ptr = RARRAY_PTR(ARR);     \
-  long NUM           = RARRAY_LEN(ARR);    \
+  int NUM           = (int)RARRAY_LEN(ARR);    \
   cpVect VERTS[NUM];                       \
   for(long i = 0; i < NUM; i++)            \
     VERTS[i] = *VGET(__rbcp_ptr[i]);

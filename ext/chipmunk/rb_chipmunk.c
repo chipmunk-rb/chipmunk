@@ -80,7 +80,8 @@ rb_cpMomentForSegment(VALUE self, VALUE m, VALUE v1, VALUE v2) {
 static VALUE
 rb_cpMomentForPoly(VALUE self, VALUE m, VALUE arr, VALUE offset) {
   Check_Type(arr, T_ARRAY);
-  long numVerts    = RARRAY_LEN(arr);
+  // TODO do not cast... use stdint.h in chipmunk
+  int numVerts    = (int)RARRAY_LEN(arr);
   VALUE *ary_ptr  = RARRAY_PTR(arr);
   cpVect verts[numVerts];
 
@@ -112,7 +113,8 @@ rb_cpAreaForSegment(VALUE self, VALUE v1, VALUE v2, VALUE r) {
 static VALUE
 rb_cpAreaForPoly(VALUE self, VALUE arr) {
   Check_Type(arr, T_ARRAY);
-  long numVerts   = RARRAY_LEN(arr);
+  // TODO do not cast... use stdint.h in chipmunk
+  int numVerts   = (int)RARRAY_LEN(arr);
   VALUE *ary_ptr = RARRAY_PTR(arr);
   cpVect verts[numVerts];
 
@@ -151,7 +153,8 @@ rb_cpflerpconst(VALUE self, VALUE f1, VALUE f2, VALUE d) {
 static VALUE
 rb_cpCentroidForPoly(VALUE self,  VALUE arr) {
   Check_Type(arr, T_ARRAY);
-  long numVerts   = RARRAY_LEN(arr);
+  // TODO do not cast... use stdint.h in chipmunk
+  int numVerts   = (int)RARRAY_LEN(arr);
   VALUE *ary_ptr = RARRAY_PTR(arr);
   cpVect verts[numVerts];
 
@@ -164,7 +167,8 @@ rb_cpCentroidForPoly(VALUE self,  VALUE arr) {
 static VALUE
 rb_cpRecenterPoly(VALUE self,  VALUE arr) {
   Check_Type(arr, T_ARRAY);
-  long numVerts   = RARRAY_LEN(arr);
+  // TODO do not cast... use stdint.h in chipmunk
+  int numVerts   = (int)RARRAY_LEN(arr);
   VALUE *ary_ptr = RARRAY_PTR(arr);
   cpVect verts[numVerts];
 

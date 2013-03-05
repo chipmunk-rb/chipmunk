@@ -102,9 +102,9 @@ cpBodyFree(cpBody *body)
 	}
 }
 
-static void cpv_assert_nan(cpVect v, char *message){cpAssertSoft(v.x == v.x && v.y == v.y, message);}
-static void cpv_assert_infinite(cpVect v, char *message){cpAssertSoft(cpfabs(v.x) != INFINITY && cpfabs(v.y) != INFINITY, message);}
-static void cpv_assert_sane(cpVect v, char *message){cpv_assert_nan(v, message); cpv_assert_infinite(v, message);}
+static void cpv_assert_nan(cpVect v, const char *message){cpAssertSoft(v.x == v.x && v.y == v.y, message);}
+static void cpv_assert_infinite(cpVect v, const char *message){cpAssertSoft(cpfabs(v.x) != INFINITY && cpfabs(v.y) != INFINITY, message);}
+static void cpv_assert_sane(cpVect v, const char *message){cpv_assert_nan(v, message); cpv_assert_infinite(v, message);}
 
 #ifdef __cplusplus
 extern "C" {
