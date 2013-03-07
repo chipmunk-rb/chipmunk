@@ -29,6 +29,7 @@
 VALUE m_Chipmunk;
 
 ID id_parent;
+VALUE cpObjectToIntHash;
 
 /*
 static VALUE
@@ -194,6 +195,8 @@ Init_chipmunk(void) {
 
 
   m_Chipmunk = rb_define_module("CP");
+
+  cpObjectToIntHash = rb_hash_new();
   /* These have been moved to cpSpace in chipmunk 6.x
   rb_define_module_function(m_Chipmunk, "bias_coef", rb_get_cp_bias_coef, 0);
   rb_define_module_function(m_Chipmunk, "bias_coef=", rb_set_cp_bias_coef, 1);

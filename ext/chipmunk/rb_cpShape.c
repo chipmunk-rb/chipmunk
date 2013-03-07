@@ -110,20 +110,17 @@ static VALUE
 rb_cpShapeSetGroup(VALUE self, VALUE groupValue) {
   rb_iv_set(self, "@group", groupValue);
 
-  VALUE cpGroupIDsMap = rb_gv_get("$_cpGroupIDsHash");
-  if(NIL_P(cpGroupIDsMap)) {
-    cpGroupIDsMap = rb_hash_new();
-    rb_gv_set("$_cpGroupIDsHash", cpGroupIDsMap);
-  }
 
-  VALUE groupID = rb_hash_aref(cpGroupIDsMap, groupValue);
+  cpObjectToIntHash = rb_hash_new();
+
+  VALUE groupID = rb_hash_aref(cpObjectToIntHash, groupValue);
   long nextID = 0;
 
   if(NIL_P(groupID)) {
-    if (RHASH(cpGroupIDsMap)->ntbl) {
-      nextID = RHASH(cpGroupIDsMap)->ntbl->num_entries;
+    if (RHASH(cpObjectToIntHash)->ntbl) {
+      nextID = RHASH(cpObjectToIntHash)->ntbl->num_entries;
     }
-    rb_hash_aset(cpGroupIDsMap, groupValue, INT2NUM(nextID));
+    rb_hash_aset(cpObjectToIntHash, groupValue, INT2NUM(nextID));
   } else {
     nextID = NUM2INT(groupID);
   }

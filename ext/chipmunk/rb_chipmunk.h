@@ -33,6 +33,7 @@ extern VALUE c_cpSpace;
 extern VALUE c_cpArbiter;
 extern VALUE c_cpStaticBody;
 extern VALUE c_cpSegmentQueryInfo;
+extern VALUE cpObjectToIntHash;
 
 extern ID id_parent;
 
