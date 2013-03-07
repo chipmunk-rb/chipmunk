@@ -103,16 +103,33 @@ rb_cpShapeGetSelf(VALUE self) {
 
 static VALUE
 rb_cpShapeGetGroup(VALUE self) {
-  return rb_iv_get(self, "group");
+  return rb_iv_get(self, "@group");
 }
 
 static VALUE
-rb_cpShapeSetGroup(VALUE self, VALUE val) {
-  VALUE col_type = rb_obj_id(val);
-  rb_iv_set(self, "group", val);
-  SHAPE(self)->group = NUM2UINT(col_type);
+rb_cpShapeSetGroup(VALUE self, VALUE groupValue) {
+  rb_iv_set(self, "@group", groupValue);
 
-  return val;
+  VALUE cpGroupIDsMap = rb_gv_get("$_cpGroupIDsHash");
+  if(NIL_P(cpGroupIDsMap)) {
+    cpGroupIDsMap = rb_hash_new();
+    rb_gv_set("$_cpGroupIDsHash", cpGroupIDsMap);
+  }
+
+  VALUE groupID = rb_hash_aref(cpGroupIDsMap, groupValue);
+  long nextID = 0;
+
+  if(NIL_P(groupID)) {
+    if (RHASH(cpGroupIDsMap)->ntbl) {
+      nextID = RHASH(cpGroupIDsMap)->ntbl->num_entries;
+    }
+    rb_hash_aset(cpGroupIDsMap, groupValue, INT2NUM(nextID));
+  } else {
+    nextID = NUM2INT(groupID);
+  }
+  SHAPE(self)->group = nextID;
+
+  return groupValue;
 }
 
 static VALUE

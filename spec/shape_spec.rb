@@ -85,7 +85,11 @@ describe 'Shapes in chipmunk' do
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
       # Nil, because not set before
       s.group = Aid 
+      s.group = Aid 
       s.group.should == Aid
+
+      s.group = :other
+      s.group.should == :other
     end
 
 
