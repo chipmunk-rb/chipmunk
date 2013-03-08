@@ -191,12 +191,12 @@ Init_chipmunk(void) {
   id_parent  = rb_intern("parent");
 
   cpInitChipmunk();
-
-
-
   m_Chipmunk = rb_define_module("CP");
 
   cpObjectToIntHash = rb_hash_new();
+  /* rb_gv_set("$__cpObj", cpObjectToIntHash);  */
+  rb_gc_register_mark_object(cpObjectToIntHash);
+
   /* These have been moved to cpSpace in chipmunk 6.x
   rb_define_module_function(m_Chipmunk, "bias_coef", rb_get_cp_bias_coef, 0);
   rb_define_module_function(m_Chipmunk, "bias_coef=", rb_set_cp_bias_coef, 1);

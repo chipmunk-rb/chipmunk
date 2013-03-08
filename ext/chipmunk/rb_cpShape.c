@@ -110,9 +110,6 @@ static VALUE
 rb_cpShapeSetGroup(VALUE self, VALUE groupValue) {
   rb_iv_set(self, "@group", groupValue);
 
-
-  cpObjectToIntHash = rb_hash_new();
-
   VALUE groupID = rb_hash_aref(cpObjectToIntHash, groupValue);
   long nextID = 0;
 

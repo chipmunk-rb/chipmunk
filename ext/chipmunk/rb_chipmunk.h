@@ -86,6 +86,10 @@ VGET_ZERO(VALUE value) {
   return *VGET(value);
 }
 
+// int
+// OBJ2INT(VALUE value) {
+// }
+
 //Helper that allocates and initializes a SegmenQueryInfo struct
 VALUE rb_cpSegmentQueryInfoNew(VALUE shape, VALUE t, VALUE n);
 
