@@ -33,6 +33,7 @@ extern VALUE c_cpSpace;
 extern VALUE c_cpArbiter;
 extern VALUE c_cpStaticBody;
 extern VALUE c_cpSegmentQueryInfo;
+extern VALUE c_cpNearestPointQueryInfo;
 extern VALUE cpObjectToIntHash;
 
 extern ID id_parent;
@@ -86,14 +87,25 @@ VGET_ZERO(VALUE value) {
   return *VGET(value);
 }
 
-// int
-// OBJ2INT(VALUE value) {
-// }
+int
+CP_OBJ2INT(VALUE object) {
+  VALUE intValue = rb_hash_aref(cpObjectToIntHash, object);
+  int nextInt = 0;
 
-//Helper that allocates and initializes a SegmenQueryInfo struct
+  if(NIL_P(intValue)) {
+    if (RHASH(cpObjectToIntHash)->ntbl) {
+      nextInt = RHASH(cpObjectToIntHash)->ntbl->num_entries;
+    }
+    rb_hash_aset(cpObjectToIntHash, object, INT2NUM(nextInt));
+  } else {
+    nextInt = NUM2INT(intValue);
+  }
+
+  return nextInt;
+}
+
 VALUE rb_cpSegmentQueryInfoNew(VALUE shape, VALUE t, VALUE n);
-
-// Helper that allocates and initializes a ContactPoint struct.
+VALUE rb_cpNearestPointQueryInfoNew(VALUE shape, VALUE p, VALUE d);
 VALUE rb_cpContactPointNew(VALUE point, VALUE normal, VALUE dist);
 
 
