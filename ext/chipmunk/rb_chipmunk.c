@@ -65,6 +65,23 @@ rb_get_cp_contact_persistence(VALUE self) {
   return UINT2NUM(cp_contact_persistence);
 }*/
 
+int
+CP_OBJ2INT(VALUE object) {
+  VALUE intValue = rb_hash_aref(cpObjectToIntHash, object);
+  int nextInt = 0;
+
+  if(NIL_P(intValue)) {
+    if (RHASH(cpObjectToIntHash)->ntbl) {
+      nextInt = RHASH(cpObjectToIntHash)->ntbl->num_entries;
+    }
+    rb_hash_aset(cpObjectToIntHash, object, INT2NUM(nextInt));
+  } else {
+    nextInt = NUM2INT(intValue);
+  }
+
+  return nextInt;
+}
+
 
 static VALUE
 rb_cpMomentForCircle(VALUE self, VALUE m, VALUE r1, VALUE r2, VALUE offset) {

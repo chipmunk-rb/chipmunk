@@ -302,6 +302,30 @@ rb_cpPolyAlloc(VALUE klass) {
 }
 
 static VALUE
+rb_cpShapeBoxInitialize(int argc, VALUE * argv, VALUE self) {
+  VALUE body, widthOrBB, height;
+  rb_scan_args(argc, argv, "21", &body, &widthOrBB, &height);
+
+  VALUE newPoly = rb_cpPolyAlloc(c_cpPolyShape);
+  cpPolyShape *poly = (cpPolyShape *)SHAPE(newPoly);
+
+  if(NIL_P(height)) {
+    // takes bb
+    cpBoxShapeInit2(poly, BODY(body), *BBGET(widthOrBB));
+  } else {
+    // takes w / h
+    cpBoxShapeInit(poly, BODY(body), NUM2DBL(widthOrBB), NUM2DBL(height));
+  }
+
+  poly->shape.data           = (void *)self;
+  poly->shape.collision_type = Qnil;
+
+  rb_ivar_set(newPoly, id_body, body);
+
+  return newPoly;
+}
+
+static VALUE
 rb_cpPolyInitialize(int argc, VALUE * argv, VALUE self) {
   VALUE body, arr, offset;
   cpPolyShape *poly = (cpPolyShape *)SHAPE(self);
@@ -478,6 +502,7 @@ Init_cpShape(void) {
   rb_include_module(c_cpPolyShape, m_cpShape);
   rb_define_alloc_func(c_cpPolyShape, rb_cpPolyAlloc);
   rb_define_singleton_method(c_cpPolyShape, "valid?", rb_cpPolyValidate, 1);
+  rb_define_singleton_method(c_cpPolyShape, "box", rb_cpShapeBoxInitialize, -1);
 
   rb_define_method(c_cpPolyShape, "initialize", rb_cpPolyInitialize, -1);
 

@@ -87,23 +87,7 @@ VGET_ZERO(VALUE value) {
   return *VGET(value);
 }
 
-int
-CP_OBJ2INT(VALUE object) {
-  VALUE intValue = rb_hash_aref(cpObjectToIntHash, object);
-  int nextInt = 0;
-
-  if(NIL_P(intValue)) {
-    if (RHASH(cpObjectToIntHash)->ntbl) {
-      nextInt = RHASH(cpObjectToIntHash)->ntbl->num_entries;
-    }
-    rb_hash_aset(cpObjectToIntHash, object, INT2NUM(nextInt));
-  } else {
-    nextInt = NUM2INT(intValue);
-  }
-
-  return nextInt;
-}
-
+int CP_OBJ2INT(VALUE object);
 VALUE rb_cpSegmentQueryInfoNew(VALUE shape, VALUE t, VALUE n);
 VALUE rb_cpNearestPointQueryInfoNew(VALUE shape, VALUE p, VALUE d);
 VALUE rb_cpContactPointNew(VALUE point, VALUE normal, VALUE dist);

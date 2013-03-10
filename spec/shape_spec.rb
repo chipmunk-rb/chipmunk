@@ -14,7 +14,7 @@ describe 'Shapes in chipmunk' do
     
     it 'can be created with a missing offset' do
        bod = CP::Body.new 90, 76
-         s = CP::Shape::Circle.new bod, 40
+       s = CP::Shape::Circle.new bod, 40
     end
     
     it 'does not crash if created incorrectly' do      
@@ -289,6 +289,36 @@ describe 'Shapes in chipmunk' do
   end
   
   describe 'Poly class' do
+    it 'can create box from width / height' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Poly.box(bod, 22, 40)
+      s.class.should == CP::Shape::Poly
+      s.num_verts.should == 4
+      s[0].x.should == -11
+      s[0].y.should == -20
+      s[1].x.should == -11
+      s[1].y.should == 20
+      s[2].x.should == 11
+      s[2].y.should == 20
+      s[3].x.should == 11
+      s[3].y.should == -20
+    end
+
+    it 'can create box from BB' do
+      bod = CP::Body.new 90, 76
+      bb = CP::BB.new(-11, -20, 11, 20)
+      s = CP::Shape::Poly.box(bod, bb)
+      s.num_verts.should == 4
+      s[0].x.should == -11
+      s[0].y.should == -20
+      s[1].x.should == -11
+      s[1].y.should == 20
+      s[2].x.should == 11
+      s[2].y.should == 20
+      s[3].x.should == 11
+      s[3].y.should == -20
+    end
+
     it 'can validate polygon points' do
       points  = [vec2(1,1), vec2(2,2),vec2(3,3)]
       res     = CP::Shape::Poly.valid? points
