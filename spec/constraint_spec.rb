@@ -22,8 +22,8 @@ describe 'Constraints in chipmunk' do
       @con.max_force.should == CP::INFINITY
     end
     
-    it 'can access bias_coef' do
-      @con.bias_coef.should be_within(0.0001).of(0.10) 
+    it 'can access error_bias' do
+      @con.error_bias.should be_within(0.0001).of((1.0 - 0.1) ** 60)
     end
     
     it 'can access max_bias' do
@@ -34,10 +34,6 @@ describe 'Constraints in chipmunk' do
       @con.impulse.should == 0.0 
     end  
 
-    it 'can set its impulse' do
-      @con.impulse= 1.0 
-      @con.impulse.should == 1.0 
-    end  
   end
   
   describe 'PinJoint class' do

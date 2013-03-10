@@ -34,7 +34,7 @@ VALUE m_cpConstraint;
   { CONSTRAINT(self)->member = NUM2DBL(value); return value;}
 
 CONSTRAINT_GETSET_FUNCS(maxForce)
-// CONSTRAINT_GETSET_FUNCS(biasCoef)
+CONSTRAINT_GETSET_FUNCS(errorBias)
 CONSTRAINT_GETSET_FUNCS(maxBias)
 
 
@@ -262,9 +262,8 @@ Init_cpConstraint(void) {
   rb_define_attr(m_cpConstraint, "body_b", 1, 0);
   rb_define_method(m_cpConstraint, "max_force", rb_cpConstraint_get_maxForce, 0);
   rb_define_method(m_cpConstraint, "max_force=", rb_cpConstraint_set_maxForce, 1);
-/*  rb_define_method(m_cpConstraint, "bias_coef", rb_cpConstraint_get_biasCoef, 0);
-  rb_define_method(m_cpConstraint, "bias_coef=", rb_cpConstraint_set_biasCoef, 1);
-*/  
+  rb_define_method(m_cpConstraint, "error_bias", rb_cpConstraint_get_errorBias, 0);
+  rb_define_method(m_cpConstraint, "error_bias=", rb_cpConstraint_set_errorBias, 1);
   rb_define_method(m_cpConstraint, "max_bias", rb_cpConstraint_get_maxBias, 0);
   rb_define_method(m_cpConstraint, "max_bias=", rb_cpConstraint_set_maxBias, 1);
   rb_define_method(m_cpConstraint, "impulse", rb_cpConstraintGetImpulse, 0);

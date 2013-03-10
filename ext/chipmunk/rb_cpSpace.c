@@ -34,6 +34,16 @@ static ID id_separate;
 
 VALUE c_cpSpace;
 
+#define SPACE_GETSET_FUNCS(member)                                \
+  static VALUE rb_cpSpace_get_ ## member(VALUE self)              \
+  { return rb_float_new(SPACE(self)->member);}                    \
+  static VALUE rb_cpSpace_set_ ## member(VALUE self, VALUE value) \
+  { SPACE(self)->member = NUM2DBL(value); return value;}
+
+
+SPACE_GETSET_FUNCS(collisionBias)
+SPACE_GETSET_FUNCS(collisionSlop)
+SPACE_GETSET_FUNCS(collisionPersistence)
 
 static VALUE
 rb_cpSpaceAlloc(VALUE klass) {
@@ -630,8 +640,13 @@ Init_cpSpace(void) {
   rb_define_method(c_cpSpace, "on_post_step",
                    rb_cpSpaceAddPostStepCallback, -1);
 
-
-
+  rb_define_module_function(m_Chipmunk, "collision_bias", rb_cpSpace_get_collisionBias, 0);
+  rb_define_module_function(m_Chipmunk, "collision_bias=", rb_cpSpace_set_collisionBias, 1);
+  rb_define_module_function(m_Chipmunk, "collision_slop", rb_cpSpace_get_collisionSlop, 0);
+  rb_define_module_function(m_Chipmunk, "collision_slop=", rb_cpSpace_set_collisionSlop, 1);
+  rb_define_module_function(m_Chipmunk, "collision_persistence", rb_cpSpace_get_collisionPersistence, 0);
+  rb_define_module_function(m_Chipmunk, "collision_persistence=", rb_cpSpace_set_collisionPersistence, 1);
+  
 
   rb_define_method(c_cpSpace, "add_shape", rb_cpSpaceAddShape, 1);
   rb_define_method(c_cpSpace, "add_static_shape", rb_cpSpaceAddStaticShape, 1);

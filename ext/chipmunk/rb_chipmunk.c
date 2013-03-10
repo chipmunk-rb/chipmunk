@@ -214,17 +214,6 @@ Init_chipmunk(void) {
   /* rb_gv_set("$__cpObj", cpObjectToIntHash);  */
   rb_gc_register_mark_object(cpObjectToIntHash);
 
-  /* These have been moved to cpSpace in chipmunk 6.x
-  rb_define_module_function(m_Chipmunk, "bias_coef", rb_get_cp_bias_coef, 0);
-  rb_define_module_function(m_Chipmunk, "bias_coef=", rb_set_cp_bias_coef, 1);
-  rb_define_module_function(m_Chipmunk, "collision_slop", rb_get_cp_collision_slop, 0);
-  rb_define_module_function(m_Chipmunk, "collision_slop=", rb_set_cp_collision_slop, 1);
-  rb_define_module_function(m_Chipmunk, "contact_persistence", rb_get_cp_contact_persistence, 0);
-  rb_define_module_function(m_Chipmunk, "contact_persistence=", rb_set_cp_contact_persistence, 1);
-  */
-
-
-
   rb_define_module_function(m_Chipmunk, "clamp", rb_cpfclamp, 3);
   rb_define_module_function(m_Chipmunk, "flerp", rb_cpflerp, 3);
   rb_define_module_function(m_Chipmunk, "flerpconst", rb_cpflerpconst, 3);
