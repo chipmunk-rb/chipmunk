@@ -117,13 +117,6 @@ describe 'Space in chipmunk' do
     lambda { space.activate_touching(shaa) }.should_not raise_error  
   end
    
-  it 'can resize its spacial hashes' do
-    space = CP::Space.new
-    lambda { space.resize_static_hash(10.0, 2000) }.should_not raise_error
-    lambda { space.resize_active_hash(10.0, 2000) }.should_not raise_error
-    lambda { space.rehash_static() }.should_not raise_error
-  end 
-
   it 'can be stepped' do
     space = CP::Space.new  
     lambda { space.step(0.5) }.should_not raise_error

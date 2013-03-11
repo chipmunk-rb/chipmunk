@@ -139,9 +139,22 @@ MAKE_FLT_ACCESSORS(cpGearJoint, Ratio);
 ALLOC_TEMPLATE(cpPivotJoint, cpPivotJointAlloc())
 
 static VALUE
-rb_cpPivotJoint_init(VALUE self, VALUE a, VALUE b, VALUE anchr1, VALUE anchr2) {
+rb_cpPivotJoint_init(int argc, VALUE *argv, VALUE self) {
+/* rb_cpPivotJoint_init(VALUE self, VALUE a, VALUE b, VALUE anchr1, VALUE anchr2) { */
+  VALUE a, b, pivotOrAnchr1, anchr2;
+
+  rb_scan_args(argc, argv, "31", &a, &b, &pivotOrAnchr1, &anchr2);
+
   cpPivotJoint *joint = (cpPivotJoint *)CONSTRAINT(self);
-  cpPivotJointInit(joint, BODY(a), BODY(b), *VGET(anchr1), *VGET(anchr2));
+
+  if(NIL_P(anchr2)) {
+    cpVect a1 = (a ? cpBodyWorld2Local(a, *VGET(pivotOrAnchr1)) : *VGET(pivotOrAnchr1));
+    cpVect a2 = (b ? cpBodyWorld2Local(b, *VGET(pivotOrAnchr1)) : *VGET(pivotOrAnchr1));
+    cpPivotJointInit(joint, BODY(a), BODY(b), a1, a2);
+  } else {
+    cpPivotJointInit(joint, BODY(a), BODY(b), *VGET(pivotOrAnchr1), *VGET(anchr2));
+  }
+
   rb_iv_set(self, "@body_a", a);
   rb_iv_set(self, "@body_b", b);
 
@@ -213,9 +226,9 @@ rb_cpGrooveJoint_init(VALUE self, VALUE a, VALUE b, VALUE grv_a, VALUE grv_b, VA
   return self;
 }
 
+MAKE_VEC_ACCESSORS(cpGrooveJoint, Anchr2)
 MAKE_VEC_ACCESSORS(cpGrooveJoint, GrooveA)
 MAKE_VEC_ACCESSORS(cpGrooveJoint, GrooveB)
-MAKE_VEC_ACCESSORS(cpGrooveJoint, Anchr2)
 
 
 ALLOC_TEMPLATE(cpRatchetJoint, cpRatchetJointAlloc())
@@ -287,6 +300,8 @@ Init_cpConstraint(void) {
 
   VALUE c_cpGrooveJoint      = make_class("GrooveJoint", rb_cpGrooveJoint_alloc, rb_cpGrooveJoint_init, 5);
   ACCESSOR_METHODS(cpGrooveJoint, Anchr2, anchr2)
+  ACCESSOR_METHODS(cpGrooveJoint, GrooveA, groove_a)
+  ACCESSOR_METHODS(cpGrooveJoint, GrooveB, groove_b)
 
 
   VALUE c_cpPinJoint         = make_class("PinJoint", rb_cpPinJoint_alloc, rb_cpPinJoint_init, 4);
@@ -295,7 +310,7 @@ Init_cpConstraint(void) {
   ACCESSOR_METHODS(cpPinJoint, Dist, dist)
 
 
-  VALUE c_cpPivotJoint       = make_class("PivotJoint", rb_cpPivotJoint_alloc, rb_cpPivotJoint_init, 4);
+  VALUE c_cpPivotJoint       = make_class("PivotJoint", rb_cpPivotJoint_alloc, rb_cpPivotJoint_init, -1);
   ACCESSOR_METHODS(cpPivotJoint, Anchr1, anchr1)
   ACCESSOR_METHODS(cpPivotJoint, Anchr2, anchr2)
 

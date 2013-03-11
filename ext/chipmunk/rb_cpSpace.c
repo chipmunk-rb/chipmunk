@@ -107,25 +107,6 @@ rb_cpSpaceSetIterations(VALUE self, VALUE val) {
 }
 
 static VALUE
-rb_cpSpaceGetElasticIterations(VALUE self) {
-  rb_raise(rb_eArgError, "elastic_iterations is obsolete");
-  return Qnil;
-  /*
-  return INT2NUM(SPACE(self)->elasticIterations);
-  */
-}
-
-static VALUE
-rb_cpSpaceSetElasticIterations(VALUE self, VALUE val) {
-  rb_raise(rb_eArgError, "elastic_iterations= is obsolete");
-  return Qnil;
-/*
-  SPACE(self)->elasticIterations = NUM2INT(val);
-  return val;
-*/  
-}
-
-static VALUE
 rb_cpSpaceGetDamping(VALUE self) {
   return rb_float_new(SPACE(self)->damping);
 }
@@ -602,12 +583,6 @@ Init_cpSpace(void) {
   rb_define_method(c_cpSpace, "iterations", rb_cpSpaceGetIterations, 0);
   rb_define_method(c_cpSpace, "iterations=", rb_cpSpaceSetIterations, 1);
 
-  rb_define_method(c_cpSpace, "elastic_iterations", rb_cpSpaceGetElasticIterations, 0);
-  rb_define_method(c_cpSpace, "elastic_iterations=", rb_cpSpaceSetElasticIterations, 1);
-
-  rb_define_method(c_cpSpace, "damping", rb_cpSpaceGetDamping, 0);
-  rb_define_method(c_cpSpace, "damping=", rb_cpSpaceSetDamping, 1);
-
   rb_define_method(c_cpSpace, "gravity", rb_cpSpaceGetGravity, 0);
   rb_define_method(c_cpSpace, "gravity=", rb_cpSpaceSetGravity, 1);
 
@@ -647,7 +622,6 @@ Init_cpSpace(void) {
   rb_define_module_function(m_Chipmunk, "collision_persistence", rb_cpSpace_get_collisionPersistence, 0);
   rb_define_module_function(m_Chipmunk, "collision_persistence=", rb_cpSpace_set_collisionPersistence, 1);
   
-
   rb_define_method(c_cpSpace, "add_shape", rb_cpSpaceAddShape, 1);
   rb_define_method(c_cpSpace, "add_static_shape", rb_cpSpaceAddStaticShape, 1);
   rb_define_method(c_cpSpace, "add_body", rb_cpSpaceAddBody, 1);
