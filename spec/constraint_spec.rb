@@ -140,30 +140,29 @@ CP_DefineConstraintStructProperty(cpDataPointer, data, UserData)
 
   describe 'GrooveJoint class' do
     let(:constraint) { CP::Constraint::GrooveJoint.new(boda,bodb,ZERO_VEC_2,ZERO_VEC_2,ZERO_VEC_2) }
-    let(:v) { vec2(4,5) }
 
-    it 'can get groove_a' do
-      constraint.groove_a = v
-      constraint.groove_a.should == v
-    end
-
-    it 'can get groove_b' do
-      constraint.groove_b = v
-      constraint.groove_b.should == v
-    end
-
-    it 'can set / get anchr2' do
-      constraint.anchr2 = v
-      constraint.anchr2.should == v
-    end
-
+    check_accessor :constraint, :groove_a, vec2(1,2)
+    check_accessor :constraint, :groove_b, vec2(1,2)
+    check_accessor :constraint, :anchr2, vec2(1,2)
   end
 
   describe 'DampedSpring class' do
+    let(:constraint) { CP::Constraint::DampedSpring.new(boda,bodb,ZERO_VEC_2,ZERO_VEC_2,3,4,5) }
     it 'can be created' do
-      CP::Constraint::DampedSpring.new(boda,bodb,ZERO_VEC_2,ZERO_VEC_2,3,4,5)
+      constraint      
+    end
+
+    check_accessor :constraint, :anchr1, vec2(1,2)
+    check_accessor :constraint, :anchr2, vec2(1,2)
+    check_accessor :constraint, :rest_length, 12.0
+    check_accessor :constraint, :stiffness, 1.0
+    check_accessor :constraint, :damping, 3.3
+
+    it 'allows setting of spring force func' do
+      pending "(cpDampedSpring, cpDampedSpringForceFunc, springForceFunc, SpringForceFunc)"
     end
   end
+
   
   describe 'DampedRotarySpring class' do
     it 'can be created' do
