@@ -148,8 +148,8 @@ rb_cpPivotJoint_init(int argc, VALUE *argv, VALUE self) {
   cpPivotJoint *joint = (cpPivotJoint *)CONSTRAINT(self);
 
   if(NIL_P(anchr2)) {
-    cpVect a1 = (a ? cpBodyWorld2Local(a, *VGET(pivotOrAnchr1)) : *VGET(pivotOrAnchr1));
-    cpVect a2 = (b ? cpBodyWorld2Local(b, *VGET(pivotOrAnchr1)) : *VGET(pivotOrAnchr1));
+    cpVect a1 = (a ? cpBodyWorld2Local(BODY(a), *VGET(pivotOrAnchr1)) : *VGET(pivotOrAnchr1));
+    cpVect a2 = (b ? cpBodyWorld2Local(BODY(b), *VGET(pivotOrAnchr1)) : *VGET(pivotOrAnchr1));
     cpPivotJointInit(joint, BODY(a), BODY(b), a1, a2);
   } else {
     cpPivotJointInit(joint, BODY(a), BODY(b), *VGET(pivotOrAnchr1), *VGET(anchr2));
