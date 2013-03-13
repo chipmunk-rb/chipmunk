@@ -31,40 +31,6 @@ VALUE m_Chipmunk;
 ID id_parent;
 VALUE cpObjectToIntHash;
 
-/*
-static VALUE
-rb_get_cp_bias_coef(VALUE self) {
-  return rb_float_new(cp_bias_coef);
-}
-
-static VALUE
-rb_set_cp_bias_coef(VALUE self, VALUE num) {
-  cp_bias_coef = NUM2DBL(num);
-  return num;
-}
-
-static VALUE
-rb_get_cp_collision_slop(VALUE self) {
-  return rb_float_new(cp_collision_slop);
-}
-
-static VALUE
-rb_set_cp_collision_slop(VALUE self, VALUE num) {
-  cp_collision_slop = NUM2DBL(num);
-  return num;
-}
-
-static VALUE
-rb_set_cp_contact_persistence(VALUE self, VALUE num) {
-  cp_contact_persistence = NUM2UINT(num);
-  return num;
-}
-
-static VALUE
-rb_get_cp_contact_persistence(VALUE self) {
-  return UINT2NUM(cp_contact_persistence);
-}*/
-
 int
 CP_OBJ2INT(VALUE object) {
   VALUE intValue = rb_hash_aref(cpObjectToIntHash, object);
@@ -136,9 +102,9 @@ rb_cpAreaForPoly(VALUE self, VALUE arr) {
   VALUE *ary_ptr = RARRAY_PTR(arr);
   cpVect verts[numVerts];
 
-  for(long i = 0; i < numVerts; i++)
+  for(int i = 0; i < numVerts; i++) { 
     verts[i] = *VGET(ary_ptr[i]);
-
+  }
   cpFloat area   = cpAreaForPoly(numVerts, verts);
   return rb_float_new(area);
 }

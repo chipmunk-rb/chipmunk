@@ -1,18 +1,27 @@
 require File.dirname(__FILE__)+'/spec_helper'
 describe 'Space in chipmunk' do
-  it 'can be created' do
-    s = CP::Space.new
-  end
-  it 'can set its iterations' do
-    s = CP::Space.new
-    s.iterations = 9
-    s.iterations.should == 9
-  end
-  it 'can set its gravity' do
-    s = CP::Space.new
-    s.gravity = vec2(4,5)
-    s.gravity.x.should == 4
-    s.gravity.y.should == 5
+  let(:space) { CP::Space.new }
+
+  check_accessor :space, :gravity, vec2(4,5)
+  check_accessor :space, :iterations, 9
+
+  check_accessor :space, :damping, 0.2
+  check_accessor :space, :idle_speed, 3
+  check_accessor :space, :sleep_time, 1000
+
+
+  check_accessor :space, :collision_slop, 1.3
+  check_accessor :space, :collision_bias, 2.3
+  check_accessor :space, :collision_persistence, 5
+  check_accessor :space, :object, :some_datum
+
+  it 'space missing' do
+    pending """
+      # TODO #collision_persistence needs to be uint not float
+      check_accessor :space, :enable_contact_graph, true
+      check_accessor :space, :enable_contact_graph, false
+      # TODO add query method: contact_graph_enabled?
+      """
   end
 
   it 'can have a shape added to it' do
@@ -326,18 +335,6 @@ describe 'Space in chipmunk' do
     o  = "Hello"
     b.object = o
     b.object.should == o
-  end
-  
-  it 'can set and get its idle speed' do
-    b  = CP::Space.new  
-    b.idle_speed = 1.0
-    b.idle_speed.should == 1.0
-  end
-  
-  it 'can set and get its sleep time' do
-    b  = CP::Space.new  
-    b.sleep_time = 1000.0
-    b.sleep_time.should == 1000.0
   end
   
   describe 'struct ContactPoint' do

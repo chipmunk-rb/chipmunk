@@ -43,6 +43,8 @@ VALUE c_cpSpace;
 
 SPACE_GETSET_FUNCS(collisionBias)
 SPACE_GETSET_FUNCS(collisionSlop)
+
+// TODO this needs to be uint not float
 SPACE_GETSET_FUNCS(collisionPersistence)
 
 static VALUE
@@ -78,13 +80,13 @@ rb_cpSpaceGetSleepTimeThreshold(VALUE self) {
 
 static VALUE
 rb_cpSpaceSetSleepTimeThreshold(VALUE self, VALUE val) {
-  SPACE(self)->sleepTimeThreshold = NUM2INT(val);
+  SPACE(self)->sleepTimeThreshold = NUM2UINT(val);
   return val;
 }
 
 static VALUE
 rb_cpSpaceGetIdleSpeedThreshold(VALUE self) {
-  return INT2NUM(SPACE(self)->idleSpeedThreshold);
+  return UINT2NUM(SPACE(self)->idleSpeedThreshold);
 }
 
 static VALUE
@@ -170,6 +172,7 @@ do_callback(void * data, ID method, cpArbiter *arb) {
     return CP_BOOL_INT(rb_funcall(object, method, 3, va, vb, varb));
   }
   // we never get here
+  return res;
 }
 
 
@@ -615,12 +618,12 @@ Init_cpSpace(void) {
   rb_define_method(c_cpSpace, "on_post_step",
                    rb_cpSpaceAddPostStepCallback, -1);
 
-  rb_define_module_function(m_Chipmunk, "collision_bias", rb_cpSpace_get_collisionBias, 0);
-  rb_define_module_function(m_Chipmunk, "collision_bias=", rb_cpSpace_set_collisionBias, 1);
-  rb_define_module_function(m_Chipmunk, "collision_slop", rb_cpSpace_get_collisionSlop, 0);
-  rb_define_module_function(m_Chipmunk, "collision_slop=", rb_cpSpace_set_collisionSlop, 1);
-  rb_define_module_function(m_Chipmunk, "collision_persistence", rb_cpSpace_get_collisionPersistence, 0);
-  rb_define_module_function(m_Chipmunk, "collision_persistence=", rb_cpSpace_set_collisionPersistence, 1);
+  rb_define_method(c_cpSpace, "collision_bias", rb_cpSpace_get_collisionBias, 0);
+  rb_define_method(c_cpSpace, "collision_bias=", rb_cpSpace_set_collisionBias, 1);
+  rb_define_method(c_cpSpace, "collision_slop", rb_cpSpace_get_collisionSlop, 0);
+  rb_define_method(c_cpSpace, "collision_slop=", rb_cpSpace_set_collisionSlop, 1);
+  rb_define_method(c_cpSpace, "collision_persistence", rb_cpSpace_get_collisionPersistence, 0);
+  rb_define_method(c_cpSpace, "collision_persistence=", rb_cpSpace_set_collisionPersistence, 1);
   
   rb_define_method(c_cpSpace, "add_shape", rb_cpSpaceAddShape, 1);
   rb_define_method(c_cpSpace, "add_static_shape", rb_cpSpaceAddStaticShape, 1);
@@ -672,6 +675,9 @@ Init_cpSpace(void) {
                    rb_cpSpaceSetIdleSpeedThreshold, 1);
   rb_define_method(c_cpSpace, "idle_speed",
                    rb_cpSpaceGetIdleSpeedThreshold, 0);
+
+  rb_define_method(c_cpSpace, "damping", rb_cpSpaceGetDamping, 0);
+  rb_define_method(c_cpSpace, "damping=", rb_cpSpaceSetDamping, 1);
 
   rb_define_method(c_cpSpace, "activate_shapes_touching_shape",
                    rb_cpSpaceActivateShapesTouchingShape, 1);

@@ -51,9 +51,10 @@ describe 'CP module' do
   
   it 'can calculate the area for a polygon' do
     verts = []
-    verts << vec2(2, 0)
-    verts << vec2(0, 2)
     verts << vec2(0, 0)    
+    verts << vec2(0, 2)
+    verts << vec2(2, 0)
+
     
     are = CP.area_for_poly(verts)
     are.should be_within(0.001).of(2.0)
@@ -61,26 +62,17 @@ describe 'CP module' do
   
   it 'can calculate areas for a circle' do
     are = CP.area_for_circle(1.0, 2.0)
-    are.should be_within(0.001).of(18.8495)
+    are.should be_within(0.001).of(3*Math::PI)
   end
   
   it 'can calculate areas for a segment' do
-    are = CP.area_for_segment(vec2(0,0), vec2(1,1), 1.0)
-    are.should be_within(0.001).of(9.111612431925776)
+    are = CP.area_for_segment(vec2(0,0), vec2(0,1), 1.0)
+    are.should be_within(0.001).of(Math::PI+2)
   end
   
   it 'can calculate areas for a box' do
     are = CP.area_for_box(3, 2)
     are.should be_within(0.001).of(6.0)
-  end
-  
-  it 'allows global parameters for Chipmunk to be read and set' do
-    CP.bias_coef = 0.2
-    CP.bias_coef.should == 0.2
-    CP.collision_slop = 0.3
-    CP.collision_slop.should == 0.3
-    CP.contact_persistence = 4
-    CP.contact_persistence.should == 4  
   end
   
   it 'can calculate the centroid for a polygon' do
