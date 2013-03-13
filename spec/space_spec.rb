@@ -13,7 +13,6 @@ describe 'Space in chipmunk' do
   check_accessor :space, :collision_slop, 1.3
   check_accessor :space, :collision_bias, 2.3
   check_accessor :space, :collision_persistence, 5
-  check_accessor :space, :object, :some_datum
 
   it 'space missing' do
     pending """
@@ -328,13 +327,6 @@ describe 'Space in chipmunk' do
     
     shapes.size.should == 1
     shapes.first.should == shapy
-  end
-  
-  it 'can have an arbitrary object connected to it' do
-    b  = CP::Space.new
-    o  = "Hello"
-    b.object = o
-    b.object.should == o
   end
   
   describe 'struct ContactPoint' do

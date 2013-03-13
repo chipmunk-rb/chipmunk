@@ -47,6 +47,36 @@ describe 'Constraints in chipmunk' do
       con.impulse.should == 0.0 
     end  
 
+    context "in a space" do
+      let(:space) { CP::Space.new }
+      before do
+        space.add_body(boda)
+        space.add_body(bodb)
+        space.add_constraint(con)
+      end
+
+      it 'can set pre solve func with no args' do
+        called = false
+        con.pre_solve do
+          called = true
+        end
+
+        space.step 1
+        called.should be_true
+      end
+
+      it 'can set pre solve func with space arg' do
+        called = false
+        con.pre_solve do |space|
+          called = true
+          space.should == space
+        end
+
+        space.step 1
+        called.should be_true
+      end
+    end
+
     it 'has these' do
       pending """
 CP_DefineConstraintStructProperty(cpConstraintPreSolveFunc, preSolve, PreSolveFunc)

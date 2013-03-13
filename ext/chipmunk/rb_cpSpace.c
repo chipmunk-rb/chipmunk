@@ -50,7 +50,9 @@ SPACE_GETSET_FUNCS(collisionPersistence)
 static VALUE
 rb_cpSpaceAlloc(VALUE klass) {
   cpSpace *space = cpSpaceAlloc();
-  return Data_Wrap_Struct(klass, NULL, cpSpaceFree, space);
+  VALUE rbSpace = Data_Wrap_Struct(klass, NULL, cpSpaceFree, space);
+  space->data = (void*)rbSpace;
+  return rbSpace;
 }
 
 static VALUE
@@ -134,16 +136,6 @@ static int
 doNothingCallback(cpArbiter *arb, cpSpace *space, void *data) {
   return 0;
 }
-
-// We need this as rb_obj_method_arity is not in 1.8.7
-static int
-cp_rb_obj_method_arity(VALUE self, ID id) {
-  VALUE metho = rb_funcall(self, rb_intern("method"), 1, ID2SYM(id));
-  VALUE arity = rb_funcall(metho, rb_intern("arity"), 0, 0);
-  return NUM2INT(arity);
-}
-
-
 
 // This callback function centralizes all collision callbacks.
 // it also adds flexibility by changing theway the callback is called on the
@@ -543,18 +535,6 @@ rb_cpSpaceStep(VALUE self, VALUE dt) {
 }
 
 static VALUE
-rb_cpSpaceGetData(VALUE self) {
-  return rb_iv_get(self, "data");
-}
-
-static VALUE
-rb_cpSpaceSetData(VALUE self, VALUE val) {
-  rb_iv_set(self, "data", val);
-  return val;
-}
-
-
-static VALUE
 rb_cpSpaceActivateShapesTouchingShape(VALUE self, VALUE shape) {
   cpSpaceActivateShapesTouchingShape(SPACE(self), SHAPE(shape));
   return self;
@@ -653,9 +633,6 @@ Init_cpSpace(void) {
 
 
   rb_define_method(c_cpSpace, "step", rb_cpSpaceStep, 1);
-
-  rb_define_method(c_cpSpace, "object", rb_cpSpaceGetData, 0);
-  rb_define_method(c_cpSpace, "object=", rb_cpSpaceSetData, 1);
 
   rb_define_method(c_cpSpace, "sleep_time_threshold=",
                    rb_cpSpaceSetSleepTimeThreshold, 1);

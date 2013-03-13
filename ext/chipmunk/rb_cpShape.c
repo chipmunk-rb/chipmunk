@@ -215,13 +215,6 @@ rb_cpShapeSegmentQuery(VALUE self, VALUE a, VALUE b) {
 }
 
 
-
-//cpCircle
-static void
-rb_cpCircleMark(void * data) {
-  cpCircleShape *circle = (cpCircleShape *) data;
-}
-
 static VALUE
 rb_cpCircleAlloc(VALUE klass) {
   cpCircleShape *circle = cpCircleShapeAlloc();

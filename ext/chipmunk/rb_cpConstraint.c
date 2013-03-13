@@ -65,7 +65,12 @@ CONSTRAINT_GETSET_FUNCS(maxBias)
 
 #define ALLOC_TEMPLATE(s, alloc)               \
   static VALUE rb_ ## s ## _alloc(VALUE klass) \
-  { return Data_Wrap_Struct(klass, NULL, cpConstraintFree, alloc);}
+  {  \
+    s * rb_cpStruct = alloc; \
+    VALUE rb_constraint = Data_Wrap_Struct(klass, NULL, cpConstraintFree, rb_cpStruct); \
+    rb_cpStruct->constraint.data = (void*)rb_constraint; \
+    return rb_constraint; \
+  } 
 
 ALLOC_TEMPLATE(cpPinJoint, cpPinJointAlloc())
 
@@ -252,6 +257,33 @@ rb_cpConstraintGetImpulse(VALUE self) {
   return rb_float_new(cpConstraintGetImpulse(CONSTRAINT(self)));
 }
 
+static void
+rb_cpConstraintPreSolveFunc(cpConstraint *constraint, cpSpace *space) {
+  VALUE rb_constraint = (VALUE)constraint->data;
+  VALUE callback_block = rb_iv_get(rb_constraint, "@_cp_pre_solve");
+
+  ID call_id = rb_intern("call");
+  int arity = NUM2INT(rb_funcall(callback_block, rb_intern("arity"), 0));
+  switch(arity) {
+  case 1:
+    rb_funcall(callback_block, call_id, 1, (VALUE)space->data);
+    break;
+  default:
+    rb_funcall(callback_block, call_id, 0);
+  }
+
+}
+
+static VALUE
+rb_cpConstraintSetPreSolve(int argc, VALUE * argv, VALUE self) {
+  VALUE callback_block;
+  rb_scan_args(argc, argv, "0&", &callback_block);
+  rb_iv_set(self, "@_cp_pre_solve", callback_block);
+
+  cpConstraintSetPreSolveFunc(CONSTRAINT(self), rb_cpConstraintPreSolveFunc);
+
+  return Qnil;
+}
 
 #define STRINGIFY(v) # v
 #define ACCESSOR_METHODS(s, m, name)                                   \
@@ -280,7 +312,7 @@ Init_cpConstraint(void) {
   rb_define_method(m_cpConstraint, "max_bias", rb_cpConstraint_get_maxBias, 0);
   rb_define_method(m_cpConstraint, "max_bias=", rb_cpConstraint_set_maxBias, 1);
   rb_define_method(m_cpConstraint, "impulse", rb_cpConstraintGetImpulse, 0);
-
+  rb_define_method(m_cpConstraint, "pre_solve", rb_cpConstraintSetPreSolve, -1);
 
   VALUE c_cpDampedRotarySpring = make_class("DampedRotarySpring", rb_cpDampedRotarySpring_alloc, rb_cpDampedRotarySpring_init, 5);
   ACCESSOR_METHODS(cpDampedRotarySpring, RestAngle, rest_angle)
