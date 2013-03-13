@@ -163,35 +163,56 @@ CP_DefineConstraintStructProperty(cpDataPointer, data, UserData)
     end
   end
 
-  
   describe 'DampedRotarySpring class' do
-    it 'can be created' do
-      CP::Constraint::DampedRotarySpring.new(boda,bodb,0,1.0,0.5)
+    let(:constraint) { CP::Constraint::DampedRotarySpring.new(boda,bodb,0,1.0,0.5) }
+
+    check_accessor :constraint, :rest_angle, 32.2
+    check_accessor :constraint, :stiffness, 1.0
+    check_accessor :constraint, :damping, 3.3
+
+    it 'allows setting of spring torque func' do
+      pending "CP_DefineConstraintProperty(cpDampedRotarySpring, cpDampedRotarySpringTorqueFunc, springTorqueFunc, SpringTorqueFunc)"
     end
   end
   
-
   describe 'RotaryLimitJoint class' do
-    it 'can be created' do
+    let(:constraint) { 
       CP::Constraint::RotaryLimitJoint.new(boda,bodb,Math::PI,Math::PI/2)
-    end
+    }
+
+    check_accessor :constraint, :min, 32.2
+    check_accessor :constraint, :max, 1.0
   end
 
   describe 'RatchetJoint class' do
     it 'can be created' do
-      CP::Constraint::RatchetJoint.new(boda,bodb,3,4)
-    end
-  end
-  
-  describe 'GearJoint class' do
-    it 'can be created' do
-      CP::Constraint::GearJoint.new(boda,bodb,1,2)
     end
   end
 
+  describe 'RatchetJoint class' do
+    let(:constraint) { 
+      CP::Constraint::RatchetJoint.new(boda,bodb,3,4)
+    }
+
+    check_accessor :constraint, :angle, 32.2
+    check_accessor :constraint, :phase, 1.3
+    check_accessor :constraint, :ratchet, 4.4
+  end
+  
+  describe 'GearJoint class' do
+    let(:constraint) { 
+      CP::Constraint::GearJoint.new(boda,bodb,1,2)
+    }
+
+    check_accessor :constraint, :phase, 32.2
+    check_accessor :constraint, :ratio, 2.2
+  end
+
   describe 'SimpleMotor class' do
-    it 'can be created' do
+    let(:constraint) { 
       CP::Constraint::SimpleMotor.new(boda,bodb,2)
-    end
+    }
+
+    check_accessor :constraint, :rate, 300.1
   end
 end
