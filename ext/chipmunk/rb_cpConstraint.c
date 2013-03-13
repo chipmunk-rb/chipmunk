@@ -274,6 +274,23 @@ rb_cpConstraintPreSolveFunc(cpConstraint *constraint, cpSpace *space) {
 
 }
 
+static void
+rb_cpConstraintPostSolveFunc(cpConstraint *constraint, cpSpace *space) {
+  VALUE rb_constraint = (VALUE)constraint->data;
+  VALUE callback_block = rb_iv_get(rb_constraint, "@_cp_post_solve");
+
+  ID call_id = rb_intern("call");
+  int arity = NUM2INT(rb_funcall(callback_block, rb_intern("arity"), 0));
+  switch(arity) {
+  case 1:
+    rb_funcall(callback_block, call_id, 1, (VALUE)space->data);
+    break;
+  default:
+    rb_funcall(callback_block, call_id, 0);
+  }
+
+}
+
 static VALUE
 rb_cpConstraintSetPreSolve(int argc, VALUE * argv, VALUE self) {
   VALUE callback_block;
@@ -281,6 +298,17 @@ rb_cpConstraintSetPreSolve(int argc, VALUE * argv, VALUE self) {
   rb_iv_set(self, "@_cp_pre_solve", callback_block);
 
   cpConstraintSetPreSolveFunc(CONSTRAINT(self), rb_cpConstraintPreSolveFunc);
+
+  return Qnil;
+}
+
+static VALUE
+rb_cpConstraintSetPostSolve(int argc, VALUE * argv, VALUE self) {
+  VALUE callback_block;
+  rb_scan_args(argc, argv, "0&", &callback_block);
+  rb_iv_set(self, "@_cp_post_solve", callback_block);
+
+  cpConstraintSetPostSolveFunc(CONSTRAINT(self), rb_cpConstraintPostSolveFunc);
 
   return Qnil;
 }
@@ -313,6 +341,7 @@ Init_cpConstraint(void) {
   rb_define_method(m_cpConstraint, "max_bias=", rb_cpConstraint_set_maxBias, 1);
   rb_define_method(m_cpConstraint, "impulse", rb_cpConstraintGetImpulse, 0);
   rb_define_method(m_cpConstraint, "pre_solve", rb_cpConstraintSetPreSolve, -1);
+  rb_define_method(m_cpConstraint, "post_solve", rb_cpConstraintSetPostSolve, -1);
 
   VALUE c_cpDampedRotarySpring = make_class("DampedRotarySpring", rb_cpDampedRotarySpring_alloc, rb_cpDampedRotarySpring_init, 5);
   ACCESSOR_METHODS(cpDampedRotarySpring, RestAngle, rest_angle)

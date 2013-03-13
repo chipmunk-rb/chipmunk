@@ -75,6 +75,41 @@ describe 'Constraints in chipmunk' do
         space.step 1
         called.should be_true
       end
+
+      it 'can set post solve func with no args' do
+        called = false
+        con.post_solve do
+          called = true
+        end
+
+        space.step 1
+        called.should be_true
+      end
+
+      it 'can set post solve func with space arg' do
+        called = false
+        con.post_solve do |space|
+          called = true
+          space.should == space
+        end
+
+        space.step 1
+        called.should be_true
+      end
+
+      it 'calls pre then post' do
+        calls = []
+        con.pre_solve do
+          calls << :pre
+        end
+        con.post_solve do
+          calls << :post
+        end
+        space.step 1
+
+        calls.should == [:pre, :post]
+
+      end
     end
 
     it 'has these' do
