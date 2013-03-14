@@ -112,14 +112,6 @@ describe 'Constraints in chipmunk' do
       end
     end
 
-    it 'has these' do
-      pending """
-CP_DefineConstraintStructProperty(cpConstraintPreSolveFunc, preSolve, PreSolveFunc)
-CP_DefineConstraintStructProperty(cpConstraintPostSolveFunc, postSolve, PostSolveFunc)
-CP_DefineConstraintStructProperty(cpDataPointer, data, UserData)
-"""
-    end
-
   end
   
   describe 'PinJoint class' do
@@ -224,7 +216,21 @@ CP_DefineConstraintStructProperty(cpDataPointer, data, UserData)
     check_accessor :constraint, :damping, 3.3
 
     it 'allows setting of spring force func' do
-      pending "(cpDampedSpring, cpDampedSpringForceFunc, springForceFunc, SpringForceFunc)"
+      space = CP::Space.new
+      space.add_body boda
+      space.add_body bodb
+
+      space.add_constraint constraint
+      called = false
+      called_dist = nil
+      constraint.force do |dist|
+        called = true
+        called_dist = dist
+      end
+
+      space.step 1
+      called.should be_true
+      called_dist.should == 0.0
     end
   end
 

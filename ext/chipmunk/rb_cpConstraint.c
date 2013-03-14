@@ -291,6 +291,23 @@ rb_cpConstraintPostSolveFunc(cpConstraint *constraint, cpSpace *space) {
 
 }
 
+static cpFloat
+rb_cpDampedSpringForceFunc(cpConstraint *constraint, cpFloat dist) {
+  VALUE rb_constraint = (VALUE)constraint->data;
+  VALUE callback_block = rb_iv_get(rb_constraint, "@_cp_force_func");
+
+  ID call_id = rb_intern("call");
+  int arity = NUM2INT(rb_funcall(callback_block, rb_intern("arity"), 0));
+  switch(arity) {
+  case 1:
+    // TODO is NUM2DBL what I want here?
+    return NUM2DBL(rb_funcall(callback_block, call_id, 1, rb_float_new(dist)));
+  default:
+    return NUM2DBL(rb_funcall(callback_block, call_id, 0));
+  }
+
+}
+
 static VALUE
 rb_cpConstraintSetPreSolve(int argc, VALUE * argv, VALUE self) {
   VALUE callback_block;
@@ -312,6 +329,18 @@ rb_cpConstraintSetPostSolve(int argc, VALUE * argv, VALUE self) {
 
   return Qnil;
 }
+
+static VALUE
+rb_cpDampedSpringSetForceFunc(int argc, VALUE * argv, VALUE self) {
+  VALUE callback_block;
+  rb_scan_args(argc, argv, "0&", &callback_block);
+  rb_iv_set(self, "@_cp_force_func", callback_block);
+
+  cpDampedSpringSetSpringForceFunc(CONSTRAINT(self), rb_cpDampedSpringForceFunc);
+
+  return Qnil;
+}
+
 
 #define STRINGIFY(v) # v
 #define ACCESSOR_METHODS(s, m, name)                                   \
@@ -354,6 +383,7 @@ Init_cpConstraint(void) {
   ACCESSOR_METHODS(cpDampedSpring, RestLength, rest_length)
   ACCESSOR_METHODS(cpDampedSpring, Stiffness, stiffness)
   ACCESSOR_METHODS(cpDampedSpring, Damping, damping)
+  rb_define_method(c_cpDampedSpring, "force", rb_cpDampedSpringSetForceFunc, -1);
 
   VALUE c_cpGearJoint        = make_class("GearJoint", rb_cpGearJoint_alloc, rb_cpGearJoint_init, 4);
   ACCESSOR_METHODS(cpGearJoint, Phase, phase)
