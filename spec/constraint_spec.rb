@@ -242,7 +242,21 @@ describe 'Constraints in chipmunk' do
     check_accessor :constraint, :damping, 3.3
 
     it 'allows setting of spring torque func' do
-      pending "CP_DefineConstraintProperty(cpDampedRotarySpring, cpDampedRotarySpringTorqueFunc, springTorqueFunc, SpringTorqueFunc)"
+      space = CP::Space.new
+      space.add_body boda
+      space.add_body bodb
+
+      space.add_constraint constraint
+      called = false
+      called_dist = nil
+      constraint.torque do |dist|
+        called = true
+        called_dist = dist
+      end
+
+      space.step 1
+      called.should be_true
+      called_dist.should == 0.0
     end
   end
   
