@@ -41,24 +41,21 @@ rb_cpBBAlloc(VALUE klass) {
 }
 
 static VALUE
-rb_cpBBInitialize(VALUE self, VALUE l, VALUE b, VALUE r, VALUE t) {
+rb_cpBBInitialize(int argc, VALUE *argv, VALUE self) {
+  VALUE l, b, r, t;
   cpBB *bb = BBGET(self);
+
+  rb_scan_args(argc, argv, "04", &l, &b, &r, &t);
   // initialize as a circle bounds box if ony 2 params
   if (NIL_P(r)) {
-    cpVect * p =  VGET(l);
-    if(p) { 
-       (*bb) = cpBBNewForCircle(*p, b);
-    } else {
+    if(NIL_P(l)) { 
        (*bb) = cpBBNew(0, 0, 1, 1); // unit box. 
+    } else {
+       cpVect * p =  VGET(l);
+       (*bb) = cpBBNewForCircle(*p, NUM2DBL(b));
     }   
   } else {
    (*bb)  = cpBBNew(NUM2DBL(l), NUM2DBL(b), NUM2DBL(r), NUM2DBL(t));
-   // unit box.
-   /*  bb->l = ;
-    bb->b = NUM2DBL(b);
-    bb->r = NUM2DBL(r);
-    bb->t = NUM2DBL(t);
-    */
   }  
   return self;
 }
@@ -117,7 +114,11 @@ rb_cpBBIntersectsSegment(VALUE self, VALUE a, VALUE b) {
 }
 
 static VALUE
-rb_cpBBintersects(VALUE self, VALUE other, VALUE b) {
+rb_cpBBintersects(int argc, VALUE *argv, VALUE self) {
+  VALUE other, b;
+
+  rb_scan_args(argc, argv, "11", &other, &b);
+
   if (rb_class_of(other) == c_cpBB) {
     return rb_cpBBIntersectsBB(self, other);
   } else if ((rb_class_of(other) == c_cpVect) && (rb_class_of(b) == c_cpVect)) {
@@ -208,7 +209,7 @@ rb_cpBBArea(VALUE self) {
 }
 
 static VALUE
-rb_cpBBMergeArea(VALUE self, VALUE other) {
+rb_cpBBMergedArea(VALUE self, VALUE other) {
   return DBL2NUM(cpBBMergedArea(*BBGET(self), *BBGET(other)));
 }
 
@@ -230,7 +231,7 @@ void
 Init_cpBB(void) {
   c_cpBB = rb_define_class_under(m_Chipmunk, "BB", rb_cObject);
   rb_define_alloc_func(c_cpBB, rb_cpBBAlloc);
-  rb_define_method(c_cpBB, "initialize", rb_cpBBInitialize, 4);
+  rb_define_method(c_cpBB, "initialize", rb_cpBBInitialize, -1);
 
   rb_define_method(c_cpBB, "l", rb_cpBBGetL, 0);
   rb_define_method(c_cpBB, "b", rb_cpBBGetB, 0);
@@ -242,8 +243,8 @@ Init_cpBB(void) {
   rb_define_method(c_cpBB, "r=", rb_cpBBSetR, 1);
   rb_define_method(c_cpBB, "t=", rb_cpBBSetT, 1);
 
-  rb_define_method(c_cpBB, "intersect?", rb_cpBBintersects, 1);
-  rb_define_method(c_cpBB, "intersects?", rb_cpBBintersects, 1);
+  rb_define_method(c_cpBB, "intersect?", rb_cpBBintersects, -1);
+  rb_define_method(c_cpBB, "intersects?", rb_cpBBintersects, -1);
   
   //containsBB
   //containsVect
@@ -260,17 +261,14 @@ Init_cpBB(void) {
   rb_define_method(c_cpBB, "merge"      , rb_cpBBmerge, 1);
   rb_define_method(c_cpBB, "expand"     , rb_cpBBexpand, 1);
 
-  // new in 6.0.3.0
   rb_define_method(c_cpBB, "area"       , rb_cpBBArea, 0);
-  rb_define_method(c_cpBB, "merge_area" , rb_cpBBMergeArea, 1); 
+  rb_define_method(c_cpBB, "merged_area" , rb_cpBBMergedArea, 1); 
   
   rb_define_method(c_cpBB, "intersect_bb?", rb_cpBBIntersectsBB, 1);
   rb_define_method(c_cpBB, "intersects_bb?", rb_cpBBIntersectsBB, 1);
   rb_define_method(c_cpBB, "intersect_segment?", rb_cpBBIntersectsSegment, 2);
   rb_define_method(c_cpBB, "intersects_segment?", rb_cpBBIntersectsSegment, 2);
-
-  
-
+  rb_define_method(c_cpBB, "segment_query", rb_cpBBSegmentQuery, 2);
 
   rb_define_method(c_cpBB, "to_s", rb_cpBBToString, 0);
 }
