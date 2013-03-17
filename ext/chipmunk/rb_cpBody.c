@@ -301,11 +301,13 @@ rb_cpBodyIsRogue(VALUE self) {
 ID id_velocity_func;
 ID id_speed_func;
 
+/*
 static int
 respondsTo(VALUE obj, ID method) {
   VALUE value = rb_funcall(obj, rb_intern("respond_to?"), 1, ID2SYM(method));
   return RTEST(value);
 }
+ */
 
 /*
 

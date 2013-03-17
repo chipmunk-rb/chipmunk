@@ -13,14 +13,11 @@ describe 'Space in chipmunk' do
   check_accessor :space, :collision_slop, 1.3
   check_accessor :space, :collision_bias, 2.3
   check_accessor :space, :collision_persistence, 5
+  check_accessor :space, :contact_graph_enabled, true
+  check_accessor :space, :contact_graph_enabled, false
 
   it 'space missing' do
-    pending """
-      # TODO #collision_persistence needs to be uint not float
-      check_accessor :space, :enable_contact_graph, true
-      check_accessor :space, :enable_contact_graph, false
-      # TODO add query method: contact_graph_enabled?
-      """
+    pending "# TODO #collision_persistence needs to be uint not float"
   end
 
   it 'can have a shape added to it' do

@@ -122,6 +122,18 @@ rb_cpSpaceSetDamping(VALUE self, VALUE val) {
 }
 
 static VALUE
+rb_cpSpaceGetContactGraphEnabled(VALUE self) {
+  return CP_INT_BOOL(SPACE(self)->enableContactGraph);
+}
+
+static VALUE
+rb_cpSpaceSetContactGraphEnabled(VALUE self, VALUE val) {
+  SPACE(self)->enableContactGraph = CP_BOOL_INT(val);
+  return val;
+}
+
+
+static VALUE
 rb_cpSpaceGetGravity(VALUE self) {
   return VWRAP(self, &SPACE(self)->gravity);
 }
@@ -198,11 +210,6 @@ static int
 respondsTo(VALUE obj, ID method) {
   VALUE value = rb_funcall(obj, rb_intern("respond_to?"), 1, ID2SYM(method));
   return RTEST(value);
-}
-
-static int
-isBlock(VALUE obj) {
-  return respondsTo(obj, id_call);
 }
 
 static VALUE
@@ -655,6 +662,9 @@ Init_cpSpace(void) {
 
   rb_define_method(c_cpSpace, "damping", rb_cpSpaceGetDamping, 0);
   rb_define_method(c_cpSpace, "damping=", rb_cpSpaceSetDamping, 1);
+
+  rb_define_method(c_cpSpace, "contact_graph_enabled", rb_cpSpaceGetContactGraphEnabled, 0);
+  rb_define_method(c_cpSpace, "contact_graph_enabled=", rb_cpSpaceSetContactGraphEnabled, 1);
 
   rb_define_method(c_cpSpace, "activate_shapes_touching_shape",
                    rb_cpSpaceActivateShapesTouchingShape, 1);
