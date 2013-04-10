@@ -3,8 +3,8 @@ Ruby Bindings to Chipmunk Physics Version 5.3.4
 (C) Scott Lembcke, Beoran and John Mair (banisterfiend)
 
 IMPORTANT NOTICE:
-This is version 5.3.4.3 of the bindings for MRI Ruby 1.8.x and 1.9.x to
-Chipmunk version 5.3.4.
+This is version 6.1.3.1 of the bindings for MRI Ruby 1.9.x to
+Chipmunk version 6.1.3.
 
 (1) 1/10/09 Cross-Platform Gem built by John Mair (banisterfiend)
     * Just go: gem install chipmunk
@@ -40,7 +40,7 @@ ABOUT THESE RUBY BINDINGS:
   https://github.com/beoran/chipmunk/issues
 
 REQUIREMENTS
-  * Ruby 1.8.x or 1.9.x.
+  * 1.9.x.
   * rspec for running the specs.
   * rake and rake-compiler for compiling the extension.
   
@@ -60,7 +60,7 @@ INSTALLATION
   you. This will be solved when these incompatibilities are solved by these
   upstream tools.
 
-  These bindings vendor Chipmunk 5.3.4 with a few extra patches, so you don't
+  These bindings vendor Chipmunk 6.1.3 with a few extra patches, so you don't
   need to have it installed.
 
 DOCUMENTATION:
@@ -68,6 +68,7 @@ DOCUMENTATION:
   http://beoran.github.com/chipmunk/
 
 CHANGES:
+  * Bumped to Chipmunk version 6.1.3; dropped 1.8 support
   * Since 5.3.4.4: Vendored chipmunk again, uncleanly. should compile well now.
   * Version 5.3.4.2 and 5.3.4.3 are broken, don't use them.
   * Since 5.3.4.1: Vendored chipmunk again, cleanly. Several bugfixes.
@@ -75,12 +76,9 @@ CHANGES:
     chipmunk. More specs and documentation.
     
 VERSIONING POLICY:
-  Since 5.3.4.0 these bindings follow the version of chipmunk, followed by an 
+  Since 6.1.3.0 these bindings follow the version of chipmunk, followed by an 
   extra number for the version of the bindings. All major releases will be 
   backwards compatible in their API. The API may be enhanced in minor releases.
-  The next planned release that is expected to partialy break backwards 
-  compatibility with the 5.3.4 API will be 6.x.x.0, which will be based on
-  the upstream C Chipmunk library version 6.x.x after that leaves beta.
 
 KNOWN BUGS:
   * There are no bindings to SpaceHash since I think they are not so useful
@@ -97,7 +95,6 @@ TODO:
   * Allow several constructors to be more flexible and take nil as a default
     argument.
   * Try to prevent segfauts on incorrect use of certain methods, if possible.
-  * Get ready for chipmunk 5.3.5 and 6.x when they come out.
   * Some more specs.
   * Fix the gem when the upstream tools get fixed.
 
@@ -110,7 +107,7 @@ INFO FOR MAINTAINERS:
 
 (3) How to build the gems? (maintainers only)
     * Install rake-compiler (http://github.com/luislavena/rake-compiler)
-    * Install 1.9.1 and 1.8.6 mingw ruby versions (instructions above)
-    * Type: rake cross native gem RUBY_CC_VERSION=1.8.6:1.9.1
-    * Upload new gems to rubyforge and gemcutter.
+    * Install 1.9.1 mingw ruby versions (instructions above)
+    * Type: rake cross native gem RUBY_CC_VERSION=1.9.1
+    * Upload new gems to rubygems
     
