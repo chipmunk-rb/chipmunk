@@ -33,6 +33,8 @@ extern VALUE c_cpSpace;
 extern VALUE c_cpArbiter;
 extern VALUE c_cpStaticBody;
 extern VALUE c_cpSegmentQueryInfo;
+extern VALUE c_cpNearestPointQueryInfo;
+extern VALUE cpObjectToIntHash;
 
 extern ID id_parent;
 
@@ -50,6 +52,8 @@ VWRAP(VALUE parent, cpVect *v) {
 
   return vec_obj;
 }
+
+int cp_rb_obj_method_arity(VALUE self, ID id);
 
 #define GETTER_TEMPLATE(func_name, klass, type)                                                                            \
   static inline type *                                                                                                     \
@@ -85,10 +89,9 @@ VGET_ZERO(VALUE value) {
   return *VGET(value);
 }
 
-//Helper that allocates and initializes a SegmenQueryInfo struct
+int CP_OBJ2INT(VALUE object);
 VALUE rb_cpSegmentQueryInfoNew(VALUE shape, VALUE t, VALUE n);
-
-// Helper that allocates and initializes a ContactPoint struct.
+VALUE rb_cpNearestPointQueryInfoNew(VALUE shape, VALUE p, VALUE d);
 VALUE rb_cpContactPointNew(VALUE point, VALUE normal, VALUE dist);
 
 

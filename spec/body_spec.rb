@@ -5,9 +5,9 @@ describe 'A new Body' do
     b = CP::Body.new(5, 7)
     b.m.should == 5
     b.i.should == 7
-    b.static?.should be_false
-    b.sleep?.should be_false
-    b.rogue?.should be_true
+    b.should_not be_static
+    b.should_not be_sleeping
+    b.should be_rogue
   end
   
   describe 'StaticBody class' do
@@ -31,18 +31,18 @@ describe 'A new Body' do
   it 'can sleep and be activated again' do
     space = CP::Space.new
     b     = CP::Body.new(5, 7)
-    b.sleep?.should be_false
+    b.should_not be_sleeping
     # It's not allowed to make this body sleep yet.
     lambda { b.body_alone}.should raise_error
-    b.sleep?.should be_false
+    b.should_not be_sleeping
     b.activate
-    b.sleep?.should be_false
+    b.should_not be_sleeping
     # Now we add the body to the space, and making it sleep is fine.
     space.add_body(b) 
     lambda { b.sleep_alone}.should_not raise_error
-    b.sleep?.should be_true
+    b.should be_sleeping
     b.activate
-    b.sleep?.should be_false    
+    b.should_not be_sleeping
   end
   
   it "'s rogue status is adjusted correctly" do
@@ -61,9 +61,9 @@ describe 'A new Body' do
     space.add_body(b)
     group.sleep_alone
     lambda { b.sleep_with_group(group)}.should_not raise_error
-    b.sleep?.should be_true
+    b.should be_sleeping
     group.activate
-    b.sleep?.should be_false    
+    b.should_not be_sleeping
   end
 
   it 'can set its mass' do
@@ -214,48 +214,49 @@ describe 'A new Body' do
     b.v.y.should be_within(0.001).of(0)
   end
   
-  it 'can slew to a position' do
-    b = CP::Body.new(5, 7)
-    b.slew(vec2(100, 40), 25)
-    b.v.x.should be_within(0.001).of(4.0)
-    b.v.y.should be_within(0.001).of(1.6)
-  end
-  
   it 'can has a kinetic energy' do
     b = CP::Body.new(5, 7)    
     b.kinetic_energy.should == 0.0    
   end
   
-  
-  
   it 'can have a specific velocity_func callback set' do
+    space = CP::Space.new  
     b       = CP::Body.new(5, 7)
+    space.add_body(b)
+
     called  = false
-    # xxx: doesn't seem to get called, though.
     res = b.velocity_func do |body, gravity, damping, dt|
       body.should_not be_nil
       gravity.should_not be_nil
       damping.should_not be_nil
       dt.should_not be_nil
+      called = true
     end
+    space.step 1
     res.should_not be_nil
     b.apply_impulse(vec2(1,0), ZERO_VEC_2)
     b.update_velocity vec2(0,0), 0.5, 25
     b.v.x.should be_within(0.001).of(0.1)
     b.v.y.should be_within(0.001).of(0)
+    
+    called.should be_true
     # Restore velocity callback.
     res = b.velocity_func
     res.should be_nil
   end
   
   it 'can have a specific position_func callback set' do
+    space = CP::Space.new  
     b       = CP::Body.new(5, 7)
+    space.add_body(b)
     called  = false
     # xxx: doesn't seem to get called, though.
     res = b.position_func do |body,  dt|
+      called = true
       body.should_not be_nil
       dt.should_not be_nil
     end
+    space.step 1
     res.should_not be_nil
     b.apply_impulse(vec2(1,0), ZERO_VEC_2)
     b.update_velocity vec2(0,0), 0.5, 25
@@ -264,6 +265,7 @@ describe 'A new Body' do
     # Restore position callback.
     res = b.position_func
     res.should be_nil
+    called.should be_true
   end
   
   it 'can have an arbitrary object connected to it' do
@@ -273,6 +275,12 @@ describe 'A new Body' do
     b.object.should == o
   end
   
-  
+  # TODO potential additions to API
+# cpVect cpBodyGetVelAtWorldPoint(cpBody *body, cpVect point);
+# cpVect cpBodyGetVelAtLocalPoint(cpBody *body, cpVect point);
+# typedef void (*cpBodyConstraintIteratorFunc)(cpBody *body, cpConstraint *constraint, void *data);
+# void cpBodyEachConstraint(cpBody *body, cpBodyConstraintIteratorFunc func, void *data);
+# typedef void (*cpBodyArbiterIteratorFunc)(cpBody *body, cpArbiter *arbiter, void *data);
+# void cpBodyEachArbiter(cpBody *body, cpBodyArbiterIteratorFunc func, void *data);
 
 end

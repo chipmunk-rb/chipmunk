@@ -3,14 +3,11 @@
 require 'rbconfig'
 
 direc = File.dirname(__FILE__)
-dlext = Config::CONFIG['DLEXT']
+dlext = RbConfig::CONFIG['DLEXT']
 begin
-    if RUBY_VERSION && RUBY_VERSION =~ /1.9/
-        require "#{direc}/1.9/chipmunk.#{dlext}"
-    else
-        require "#{direc}/1.8/chipmunk.#{dlext}"
-    end
+    require "#{RUBY_VERSION[0..2]}/chipmunk.#{dlext}"
 rescue LoadError => e
+    puts e.inspect
     require "#{direc}/chipmunk.#{dlext}"
 end
 
@@ -20,7 +17,7 @@ end
 # Let's cheat a bit here.. :p
 
 module CP
-  VERSION    = '5.4.3' 
+  VERSION    = '6.1.3.0' 
   ZERO_VEC_2 = Vec2.new(0,0).freeze
   ALL_ONES   = Vec2.new(1,1).freeze
 end  

@@ -193,8 +193,8 @@ rb_cpArbiterGetDepth(VALUE self, VALUE index) {
   if (arbiterBadIndex(arb, i)) {
     rb_raise(rb_eIndexError, "No such depth.");
   }
-  // there"s a typo in the cpArbiter.h class.
-  return rb_float_new(cpArbiteGetDepth(arb, i));
+  // there was a typo in the cpArbiter.h class but ,no more in 6.0.3.
+  return rb_float_new(cpArbiterGetDepth(arb, i));
 }
 
 

@@ -34,11 +34,25 @@ static ID id_separate;
 
 VALUE c_cpSpace;
 
+#define SPACE_GETSET_FUNCS(member)                                \
+  static VALUE rb_cpSpace_get_ ## member(VALUE self)              \
+  { return rb_float_new(SPACE(self)->member);}                    \
+  static VALUE rb_cpSpace_set_ ## member(VALUE self, VALUE value) \
+  { SPACE(self)->member = NUM2DBL(value); return value;}
+
+
+SPACE_GETSET_FUNCS(collisionBias)
+SPACE_GETSET_FUNCS(collisionSlop)
+
+// TODO this needs to be uint not float
+SPACE_GETSET_FUNCS(collisionPersistence)
 
 static VALUE
 rb_cpSpaceAlloc(VALUE klass) {
   cpSpace *space = cpSpaceAlloc();
-  return Data_Wrap_Struct(klass, NULL, cpSpaceFree, space);
+  VALUE rbSpace = Data_Wrap_Struct(klass, NULL, cpSpaceFree, space);
+  space->data = (void*)rbSpace;
+  return rbSpace;
 }
 
 static VALUE
@@ -47,18 +61,14 @@ rb_cpSpaceInitialize(VALUE self) {
   cpSpaceInit(space);
 
   // These might as well be in one shared hash.
-  rb_iv_set(self, "static_shapes", rb_ary_new());
-  rb_iv_set(self, "active_shapes", rb_ary_new());
-  rb_iv_set(self, "bodies", rb_ary_new());
-  rb_iv_set(self, "constraints", rb_ary_new());
-  rb_iv_set(self, "blocks", rb_hash_new());
+  rb_iv_set(self, "@static_shapes", rb_ary_new());
+  rb_iv_set(self, "@active_shapes", rb_ary_new());
+  rb_iv_set(self, "@bodies", rb_ary_new());
+  rb_iv_set(self, "@constraints", rb_ary_new());
+  rb_iv_set(self, "@blocks", rb_hash_new());
+  rb_iv_set(self, "@post_step_blocks", rb_hash_new());
 
   return self;
-}
-
-static VALUE
-SPACEWRAP(cpSpace * space) {
-  return Data_Wrap_Struct(c_cpSpace, NULL, cpSpaceFree, space);
 }
 
 static VALUE
@@ -68,13 +78,13 @@ rb_cpSpaceGetSleepTimeThreshold(VALUE self) {
 
 static VALUE
 rb_cpSpaceSetSleepTimeThreshold(VALUE self, VALUE val) {
-  SPACE(self)->sleepTimeThreshold = NUM2INT(val);
+  SPACE(self)->sleepTimeThreshold = NUM2UINT(val);
   return val;
 }
 
 static VALUE
 rb_cpSpaceGetIdleSpeedThreshold(VALUE self) {
-  return INT2NUM(SPACE(self)->idleSpeedThreshold);
+  return UINT2NUM(SPACE(self)->idleSpeedThreshold);
 }
 
 static VALUE
@@ -97,17 +107,6 @@ rb_cpSpaceSetIterations(VALUE self, VALUE val) {
 }
 
 static VALUE
-rb_cpSpaceGetElasticIterations(VALUE self) {
-  return INT2NUM(SPACE(self)->elasticIterations);
-}
-
-static VALUE
-rb_cpSpaceSetElasticIterations(VALUE self, VALUE val) {
-  SPACE(self)->elasticIterations = NUM2INT(val);
-  return val;
-}
-
-static VALUE
 rb_cpSpaceGetDamping(VALUE self) {
   return rb_float_new(SPACE(self)->damping);
 }
@@ -117,6 +116,18 @@ rb_cpSpaceSetDamping(VALUE self, VALUE val) {
   SPACE(self)->damping = NUM2DBL(val);
   return val;
 }
+
+static VALUE
+rb_cpSpaceGetContactGraphEnabled(VALUE self) {
+  return CP_INT_BOOL(SPACE(self)->enableContactGraph);
+}
+
+static VALUE
+rb_cpSpaceSetContactGraphEnabled(VALUE self, VALUE val) {
+  SPACE(self)->enableContactGraph = CP_BOOL_INT(val);
+  return val;
+}
+
 
 static VALUE
 rb_cpSpaceGetGravity(VALUE self) {
@@ -133,16 +144,6 @@ static int
 doNothingCallback(cpArbiter *arb, cpSpace *space, void *data) {
   return 0;
 }
-
-// We need this as rb_obj_method_arity is not in 1.8.7
-static int
-cp_rb_obj_method_arity(VALUE self, ID id) {
-  VALUE metho = rb_funcall(self, rb_intern("method"), 1, ID2SYM(id));
-  VALUE arity = rb_funcall(metho, rb_intern("arity"), 0, 0);
-  return NUM2INT(arity);
-}
-
-
 
 // This callback function centralizes all collision callbacks.
 // it also adds flexibility by changing theway the callback is called on the
@@ -171,6 +172,7 @@ do_callback(void * data, ID method, cpArbiter *arb) {
     return CP_BOOL_INT(rb_funcall(object, method, 3, va, vb, varb));
   }
   // we never get here
+  return res;
 }
 
 
@@ -206,11 +208,6 @@ respondsTo(VALUE obj, ID method) {
   return RTEST(value);
 }
 
-static int
-isBlock(VALUE obj) {
-  return respondsTo(obj, id_call);
-}
-
 static VALUE
 rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self) {
   VALUE a, b, obj, block;
@@ -219,7 +216,7 @@ rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self) {
 
   VALUE id_a   = rb_obj_id(a);
   VALUE id_b   = rb_obj_id(b);
-  VALUE blocks = rb_iv_get(self, "blocks");
+  VALUE blocks = rb_iv_get(self, "@blocks");
 
   if(RTEST(obj) && RTEST(block)) {
     rb_raise(rb_eArgError, "Cannot specify both a handler object and a block.");
@@ -261,7 +258,7 @@ rb_cpSpaceRemoveCollisionHandler(VALUE self, VALUE a, VALUE b) {
   VALUE id_b   = rb_obj_id(b);
   cpSpaceRemoveCollisionHandler(SPACE(self), NUM2UINT(id_a), NUM2UINT(id_b));
 
-  VALUE blocks = rb_iv_get(self, "blocks");
+  VALUE blocks = rb_iv_get(self, "@blocks");
   rb_hash_delete(blocks, rb_ary_new3(2, id_a, id_b));
 
   return Qnil;
@@ -284,7 +281,7 @@ rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self) {
       (void *)block
       );
 
-    rb_hash_aset(rb_iv_get(self, "blocks"), ID2SYM(rb_intern("default")), block);
+    rb_hash_aset(rb_iv_get(self, "@blocks"), ID2SYM(rb_intern("default")), block);
   } else if(RTEST(obj)) {
     cpSpaceSetDefaultCollisionHandler(
       SPACE(self),
@@ -295,7 +292,7 @@ rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self) {
       (void *)obj
       );
 
-    rb_hash_aset(rb_iv_get(self, "blocks"), ID2SYM(rb_intern("default")), obj);
+    rb_hash_aset(rb_iv_get(self, "@blocks"), ID2SYM(rb_intern("default")), obj);
   } else {
     cpSpaceSetDefaultCollisionHandler(
       SPACE(self), NULL, doNothingCallback, NULL, NULL, NULL
@@ -307,96 +304,110 @@ rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self) {
 
 static void
 poststepCallback(cpSpace *space, void *obj, void *data) {
-  rb_funcall((VALUE)data, id_call, 2, SPACEWRAP(space), (VALUE)obj);
+  rb_funcall((VALUE)data, id_call, 2, (VALUE)space->data, (VALUE)obj);
 }
 
 
 static VALUE
 rb_cpSpaceAddPostStepCallback(int argc, VALUE *argv, VALUE self) {
   VALUE obj, block;
+  VALUE blocks = rb_iv_get(self, "@post_step_blocks");
+
   rb_scan_args(argc, argv, "10&", &obj, &block);
+  rb_hash_aset(blocks, obj, block);
+
   cpSpaceAddPostStepCallback(SPACE(self),
                              poststepCallback, (void *) obj, (void *) block);
+
   return self;
 }
 
 static VALUE
 rb_cpSpaceAddShape(VALUE self, VALUE shape) {
   cpSpaceAddShape(SPACE(self), SHAPE(shape));
-  rb_ary_push(rb_iv_get(self, "active_shapes"), shape);
+  rb_ary_push(rb_iv_get(self, "@active_shapes"), shape);
   return shape;
 }
 
 static VALUE
 rb_cpSpaceAddStaticShape(VALUE self, VALUE shape) {
   cpSpaceAddStaticShape(SPACE(self), SHAPE(shape));
-  rb_ary_push(rb_iv_get(self, "static_shapes"), shape);
+  rb_ary_push(rb_iv_get(self, "@static_shapes"), shape);
   return shape;
 }
 
 static VALUE
 rb_cpSpaceAddBody(VALUE self, VALUE body) {
   cpSpaceAddBody(SPACE(self), BODY(body));
-  rb_ary_push(rb_iv_get(self, "bodies"), body);
+  rb_ary_push(rb_iv_get(self, "@bodies"), body);
   return body;
 }
 
 static VALUE
 rb_cpSpaceAddConstraint(VALUE self, VALUE constraint) {
   cpSpaceAddConstraint(SPACE(self), CONSTRAINT(constraint));
-  rb_ary_push(rb_iv_get(self, "constraints"), constraint);
+  rb_ary_push(rb_iv_get(self, "@constraints"), constraint);
   return constraint;
 }
 
 static VALUE
 rb_cpSpaceRemoveShape(VALUE self, VALUE shape) {
-  VALUE ok = rb_ary_delete(rb_iv_get(self, "active_shapes"), shape);
+  VALUE ok = rb_ary_delete(rb_iv_get(self, "@active_shapes"), shape);
   if(!(NIL_P(ok))) cpSpaceRemoveShape(SPACE(self), SHAPE(shape));
   return ok;
 }
 
 static VALUE
 rb_cpSpaceRemoveStaticShape(VALUE self, VALUE shape) {
-  VALUE ok = rb_ary_delete(rb_iv_get(self, "static_shapes"), shape);
+  VALUE ok = rb_ary_delete(rb_iv_get(self, "@static_shapes"), shape);
   if(!(NIL_P(ok))) cpSpaceRemoveStaticShape(SPACE(self), SHAPE(shape));
   return ok;
 }
 
 static VALUE
 rb_cpSpaceRemoveBody(VALUE self, VALUE body) {
-  VALUE ok = rb_ary_delete(rb_iv_get(self, "bodies"), body);
+  VALUE ok = rb_ary_delete(rb_iv_get(self, "@bodies"), body);
   if(!(NIL_P(ok))) cpSpaceRemoveBody(SPACE(self), BODY(body));
   return ok;
 }
 
 static VALUE
 rb_cpSpaceRemoveConstraint(VALUE self, VALUE constraint) {
-  VALUE ok = rb_ary_delete(rb_iv_get(self, "constraints"), constraint);
+  VALUE ok = rb_ary_delete(rb_iv_get(self, "@constraints"), constraint);
   if(!(NIL_P(ok))) cpSpaceRemoveConstraint(SPACE(self), CONSTRAINT(constraint));
   return ok;
 }
 
 static VALUE
 rb_cpSpaceResizeStaticHash(VALUE self, VALUE dim, VALUE count) {
+  rb_raise(rb_eArgError, "resize_static_hash is obsolete");
+  return Qnil;
+  /*
   cpSpaceResizeStaticHash(SPACE(self), NUM2DBL(dim), NUM2INT(count));
   return Qnil;
+  */
 }
 
 static VALUE
 rb_cpSpaceResizeActiveHash(VALUE self, VALUE dim, VALUE count) {
-  cpSpaceResizeActiveHash(SPACE(self), NUM2DBL(dim), NUM2INT(count));
+  rb_raise(rb_eArgError, "resize_active_hash is obsolete");
   return Qnil;
+  /* cpSpaceResizeActiveHash(SPACE(self), NUM2DBL(dim), NUM2INT(count));  
+  return Qnil;
+  */
 }
 
 static VALUE
 rb_cpSpaceRehashStatic(VALUE self) {
-  cpSpaceRehashStatic(SPACE(self));
+  rb_raise(rb_eArgError, "rehash_static is obsolete");
+  /* cpSpaceRehashStatic(SPACE(self)); */
   return Qnil;
 }
 
 static VALUE
 rb_cpSpaceRehashShape(VALUE self, VALUE shape) {
-  cpSpaceRehashShape(SPACE(self), SHAPE(shape));
+  rb_raise(rb_eArgError, "rehash_shape is obsolete");
+  /* cpSpaceRehashShape(SPACE(self), SHAPE(shape)); */
   return Qnil;
 }
 
@@ -532,18 +543,6 @@ rb_cpSpaceStep(VALUE self, VALUE dt) {
 }
 
 static VALUE
-rb_cpSpaceGetData(VALUE self) {
-  return rb_iv_get(self, "data");
-}
-
-static VALUE
-rb_cpSpaceSetData(VALUE self, VALUE val) {
-  rb_iv_set(self, "data", val);
-  return val;
-}
-
-
-static VALUE
 rb_cpSpaceActivateShapesTouchingShape(VALUE self, VALUE shape) {
   cpSpaceActivateShapesTouchingShape(SPACE(self), SHAPE(shape));
   return self;
@@ -574,12 +573,6 @@ Init_cpSpace(void) {
 
   rb_define_method(c_cpSpace, "iterations", rb_cpSpaceGetIterations, 0);
   rb_define_method(c_cpSpace, "iterations=", rb_cpSpaceSetIterations, 1);
-
-  rb_define_method(c_cpSpace, "elastic_iterations", rb_cpSpaceGetElasticIterations, 0);
-  rb_define_method(c_cpSpace, "elastic_iterations=", rb_cpSpaceSetElasticIterations, 1);
-
-  rb_define_method(c_cpSpace, "damping", rb_cpSpaceGetDamping, 0);
-  rb_define_method(c_cpSpace, "damping=", rb_cpSpaceSetDamping, 1);
 
   rb_define_method(c_cpSpace, "gravity", rb_cpSpaceGetGravity, 0);
   rb_define_method(c_cpSpace, "gravity=", rb_cpSpaceSetGravity, 1);
@@ -613,9 +606,13 @@ Init_cpSpace(void) {
   rb_define_method(c_cpSpace, "on_post_step",
                    rb_cpSpaceAddPostStepCallback, -1);
 
-
-
-
+  rb_define_method(c_cpSpace, "collision_bias", rb_cpSpace_get_collisionBias, 0);
+  rb_define_method(c_cpSpace, "collision_bias=", rb_cpSpace_set_collisionBias, 1);
+  rb_define_method(c_cpSpace, "collision_slop", rb_cpSpace_get_collisionSlop, 0);
+  rb_define_method(c_cpSpace, "collision_slop=", rb_cpSpace_set_collisionSlop, 1);
+  rb_define_method(c_cpSpace, "collision_persistence", rb_cpSpace_get_collisionPersistence, 0);
+  rb_define_method(c_cpSpace, "collision_persistence=", rb_cpSpace_set_collisionPersistence, 1);
+  
   rb_define_method(c_cpSpace, "add_shape", rb_cpSpaceAddShape, 1);
   rb_define_method(c_cpSpace, "add_static_shape", rb_cpSpaceAddStaticShape, 1);
   rb_define_method(c_cpSpace, "add_body", rb_cpSpaceAddBody, 1);
@@ -645,9 +642,6 @@ Init_cpSpace(void) {
 
   rb_define_method(c_cpSpace, "step", rb_cpSpaceStep, 1);
 
-  rb_define_method(c_cpSpace, "object", rb_cpSpaceGetData, 0);
-  rb_define_method(c_cpSpace, "object=", rb_cpSpaceSetData, 1);
-
   rb_define_method(c_cpSpace, "sleep_time_threshold=",
                    rb_cpSpaceSetSleepTimeThreshold, 1);
   rb_define_method(c_cpSpace, "sleep_time_threshold",
@@ -666,6 +660,12 @@ Init_cpSpace(void) {
                    rb_cpSpaceSetIdleSpeedThreshold, 1);
   rb_define_method(c_cpSpace, "idle_speed",
                    rb_cpSpaceGetIdleSpeedThreshold, 0);
+
+  rb_define_method(c_cpSpace, "damping", rb_cpSpaceGetDamping, 0);
+  rb_define_method(c_cpSpace, "damping=", rb_cpSpaceSetDamping, 1);
+
+  rb_define_method(c_cpSpace, "contact_graph_enabled", rb_cpSpaceGetContactGraphEnabled, 0);
+  rb_define_method(c_cpSpace, "contact_graph_enabled=", rb_cpSpaceSetContactGraphEnabled, 1);
 
   rb_define_method(c_cpSpace, "activate_shapes_touching_shape",
                    rb_cpSpaceActivateShapesTouchingShape, 1);

@@ -14,18 +14,17 @@ describe 'Shapes in chipmunk' do
     
     it 'can be created with a missing offset' do
        bod = CP::Body.new 90, 76
-         s = CP::Shape::Circle.new bod, 40
+       s = CP::Shape::Circle.new bod, 40
     end
     
-#     it 'does not crash if created incorrectly' do      
-#       lambda { s = CP::Shape::Circle.new }.should raise_error
-#     end
+    it 'does not crash if created incorrectly' do      
+      lambda { s = CP::Shape::Circle.new }.should raise_error
+    end
 
-#     it 'cannot be created' do
-#       bod = CP::Body.new 90, 76
-#       s = CP::Shape::Circle.new(bod) 
-#       # lambda {}.should raise_error
-#     end
+    it 'cannot be created' do
+      bod = CP::Body.new 90, 76
+      lambda { s = CP::Shape::Circle.new(bod) }.should raise_error
+    end
 
     it 'can get its body' do
       bod = CP::Body.new 90, 76
@@ -71,6 +70,13 @@ describe 'Shapes in chipmunk' do
       # he sets layers to -1 on an unsigned int
       s.layers.should == CP::ALL_LAYERS
     end
+
+    it 'can set its layers' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+      s.layers = 5
+      s.layers.should == 5
+    end
     
     it 'can get its group' do
       bod = CP::Body.new 90, 76
@@ -85,7 +91,11 @@ describe 'Shapes in chipmunk' do
       s = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
       # Nil, because not set before
       s.group = Aid 
+      s.group = Aid 
       s.group.should == Aid
+
+      s.group = :other
+      s.group.should == :other
     end
 
 
@@ -95,9 +105,6 @@ describe 'Shapes in chipmunk' do
       s.collision_type.should == nil
       s.collision_type = :foo
       s.collision_type.should == :foo
-      # s.collision_type.should == :foo.object_id
-      # the next one on top is impossible, 
-      # and contradictory to boot.
     end
 
     it 'can get its sensor' do
@@ -165,9 +172,6 @@ describe 'Shapes in chipmunk' do
       s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
       info = s.segment_query(vec2(-100,10),vec2(0,10))
       GC.start
-      # beoran: originaly, in the ffi bindings it was info.hit
-      # but that's inconsistent with the C name, which is shape,
-      # so shape it is for me.
       info.shape.should be_true
       info.shape.should == s
       info.t.should be_within(0.001).of(0.827)
@@ -175,7 +179,21 @@ describe 'Shapes in chipmunk' do
       info.n.y.should be_within(0.001).of(0.5)
       info.class.should == CP::SegmentQueryInfo
     end
-    
+
+    it 'can query nearest point' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
+      info = s.nearest_point_query(vec2(100, 100))
+      GC.start
+      info.shape.should be_true
+      info.shape.should == s
+
+      info.d.should be_within(0.001).of(121.421)
+      info.p.x.should be_within(0.001).of(14.142)
+      info.p.y.should be_within(0.001).of(14.142)
+      info.class.should == CP::NearestPointQueryInfo
+    end
+
     it 'can get its radius' do
       bod = CP::Body.new 90, 76
       s = CP::Shape::Circle.new bod, 20, CP::ZERO_VEC_2
@@ -271,6 +289,36 @@ describe 'Shapes in chipmunk' do
   end
   
   describe 'Poly class' do
+    it 'can create box from width / height' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Poly.box(bod, 22, 40)
+      s.class.should == CP::Shape::Poly
+      s.num_verts.should == 4
+      s[0].x.should == -11
+      s[0].y.should == -20
+      s[1].x.should == -11
+      s[1].y.should == 20
+      s[2].x.should == 11
+      s[2].y.should == 20
+      s[3].x.should == 11
+      s[3].y.should == -20
+    end
+
+    it 'can create box from BB' do
+      bod = CP::Body.new 90, 76
+      bb = CP::BB.new(-11, -20, 11, 20)
+      s = CP::Shape::Poly.box(bod, bb)
+      s.num_verts.should == 4
+      s[0].x.should == -11
+      s[0].y.should == -20
+      s[1].x.should == -11
+      s[1].y.should == 20
+      s[2].x.should == 11
+      s[2].y.should == 20
+      s[3].x.should == 11
+      s[3].y.should == -20
+    end
+
     it 'can validate polygon points' do
       points  = [vec2(1,1), vec2(2,2),vec2(3,3)]
       res     = CP::Shape::Poly.valid? points
@@ -323,25 +371,6 @@ describe 'Shapes in chipmunk' do
       v.x.should == 4
       v.y.should == 4      
     end
-    
-    # Note, this functionality is not officially part of the API,
-    # as it might change.
-    it "can collide with other shapes" do
-      bod1 = CP::Body.new 90, 76
-      bod2 = CP::Body.new 90, 76
-      s1 = CP::Shape::Circle.new bod1, 20, CP::ZERO_VEC_2
-      s2 = CP::Shape::Circle.new bod1, 20, vec2(1.0, 1.0)
-      contact = s1.collide!(s2)
-      contact.size.should > 0
-    end
-    
-=begin
-  Will be addd to the API later:
-  Poly#value_on_axis
-  Poly#contains?
-  Poly#contains_partial?
-=end
-    
   end
   
   

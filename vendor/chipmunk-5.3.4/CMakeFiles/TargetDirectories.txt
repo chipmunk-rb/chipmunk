@@ -1,2 +1,0 @@
-/home/bjmey/arch/src/chipmunk/vendor/chipmunk-5.3.4/src/CMakeFiles/chipmunk.dir
-/home/bjmey/arch/src/chipmunk/vendor/chipmunk-5.3.4/src/CMakeFiles/chipmunk_static.dir
