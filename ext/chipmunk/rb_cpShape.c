@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include "chipmunk.h"
 #include "chipmunk_unsafe.h"
+// looks like certain functions I exposed are supposed to be private? 
+// #include "chipmunk_private.h"
 
 #include "ruby.h"
 #include "rb_chipmunk.h"
@@ -34,11 +36,17 @@ VALUE c_cpSegmentShape;
 VALUE c_cpPolyShape;
 
 VALUE c_cpSegmentQueryInfo;
+VALUE c_cpNearestPointQueryInfo;
 
 //Helper that allocates and initializes a SegmenQueryInfo struct
 VALUE
 rb_cpSegmentQueryInfoNew(VALUE shape, VALUE t, VALUE n) {
   return rb_struct_new(c_cpSegmentQueryInfo, shape, t, n);
+}
+
+VALUE
+rb_cpNearestPointQueryInfoNew(VALUE shape, VALUE p, VALUE d) {
+  return rb_struct_new(c_cpNearestPointQueryInfo, shape, p, d);
 }
 
 
@@ -101,16 +109,15 @@ rb_cpShapeGetSelf(VALUE self) {
 
 static VALUE
 rb_cpShapeGetGroup(VALUE self) {
-  return rb_iv_get(self, "group");
+  return rb_iv_get(self, "@group");
 }
 
 static VALUE
-rb_cpShapeSetGroup(VALUE self, VALUE val) {
-  VALUE col_type = rb_obj_id(val);
-  rb_iv_set(self, "group", val);
-  SHAPE(self)->group = NUM2UINT(col_type);
+rb_cpShapeSetGroup(VALUE self, VALUE groupValue) {
+  rb_iv_set(self, "@group", groupValue);
+  SHAPE(self)->group = CP_OBJ2INT(groupValue);
 
-  return val;
+  return groupValue;
 }
 
 static VALUE
@@ -186,6 +193,16 @@ rb_cpShapePointQuery(VALUE self, VALUE point) {
   return res ? Qtrue : Qfalse;
 }
 
+static VALUE
+rb_cpShapeNearestPointQuery(VALUE self, VALUE point) {
+  cpNearestPointQueryInfo info;
+  cpShapeNearestPointQuery(SHAPE(self), *VGET(point), &info);
+  if(info.shape) {
+    return rb_cpNearestPointQueryInfoNew((VALUE)info.shape->data, VNEW(info.p), rb_float_new(info.d));
+  }
+  return Qnil;
+}
+
 
 static VALUE
 rb_cpShapeSegmentQuery(VALUE self, VALUE a, VALUE b) {
@@ -197,13 +214,6 @@ rb_cpShapeSegmentQuery(VALUE self, VALUE a, VALUE b) {
   return Qnil;
 }
 
-
-
-//cpCircle
-static void
-rb_cpCircleMark(void * data) {
-  cpCircleShape *circle = (cpCircleShape *) data;
-}
 
 static VALUE
 rb_cpCircleAlloc(VALUE klass) {
@@ -260,10 +270,11 @@ rb_cpSegmentInitialize(VALUE self, VALUE body, VALUE a, VALUE b, VALUE r) {
 
 // Syntactic macro to handle fetching the vertices from a ruby array
 // to a C array.
+// TODO get rid of this cast by using stdint.h
 #define RBCP_ARRAY_POINTS(ARR, NUM, VERTS) \
   Check_Type(ARR, T_ARRAY);                \
   VALUE *__rbcp_ptr = RARRAY_PTR(ARR);     \
-  long NUM           = RARRAY_LEN(ARR);    \
+  int NUM           = (int)RARRAY_LEN(ARR);    \
   cpVect VERTS[NUM];                       \
   for(long i = 0; i < NUM; i++)            \
     VERTS[i] = *VGET(__rbcp_ptr[i]);
@@ -281,6 +292,30 @@ static VALUE
 rb_cpPolyAlloc(VALUE klass) {
   cpPolyShape *poly = cpPolyShapeAlloc();
   return Data_Wrap_Struct(klass, NULL, cpShapeFree, poly);
+}
+
+static VALUE
+rb_cpShapeBoxInitialize(int argc, VALUE * argv, VALUE self) {
+  VALUE body, widthOrBB, height;
+  rb_scan_args(argc, argv, "21", &body, &widthOrBB, &height);
+
+  VALUE newPoly = rb_cpPolyAlloc(c_cpPolyShape);
+  cpPolyShape *poly = (cpPolyShape *)SHAPE(newPoly);
+
+  if(NIL_P(height)) {
+    // takes bb
+    cpBoxShapeInit2(poly, BODY(body), *BBGET(widthOrBB));
+  } else {
+    // takes w / h
+    cpBoxShapeInit(poly, BODY(body), NUM2DBL(widthOrBB), NUM2DBL(height));
+  }
+
+  poly->shape.data           = (void *)self;
+  poly->shape.collision_type = Qnil;
+
+  rb_ivar_set(newPoly, id_body, body);
+
+  return newPoly;
 }
 
 static VALUE
@@ -392,51 +427,6 @@ rb_cpPolyShapeSetVerts(VALUE self, VALUE arr, VALUE offset) {
   return self;
 }
 
-/* extra inline functions  from the headers */
-// Returns the minimum distance of the polygon to the axis.
-static VALUE
-rb_cpPolyShapeValueOnAxis(VALUE self, VALUE n, VALUE d) {
-  cpPolyShape * poly = (cpPolyShape *) SHAPE(self);
-  return DBL2NUM(cpPolyShapeValueOnAxis(poly, *VGET(n), NUM2DBL(d)));
-}
-
-// Returns true if the polygon contains the vertex.
-static VALUE
-rb_cpPolyShapeContainsVert(VALUE self, VALUE v) {
-  cpPolyShape * poly = (cpPolyShape *) SHAPE(self);
-  return CP_INT_BOOL(cpPolyShapeContainsVert(poly, *VGET(v)));
-}
-
-// Same as cpPolyShapeContainsVert() but ignores faces pointing away from the normal.
-static VALUE
-rb_cpPolyShapeContainsVertPartial(VALUE self, VALUE v, VALUE n) {
-  cpPolyShape * poly = (cpPolyShape *) SHAPE(self);
-  return CP_INT_BOOL(cpPolyShapeContainsVertPartial(poly, *VGET(v), *VGET(n)));
-}
-
-
-/* collision.h */
-static VALUE
-rb_cpCollideShapes(VALUE self, VALUE other) {
-  cpContact points[CP_MAX_CONTACTS_PER_ARBITER];
-  int size     = cpCollideShapes(SHAPE(self), SHAPE(other), points);
-  VALUE result = rb_ary_new();
-  for(int index = 0; index < size; index++) {
-    VALUE point   = VNEW(points[index].p);
-    VALUE normal  = VNEW(points[index].n);
-    VALUE dist    = DBL2NUM(points[index].dist);
-    VALUE contact = rb_cpContactPointNew(point, normal, dist);
-    rb_ary_push(result, contact);
-  }
-  return result;
-}
-
-
-
-
-
-
-
 void
 Init_cpShape(void) {
   id_body   = rb_intern("body");
@@ -454,6 +444,19 @@ Init_cpShape(void) {
   rb_define_method(m_cpShape, "collision_type", rb_cpShapeGetCollType, 0);
   rb_define_method(m_cpShape, "collision_type=", rb_cpShapeSetCollType, 1);
 
+  rb_define_method(m_cpShape, "bb", rb_cpShapeCacheBB, 0);
+  rb_define_method(m_cpShape, "cache_bb", rb_cpShapeCacheBB, 0);
+  rb_define_method(m_cpShape, "raw_bb", rb_cpShapeGetBB, 0);
+
+  rb_define_method(m_cpShape, "e", rb_cpShapeGetElasticity, 0);
+  rb_define_method(m_cpShape, "e=", rb_cpShapeSetElasticity, 1);
+
+  rb_define_method(m_cpShape, "u", rb_cpShapeGetFriction, 0);
+  rb_define_method(m_cpShape, "u=", rb_cpShapeSetFriction, 1);
+
+  rb_define_method(m_cpShape, "surface_v", rb_cpShapeGetSurfaceV, 0);
+  rb_define_method(m_cpShape, "surface_v=", rb_cpShapeSetSurfaceV, 1);
+
   // this method only exists for Chipmunk-FFI compatibility as it seems useless
   // to me.
   rb_define_method(m_cpShape, "data", rb_cpShapeGetSelf, 0);
@@ -461,26 +464,15 @@ Init_cpShape(void) {
   rb_define_method(m_cpShape, "object", rb_cpShapeGetData, 0);
   rb_define_method(m_cpShape, "object=", rb_cpShapeSetData, 1);
 
+
   rb_define_method(m_cpShape, "group", rb_cpShapeGetGroup, 0);
   rb_define_method(m_cpShape, "group=", rb_cpShapeSetGroup, 1);
 
   rb_define_method(m_cpShape, "layers", rb_cpShapeGetLayers, 0);
   rb_define_method(m_cpShape, "layers=", rb_cpShapeSetLayers, 1);
 
-  rb_define_method(m_cpShape, "bb", rb_cpShapeCacheBB, 0);
-  rb_define_method(m_cpShape, "cache_bb", rb_cpShapeCacheBB, 0);
-  rb_define_method(m_cpShape, "raw_bb", rb_cpShapeGetBB, 0);
-
-  rb_define_method(m_cpShape, "e", rb_cpShapeGetElasticity, 0);
-  rb_define_method(m_cpShape, "u", rb_cpShapeGetFriction, 0);
-
-  rb_define_method(m_cpShape, "e=", rb_cpShapeSetElasticity, 1);
-  rb_define_method(m_cpShape, "u=", rb_cpShapeSetFriction, 1);
-
-  rb_define_method(m_cpShape, "surface_v", rb_cpShapeGetSurfaceV, 0);
-  rb_define_method(m_cpShape, "surface_v=", rb_cpShapeSetSurfaceV, 1);
-
   rb_define_method(m_cpShape, "point_query", rb_cpShapePointQuery, 1);
+  rb_define_method(m_cpShape, "nearest_point_query", rb_cpShapeNearestPointQuery, 1);
   rb_define_method(m_cpShape, "segment_query", rb_cpShapeSegmentQuery, 2);
 
 
@@ -503,6 +495,7 @@ Init_cpShape(void) {
   rb_include_module(c_cpPolyShape, m_cpShape);
   rb_define_alloc_func(c_cpPolyShape, rb_cpPolyAlloc);
   rb_define_singleton_method(c_cpPolyShape, "valid?", rb_cpPolyValidate, 1);
+  rb_define_singleton_method(c_cpPolyShape, "box", rb_cpShapeBoxInitialize, -1);
 
   rb_define_method(c_cpPolyShape, "initialize", rb_cpPolyInitialize, -1);
 
@@ -523,15 +516,15 @@ Init_cpShape(void) {
   rb_define_method(c_cpPolyShape, "length", rb_cpPolyShapeGetNumVerts, 0);
   rb_define_method(c_cpPolyShape, "size", rb_cpPolyShapeGetNumVerts, 0);
   rb_define_method(c_cpPolyShape, "[]", rb_cpPolyShapeGetVert, 1);
-  // Not in API yet:
-  rb_define_method(c_cpPolyShape, "value_on_axis", rb_cpPolyShapeValueOnAxis, 2);
-  rb_define_method(c_cpPolyShape, "contains?", rb_cpPolyShapeContainsVert, 1);
-  rb_define_method(c_cpPolyShape, "contains_partial?", rb_cpPolyShapeContainsVertPartial, 2);
 
   /* Use a struct for this small class. More efficient. */
   c_cpSegmentQueryInfo = rb_struct_define("SegmentQueryInfo",
                                           "shape", "t", "n", NULL);
   rb_define_const(m_Chipmunk, "SegmentQueryInfo", c_cpSegmentQueryInfo);
+  c_cpNearestPointQueryInfo = rb_struct_define("NearestPointQueryInfo",
+                                          "shape", "p", "d", NULL);
+  rb_define_const(m_Chipmunk, "NearestPointQueryInfo", c_cpNearestPointQueryInfo);
+
   /*"unsafe" API. */
   rb_define_method(c_cpCircleShape, "set_radius!", rb_cpCircleShapeSetRadius, 1);
   rb_define_method(c_cpCircleShape, "set_offset!", rb_cpCircleShapeSetOffset, 1);
@@ -539,8 +532,6 @@ Init_cpShape(void) {
   rb_define_method(c_cpSegmentShape, "set_radius!", rb_cpSegmentShapeSetRadius, 1);
 
   rb_define_method(c_cpPolyShape, "set_verts!", rb_cpPolyShapeSetVerts, 2);
-
-  rb_define_method(m_cpShape, "collide!", rb_cpCollideShapes, 1);
 
 }
 //

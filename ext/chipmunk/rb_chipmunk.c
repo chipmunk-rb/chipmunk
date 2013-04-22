@@ -29,38 +29,23 @@
 VALUE m_Chipmunk;
 
 ID id_parent;
+VALUE cpObjectToIntHash;
 
-static VALUE
-rb_get_cp_bias_coef(VALUE self) {
-  return rb_float_new(cp_bias_coef);
-}
+int
+CP_OBJ2INT(VALUE object) {
+  VALUE intValue = rb_hash_aref(cpObjectToIntHash, object);
+  int nextInt = 0;
 
-static VALUE
-rb_set_cp_bias_coef(VALUE self, VALUE num) {
-  cp_bias_coef = NUM2DBL(num);
-  return num;
-}
+  if(NIL_P(intValue)) {
+    if (RHASH(cpObjectToIntHash)->ntbl) {
+      nextInt = RHASH(cpObjectToIntHash)->ntbl->num_entries;
+    }
+    rb_hash_aset(cpObjectToIntHash, object, INT2NUM(nextInt));
+  } else {
+    nextInt = NUM2INT(intValue);
+  }
 
-static VALUE
-rb_get_cp_collision_slop(VALUE self) {
-  return rb_float_new(cp_collision_slop);
-}
-
-static VALUE
-rb_set_cp_collision_slop(VALUE self, VALUE num) {
-  cp_collision_slop = NUM2DBL(num);
-  return num;
-}
-
-static VALUE
-rb_set_cp_contact_persistence(VALUE self, VALUE num) {
-  cp_contact_persistence = NUM2UINT(num);
-  return num;
-}
-
-static VALUE
-rb_get_cp_contact_persistence(VALUE self) {
-  return UINT2NUM(cp_contact_persistence);
+  return nextInt;
 }
 
 
@@ -79,7 +64,8 @@ rb_cpMomentForSegment(VALUE self, VALUE m, VALUE v1, VALUE v2) {
 static VALUE
 rb_cpMomentForPoly(VALUE self, VALUE m, VALUE arr, VALUE offset) {
   Check_Type(arr, T_ARRAY);
-  long numVerts    = RARRAY_LEN(arr);
+  // TODO do not cast... use stdint.h in chipmunk
+  int numVerts    = (int)RARRAY_LEN(arr);
   VALUE *ary_ptr  = RARRAY_PTR(arr);
   cpVect verts[numVerts];
 
@@ -111,13 +97,14 @@ rb_cpAreaForSegment(VALUE self, VALUE v1, VALUE v2, VALUE r) {
 static VALUE
 rb_cpAreaForPoly(VALUE self, VALUE arr) {
   Check_Type(arr, T_ARRAY);
-  long numVerts   = RARRAY_LEN(arr);
+  // TODO do not cast... use stdint.h in chipmunk
+  int numVerts   = (int)RARRAY_LEN(arr);
   VALUE *ary_ptr = RARRAY_PTR(arr);
   cpVect verts[numVerts];
 
-  for(long i = 0; i < numVerts; i++)
+  for(int i = 0; i < numVerts; i++) { 
     verts[i] = *VGET(ary_ptr[i]);
-
+  }
   cpFloat area   = cpAreaForPoly(numVerts, verts);
   return rb_float_new(area);
 }
@@ -150,7 +137,8 @@ rb_cpflerpconst(VALUE self, VALUE f1, VALUE f2, VALUE d) {
 static VALUE
 rb_cpCentroidForPoly(VALUE self,  VALUE arr) {
   Check_Type(arr, T_ARRAY);
-  long numVerts   = RARRAY_LEN(arr);
+  // TODO do not cast... use stdint.h in chipmunk
+  int numVerts   = (int)RARRAY_LEN(arr);
   VALUE *ary_ptr = RARRAY_PTR(arr);
   cpVect verts[numVerts];
 
@@ -163,7 +151,8 @@ rb_cpCentroidForPoly(VALUE self,  VALUE arr) {
 static VALUE
 rb_cpRecenterPoly(VALUE self,  VALUE arr) {
   Check_Type(arr, T_ARRAY);
-  long numVerts   = RARRAY_LEN(arr);
+  // TODO do not cast... use stdint.h in chipmunk
+  int numVerts   = (int)RARRAY_LEN(arr);
   VALUE *ary_ptr = RARRAY_PTR(arr);
   cpVect verts[numVerts];
 
@@ -177,6 +166,15 @@ rb_cpRecenterPoly(VALUE self,  VALUE arr) {
   return arr;
 }
 
+// We need this as rb_obj_method_arity is not in 1.8.7
+int
+cp_rb_obj_method_arity(VALUE self, ID id) {
+  VALUE metho = rb_funcall(self, rb_intern("method"), 1, ID2SYM(id));
+  VALUE arity = rb_funcall(metho, rb_intern("arity"), 0, 0);
+  return NUM2INT(arity);
+}
+
+
 
 
 
@@ -185,18 +183,11 @@ Init_chipmunk(void) {
   id_parent  = rb_intern("parent");
 
   cpInitChipmunk();
-
-
-
   m_Chipmunk = rb_define_module("CP");
-  rb_define_module_function(m_Chipmunk, "bias_coef", rb_get_cp_bias_coef, 0);
-  rb_define_module_function(m_Chipmunk, "bias_coef=", rb_set_cp_bias_coef, 1);
-  rb_define_module_function(m_Chipmunk, "collision_slop", rb_get_cp_collision_slop, 0);
-  rb_define_module_function(m_Chipmunk, "collision_slop=", rb_set_cp_collision_slop, 1);
-  rb_define_module_function(m_Chipmunk, "contact_persistence", rb_get_cp_contact_persistence, 0);
-  rb_define_module_function(m_Chipmunk, "contact_persistence=", rb_set_cp_contact_persistence, 1);
 
-
+  cpObjectToIntHash = rb_hash_new();
+  /* rb_gv_set("$__cpObj", cpObjectToIntHash);  */
+  rb_gc_register_mark_object(cpObjectToIntHash);
 
   rb_define_module_function(m_Chipmunk, "clamp", rb_cpfclamp, 3);
   rb_define_module_function(m_Chipmunk, "flerp", rb_cpflerp, 3);

@@ -242,7 +242,7 @@ rb_cpBodyActivate(VALUE self) {
 static cpBody *
 rb_cpBodySleepValidate(VALUE vbody) {
   cpBody * body  = BODY(vbody);
-  cpSpace *space = body->space;
+  cpSpace *space = body->CP_PRIVATE(space);
   if(!space) {
     rb_raise(rb_eArgError, "Cannot put a body to sleep that has not been added to a space.");
     return NULL;
@@ -251,7 +251,7 @@ rb_cpBodySleepValidate(VALUE vbody) {
     rb_raise(rb_eArgError, "Rogue AND static bodies cannot be put to sleep.");
     return NULL;
   }
-  if(space->locked) {
+  if(cpSpaceIsLocked(space)) {
     rb_raise(rb_eArgError, "Bodies can not be put to sleep during a query or a call to Space#add_collision_func. Put these calls into a post-step callback using Space#add_collision_handler.");
     return NULL;
   }
@@ -301,11 +301,13 @@ rb_cpBodyIsRogue(VALUE self) {
 ID id_velocity_func;
 ID id_speed_func;
 
+/*
 static int
 respondsTo(VALUE obj, ID method) {
   VALUE value = rb_funcall(obj, rb_intern("respond_to?"), 1, ID2SYM(method));
   return RTEST(value);
 }
+ */
 
 /*
 
@@ -327,7 +329,7 @@ static VALUE
 rb_cpBodySetVelocityFunc(int argc, VALUE *argv, VALUE self) {
   VALUE block;
   cpBody * body = BODY(self);
-  rb_scan_args(argc, argv, "&", &block);
+  rb_scan_args(argc, argv, "0&", &block);
   // Restore defaults if no block
   if (NIL_P(block)) {
     body->velocity_func = cpBodyUpdateVelocity; //Default;
@@ -374,18 +376,10 @@ rb_cpBodySetData(VALUE self, VALUE val) {
   return val;
 }
 
-
-static VALUE
-rb_cpBodySlew(VALUE self, VALUE pos, VALUE dt) {
-  cpBodySlew(BODY(self), *VGET(pos), NUM2DBL(dt));
-  return self;
-}
-
 static VALUE
 rb_cpBodyKineticEnergy(VALUE self) {
   return DBL2NUM(cpBodyKineticEnergy(BODY(self)));
 }
-
 
 void
 Init_cpBody(void) {
@@ -459,7 +453,6 @@ Init_cpBody(void) {
 
   rb_define_method(c_cpBody, "update_velocity", rb_cpBodyUpdateVelocity, 3);
   rb_define_method(c_cpBody, "update_position", rb_cpBodyUpdatePosition, 1);
-  rb_define_method(c_cpBody, "slew", rb_cpBodySlew, 2);
 
   rb_define_method(c_cpBody, "static?", rb_cpBodyIsStatic, 0);
   rb_define_method(c_cpBody, "rogue?", rb_cpBodyIsRogue, 0);

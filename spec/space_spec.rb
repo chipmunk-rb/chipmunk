@@ -1,18 +1,23 @@
 require File.dirname(__FILE__)+'/spec_helper'
 describe 'Space in chipmunk' do
-  it 'can be created' do
-    s = CP::Space.new
-  end
-  it 'can set its iterations' do
-    s = CP::Space.new
-    s.iterations = 9
-    s.iterations.should == 9
-  end
-  it 'can set its gravity' do
-    s = CP::Space.new
-    s.gravity = vec2(4,5)
-    s.gravity.x.should == 4
-    s.gravity.y.should == 5
+  let(:space) { CP::Space.new }
+
+  check_accessor :space, :gravity, vec2(4,5)
+  check_accessor :space, :iterations, 9
+
+  check_accessor :space, :damping, 0.2
+  check_accessor :space, :idle_speed, 3
+  check_accessor :space, :sleep_time, 1000
+
+
+  check_accessor :space, :collision_slop, 1.3
+  check_accessor :space, :collision_bias, 2.3
+  check_accessor :space, :collision_persistence, 5
+  check_accessor :space, :contact_graph_enabled, true
+  check_accessor :space, :contact_graph_enabled, false
+
+  it 'space missing' do
+    pending "# TODO #collision_persistence needs to be uint not float"
   end
 
   it 'can have a shape added to it' do
@@ -117,13 +122,6 @@ describe 'Space in chipmunk' do
     lambda { space.activate_touching(shaa) }.should_not raise_error  
   end
    
-  it 'can resize its spacial hashes' do
-    space = CP::Space.new
-    lambda { space.resize_static_hash(10.0, 2000) }.should_not raise_error
-    lambda { space.resize_active_hash(10.0, 2000) }.should_not raise_error
-    lambda { space.rehash_static() }.should_not raise_error
-  end 
-
   it 'can be stepped' do
     space = CP::Space.new  
     lambda { space.step(0.5) }.should_not raise_error
@@ -152,6 +150,49 @@ describe 'Space in chipmunk' do
 
     space.step 1
     called.should be_true
+  end
+
+  it 'can remove from the space in old style callbacks' do
+    space = CP::Space.new
+    bod = CP::Body.new 90, 76
+    shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+    shapy.collision_type = :foo
+
+    bod_one = CP::Body.new 90, 76
+    shapy_one = CP::Shape::Circle.new bod_one, 40, CP::ZERO_VEC_2
+    shapy_one.collision_type = :bar
+    space.add_shape shapy
+    space.add_shape shapy_one
+
+    called = false
+    space.add_collision_func :foo, :bar do |a, b, arb|
+      a.should_not be_nil
+      b.should_not be_nil
+      called = true
+      space.on_post_step(a) do |spacey, shape|
+        spacey.remove_body shape.body
+        spacey.remove_shape shape
+      end
+      1
+    end
+
+    space.step 1
+
+    called.should be_true
+  end
+
+  it 'can register for post step callbacks' do
+    space = CP::Space.new
+    calls = []
+    space.on_post_step(:any_key_probably_a_shape) do |spacey, key|
+      calls << [spacey, key]
+    end
+
+    space.step 1
+
+    calls.size.should == 1
+    calls[0][0].should == space
+    calls[0][1].should == :any_key_probably_a_shape
   end
 
   class CollisionHandler
@@ -326,25 +367,6 @@ describe 'Space in chipmunk' do
     
     shapes.size.should == 1
     shapes.first.should == shapy
-  end
-  
-  it 'can have an arbitrary object connected to it' do
-    b  = CP::Space.new
-    o  = "Hello"
-    b.object = o
-    b.object.should == o
-  end
-  
-  it 'can set and get its idle speed' do
-    b  = CP::Space.new  
-    b.idle_speed = 1.0
-    b.idle_speed.should == 1.0
-  end
-  
-  it 'can set and get its sleep time' do
-    b  = CP::Space.new  
-    b.sleep_time = 1000.0
-    b.sleep_time.should == 1000.0
   end
   
   describe 'struct ContactPoint' do
