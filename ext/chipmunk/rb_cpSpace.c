@@ -61,18 +61,14 @@ rb_cpSpaceInitialize(VALUE self) {
   cpSpaceInit(space);
 
   // These might as well be in one shared hash.
-  rb_iv_set(self, "static_shapes", rb_ary_new());
-  rb_iv_set(self, "active_shapes", rb_ary_new());
-  rb_iv_set(self, "bodies", rb_ary_new());
-  rb_iv_set(self, "constraints", rb_ary_new());
-  rb_iv_set(self, "blocks", rb_hash_new());
+  rb_iv_set(self, "@static_shapes", rb_ary_new());
+  rb_iv_set(self, "@active_shapes", rb_ary_new());
+  rb_iv_set(self, "@bodies", rb_ary_new());
+  rb_iv_set(self, "@constraints", rb_ary_new());
+  rb_iv_set(self, "@blocks", rb_hash_new());
+  rb_iv_set(self, "@post_step_blocks", rb_hash_new());
 
   return self;
-}
-
-static VALUE
-SPACEWRAP(cpSpace * space) {
-  return Data_Wrap_Struct(c_cpSpace, NULL, cpSpaceFree, space);
 }
 
 static VALUE
@@ -220,7 +216,7 @@ rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self) {
 
   VALUE id_a   = rb_obj_id(a);
   VALUE id_b   = rb_obj_id(b);
-  VALUE blocks = rb_iv_get(self, "blocks");
+  VALUE blocks = rb_iv_get(self, "@blocks");
 
   if(RTEST(obj) && RTEST(block)) {
     rb_raise(rb_eArgError, "Cannot specify both a handler object and a block.");
@@ -262,7 +258,7 @@ rb_cpSpaceRemoveCollisionHandler(VALUE self, VALUE a, VALUE b) {
   VALUE id_b   = rb_obj_id(b);
   cpSpaceRemoveCollisionHandler(SPACE(self), NUM2UINT(id_a), NUM2UINT(id_b));
 
-  VALUE blocks = rb_iv_get(self, "blocks");
+  VALUE blocks = rb_iv_get(self, "@blocks");
   rb_hash_delete(blocks, rb_ary_new3(2, id_a, id_b));
 
   return Qnil;
@@ -285,7 +281,7 @@ rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self) {
       (void *)block
       );
 
-    rb_hash_aset(rb_iv_get(self, "blocks"), ID2SYM(rb_intern("default")), block);
+    rb_hash_aset(rb_iv_get(self, "@blocks"), ID2SYM(rb_intern("default")), block);
   } else if(RTEST(obj)) {
     cpSpaceSetDefaultCollisionHandler(
       SPACE(self),
@@ -296,7 +292,7 @@ rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self) {
       (void *)obj
       );
 
-    rb_hash_aset(rb_iv_get(self, "blocks"), ID2SYM(rb_intern("default")), obj);
+    rb_hash_aset(rb_iv_get(self, "@blocks"), ID2SYM(rb_intern("default")), obj);
   } else {
     cpSpaceSetDefaultCollisionHandler(
       SPACE(self), NULL, doNothingCallback, NULL, NULL, NULL
@@ -308,71 +304,76 @@ rb_cpSpaceSetDefaultCollisionHandler(int argc, VALUE *argv, VALUE self) {
 
 static void
 poststepCallback(cpSpace *space, void *obj, void *data) {
-  rb_funcall((VALUE)data, id_call, 2, SPACEWRAP(space), (VALUE)obj);
+  rb_funcall((VALUE)data, id_call, 2, (VALUE)space->data, (VALUE)obj);
 }
 
 
 static VALUE
 rb_cpSpaceAddPostStepCallback(int argc, VALUE *argv, VALUE self) {
   VALUE obj, block;
+  VALUE blocks = rb_iv_get(self, "@post_step_blocks");
+
   rb_scan_args(argc, argv, "10&", &obj, &block);
+  rb_hash_aset(blocks, obj, block);
+
   cpSpaceAddPostStepCallback(SPACE(self),
                              poststepCallback, (void *) obj, (void *) block);
+
   return self;
 }
 
 static VALUE
 rb_cpSpaceAddShape(VALUE self, VALUE shape) {
   cpSpaceAddShape(SPACE(self), SHAPE(shape));
-  rb_ary_push(rb_iv_get(self, "active_shapes"), shape);
+  rb_ary_push(rb_iv_get(self, "@active_shapes"), shape);
   return shape;
 }
 
 static VALUE
 rb_cpSpaceAddStaticShape(VALUE self, VALUE shape) {
   cpSpaceAddStaticShape(SPACE(self), SHAPE(shape));
-  rb_ary_push(rb_iv_get(self, "static_shapes"), shape);
+  rb_ary_push(rb_iv_get(self, "@static_shapes"), shape);
   return shape;
 }
 
 static VALUE
 rb_cpSpaceAddBody(VALUE self, VALUE body) {
   cpSpaceAddBody(SPACE(self), BODY(body));
-  rb_ary_push(rb_iv_get(self, "bodies"), body);
+  rb_ary_push(rb_iv_get(self, "@bodies"), body);
   return body;
 }
 
 static VALUE
 rb_cpSpaceAddConstraint(VALUE self, VALUE constraint) {
   cpSpaceAddConstraint(SPACE(self), CONSTRAINT(constraint));
-  rb_ary_push(rb_iv_get(self, "constraints"), constraint);
+  rb_ary_push(rb_iv_get(self, "@constraints"), constraint);
   return constraint;
 }
 
 static VALUE
 rb_cpSpaceRemoveShape(VALUE self, VALUE shape) {
-  VALUE ok = rb_ary_delete(rb_iv_get(self, "active_shapes"), shape);
+  VALUE ok = rb_ary_delete(rb_iv_get(self, "@active_shapes"), shape);
   if(!(NIL_P(ok))) cpSpaceRemoveShape(SPACE(self), SHAPE(shape));
   return ok;
 }
 
 static VALUE
 rb_cpSpaceRemoveStaticShape(VALUE self, VALUE shape) {
-  VALUE ok = rb_ary_delete(rb_iv_get(self, "static_shapes"), shape);
+  VALUE ok = rb_ary_delete(rb_iv_get(self, "@static_shapes"), shape);
   if(!(NIL_P(ok))) cpSpaceRemoveStaticShape(SPACE(self), SHAPE(shape));
   return ok;
 }
 
 static VALUE
 rb_cpSpaceRemoveBody(VALUE self, VALUE body) {
-  VALUE ok = rb_ary_delete(rb_iv_get(self, "bodies"), body);
+  VALUE ok = rb_ary_delete(rb_iv_get(self, "@bodies"), body);
   if(!(NIL_P(ok))) cpSpaceRemoveBody(SPACE(self), BODY(body));
   return ok;
 }
 
 static VALUE
 rb_cpSpaceRemoveConstraint(VALUE self, VALUE constraint) {
-  VALUE ok = rb_ary_delete(rb_iv_get(self, "constraints"), constraint);
+  VALUE ok = rb_ary_delete(rb_iv_get(self, "@constraints"), constraint);
   if(!(NIL_P(ok))) cpSpaceRemoveConstraint(SPACE(self), CONSTRAINT(constraint));
   return ok;
 }

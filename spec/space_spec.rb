@@ -152,6 +152,49 @@ describe 'Space in chipmunk' do
     called.should be_true
   end
 
+  it 'can remove from the space in old style callbacks' do
+    space = CP::Space.new
+    bod = CP::Body.new 90, 76
+    shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+    shapy.collision_type = :foo
+
+    bod_one = CP::Body.new 90, 76
+    shapy_one = CP::Shape::Circle.new bod_one, 40, CP::ZERO_VEC_2
+    shapy_one.collision_type = :bar
+    space.add_shape shapy
+    space.add_shape shapy_one
+
+    called = false
+    space.add_collision_func :foo, :bar do |a, b, arb|
+      a.should_not be_nil
+      b.should_not be_nil
+      called = true
+      space.on_post_step(a) do |spacey, shape|
+        spacey.remove_body shape.body
+        spacey.remove_shape shape
+      end
+      1
+    end
+
+    space.step 1
+
+    called.should be_true
+  end
+
+  it 'can register for post step callbacks' do
+    space = CP::Space.new
+    calls = []
+    space.on_post_step(:any_key_probably_a_shape) do |spacey, key|
+      calls << [spacey, key]
+    end
+
+    space.step 1
+
+    calls.size.should == 1
+    calls[0][0].should == space
+    calls[0][1].should == :any_key_probably_a_shape
+  end
+
   class CollisionHandler
     attr_reader :begin_called
     attr_reader :pre_solve_called
