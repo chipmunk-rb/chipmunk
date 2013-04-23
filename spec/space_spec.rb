@@ -128,6 +128,23 @@ describe 'Space in chipmunk' do
   end  
 
 
+  it 'can handle junk object for callback' do
+    space = CP::Space.new
+    bod = CP::Body.new 90, 76
+    shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2
+    shapy.collision_type = :foo
+
+    bod_one = CP::Body.new 90, 76
+    shapy_one = CP::Shape::Circle.new bod_one, 40, CP::ZERO_VEC_2
+    shapy_one.collision_type = :bar
+    space.add_shape shapy
+    space.add_shape shapy_one
+
+    space.add_collision_func :foo, :bar, 1
+    # just asserting that junk doesn't get registered
+    space.step 1
+  end
+
   it 'can have old style callbacks' do
     space = CP::Space.new
     bod = CP::Body.new 90, 76
@@ -179,6 +196,7 @@ describe 'Space in chipmunk' do
     space.step 1
 
     called.should be_true
+    space.instance_variable_get("@post_step_blocks").should be_empty
   end
 
   it 'can register for post step callbacks' do
