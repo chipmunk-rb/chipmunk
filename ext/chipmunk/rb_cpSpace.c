@@ -314,6 +314,10 @@ rb_cpSpaceAddPostStepCallback(int argc, VALUE *argv, VALUE self) {
   VALUE blocks = rb_iv_get(self, "@post_step_blocks");
 
   rb_scan_args(argc, argv, "10&", &obj, &block);
+  if(!RTEST(block)) {
+    rb_raise(rb_eArgError, "Cannot omit the block.");
+  }
+
   rb_hash_aset(blocks, obj, block);
 
   cpSpaceAddPostStepCallback(SPACE(self),
@@ -539,6 +543,7 @@ rb_cpSpaceShapeQuery(int argc, VALUE *argv, VALUE self) {
 static VALUE
 rb_cpSpaceStep(VALUE self, VALUE dt) {
   cpSpaceStep(SPACE(self), NUM2DBL(dt));
+  rb_iv_set(self, "@post_step_blocks", rb_hash_new());
   return Qnil;
 }
 
