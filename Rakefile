@@ -11,7 +11,7 @@ rescue LoadError
     puts "rake-compiler not found! Please install the rake-compiler gem!"
 end
 
-CHIPMUNK_VERSION = "6.1.3.0"
+CHIPMUNK_VERSION = "6.1.3.0.rc1"
 dlext = RbConfig::CONFIG['DLEXT']
 
 CLEAN.include("ext/**/*.#{dlext}", "ext/**/.log", "ext/**/.o", "ext/**/*~", "ext/**/*#*", "ext/**/.obj", "ext/**/.def", "ext/**/.pdb")
@@ -37,22 +37,22 @@ FILES = ["Rakefile", "README", "LICENSE", "lib/chipmunk.rb", "spec/*.rb"]
 task :compile => :clean
 
 # platform dependent tasks
-if RUBY_PLATFORM =~ /darwin/
-
-    spec = Gem::Specification.new do |s|
-        apply_gemspec_defaults(s)
-        s.platform = Gem::Platform::CURRENT
-        s.files = ["Rakefile", "README", "LICENSE", "lib/chipmunk.rb", "lib/1.8/chipmunk.#{dlext}", "lib/1.9/chipmunk.#{dlext}"] +
-            FileList["ext/**/extconf.rb", "ext/**/*.h", "ext/**/*.c"].to_a
-    end
-
-    Rake::ExtensionTask.new('chipmunk') do |ext|
-        ext.ext_dir   = "ext/chipmunk"
-        ext.lib_dir   = "lib/#{RUBY_VERSION[0..2]}"
-        ext.config_script = 'extconf.rb'
-        ext.config_options << '--enable-macosx'
-    end
-else
+# if RUBY_PLATFORM =~ /darwin/
+# 
+#     spec = Gem::Specification.new do |s|
+#         apply_gemspec_defaults(s)
+#         s.platform = Gem::Platform::CURRENT
+#         s.files = ["Rakefile", "README", "LICENSE", "lib/chipmunk.rb", "lib/1.8/chipmunk.#{dlext}", "lib/1.9/chipmunk.#{dlext}"] +
+#             FileList["ext/**/extconf.rb", "ext/**/*.h", "ext/**/*.c"].to_a
+#     end
+# 
+#     Rake::ExtensionTask.new('chipmunk') do |ext|
+#         ext.ext_dir   = "ext/chipmunk"
+#         ext.lib_dir   = "lib/#{RUBY_VERSION[0..2]}"
+#         ext.config_script = 'extconf.rb'
+#         ext.config_options << '--enable-macosx'
+#     end
+# else
 
     spec = Gem::Specification.new do |s|
         apply_gemspec_defaults(s)
@@ -69,7 +69,7 @@ else
         # ext.cross_platform = 'i386-mswin32'
     end
 
-end
+# end
 
 namespace :win do
 	 WINDOWS_SPEC = Gem::Specification.new do |s|
@@ -86,7 +86,6 @@ namespace :win do
 namespace :mac do
 	 MAC_SPEC = Gem::Specification.new do |s|
 		apply_gemspec_defaults(s)
-    # TODO need new flags to support 32bit machines?
 		s.platform = 'universal-darwin'
 		s.files += FileList["ext/**/*.h", "ext/**/*.c", "ext/chipmunk/extconf.rb"]
 		s.extensions = ["ext/chipmunk/extconf.rb"]

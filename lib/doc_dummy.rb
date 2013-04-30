@@ -9,15 +9,6 @@ def vec2(x, y); end
 
 # Chipmunk Game Dynamics. Provides fast, easy to use, robust physics.
 module CP
-  # The bias coefficient used for resolving penetrations. Setting 0.0 effectively disables
-  # penetration resolution. Setting 1.0 will try to resolve the penetration in a single step.
-  # (not recommended) The default is 0.1
-  attr_accessor :bias_coef
-    
-  # The maximum allowed penetration distance. If an object penetrates by more than this
-  # value, they will be pushed apart. Setting a non zero value helps to prevent
-  # oscillating contacts. Defaults to 0.1, and can be any positive value.
-  attr_accessor :collision_slop
     
   # Calculate the moment of inertia for a circle with the given mass,
   # inner and outer radii, and offset. _offset_ should be a CP::Vect.
@@ -33,6 +24,57 @@ module CP
   # Various other formulas for moments of inertia can be found here: 
   # http://en.wikipedia.org/wiki/List_of_moments_of_inertia
   def moment_for_poly(m, verts, offset); end
+
+  # Calculate the moment of inertia for a segment with the given mass,
+  # and endpoints. a and b should be CP::Vects
+  #
+  # Various other formulas for moments of inertia can be found here: 
+  # http://en.wikipedia.org/wiki/List_of_moments_of_inertia
+  def moment_for_segment(m, a, b); end
+
+  # Calculate the moment of inertia for a box with the given mass,
+  # width and height.
+  #
+  # Various other formulas for moments of inertia can be found here: 
+  # http://en.wikipedia.org/wiki/List_of_moments_of_inertia
+  def moment_for_box(m, w, h); end
+
+
+  # Calculate area of a hollow circle.
+  # r1 and r2 are the inner and outer diameters. A solid circle has an inner diameter of 0.
+  def area_for_circle(r1, r2); end
+
+  
+  # Calculate the signed area of a polygon.
+  # A Clockwise winding gives positive area. 
+  # This is probably backwards from what you expect, but matches Chipmunk's the winding for poly shapes.
+  def area_for_poly(verts)
+
+
+  # Calculate the area of a fattened (capsule shaped) line segment. 
+  # a and b are Vects
+  def area_for_segment(a, b, radius)
+
+
+  # Calculate teh area of a box (w * h)
+  def area_for_box(width, height)
+
+  # Calculate the natural centroid of a polygon. 
+  def centroid_for_poly(verts)
+
+  # Center the polygon on the origin. (Subtracts the centroid of the polygon from each vertex)
+  def recenter_poly(verts)
+
+  ALL_LAYERS = :CP_ALL_LAYERS
+  NO_GROUP = :CP_NO_GROUP
+
+  # TODO
+  # Init_cpBB();
+  # Init_cpBody();
+  # Init_cpShape();
+  # Init_cpConstraint();
+  # Init_cpSpace();
+  # Init_cpArbiter();
 
   # Basic 2D vector class.
   class Vec2
@@ -84,10 +126,30 @@ module CP
     
     # Normalize a vector in place.		
     def normalize!; end
+
+    # Returns a normalized copy of v or cpvzero if v was already cpvzero. Protects against divide by zero errors. 
+    def normalize_safe; end
+
+    def normalize_safe!; end
     
-    # Get the perpendicular vector.
+    # Get the perpendicular vector. (90 degree rotation)
     def perp; end
-    
+
+    # Returns a perpendicular vector. (-90 degree rotation) 
+    def rperp; end
+
+    # Linearly interpolate between this vector and v2. 
+    def lerp(v2, time); end
+
+    # Linearly interpolate between this vector towards v2 by distance dist. 
+    def lerpconst(v2, dist); end
+
+    # Spherically interpolate between this vector and v2. 
+    def slerp(v2, time); end
+
+    # Spherically interpolate between this vector towards v2 by distance dist. 
+    def slerpconst(v2, dist); end
+
     # Vector projection of self onto vect.
     def project(vect); end
     
@@ -99,6 +161,15 @@ module CP
     
     # Returns true if self and vect are within dist.
     def near?(vect, dist); end
+
+    # Distance to vect.
+    def dist(vect): end
+
+    # Returns the squared distance between this vector and v2. Faster than #dist when you only need to compare distances.
+    def distsq(v2); end
+
+    # Returns a copy of this vector clamped to length len
+    def clamp(len); end
   end
   
   # Basic 2D bounding box class.
@@ -403,6 +474,11 @@ module CP
     
     # Iterations used when solving for elasticity.
     attr_accessor :elastic_iterations
+
+    # The maximum allowed penetration distance. If an object penetrates by more than this
+    # value, they will be pushed apart. Setting a non zero value helps to prevent
+    # oscillating contacts. Defaults to 0.1, and can be any positive value.
+    attr_accessor :collision_slop
     
     def initialize; end
     
