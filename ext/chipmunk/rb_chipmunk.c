@@ -221,6 +221,7 @@ Init_chipmunk(void) {
 
   rb_define_const(m_Chipmunk, "ALL_LAYERS", UINT2NUM((unsigned int)CP_ALL_LAYERS));
   rb_define_const(m_Chipmunk, "NO_GROUP", UINT2NUM(CP_NO_GROUP));
+  CP_OBJ2INT(UINT2NUM(CP_NO_GROUP));
 
   rb_eval_string("Float::INFINITY = 1.0/0.0 unless Float.const_defined? :INFINITY");
   rb_eval_string("CP::INFINITY = 1.0/0.0 unless CP.const_defined? :INFINITY");
