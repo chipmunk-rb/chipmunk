@@ -53,8 +53,6 @@ VWRAP(VALUE parent, cpVect *v) {
   return vec_obj;
 }
 
-int cp_rb_obj_method_arity(VALUE self, ID id);
-
 #define GETTER_TEMPLATE(func_name, klass, type)                                                                            \
   static inline type *                                                                                                     \
   func_name(VALUE self)                                                                                                    \

@@ -166,15 +166,6 @@ rb_cpRecenterPoly(VALUE self,  VALUE arr) {
   return arr;
 }
 
-// We need this as rb_obj_method_arity is not in 1.8.7
-int
-cp_rb_obj_method_arity(VALUE self, ID id) {
-  VALUE metho = rb_funcall(self, rb_intern("method"), 1, ID2SYM(id));
-  VALUE arity = rb_funcall(metho, rb_intern("arity"), 0, 0);
-  return NUM2INT(arity);
-}
-
-
 
 
 
