@@ -53,8 +53,6 @@ VWRAP(VALUE parent, cpVect *v) {
   return vec_obj;
 }
 
-int cp_rb_obj_method_arity(VALUE self, ID id);
-
 #define GETTER_TEMPLATE(func_name, klass, type)                                                                            \
   static inline type *                                                                                                     \
   func_name(VALUE self)                                                                                                    \
@@ -105,7 +103,7 @@ void Init_cpSpace();
 void Init_cpArbiter(void);
 
 // transforms a boolean VALUE to an int
-#define CP_BOOL_INT(VAL) (((VAL) == Qnil) || ((VAL) == Qfalse) ? 0 : 1)
+#define CP_BOOL_INT(VAL) (RTEST(VAL))
 
 // transforms a C value (pointer or int) to Qtrue of Qfalse
 // For consistency with CP_BOOL_INT.

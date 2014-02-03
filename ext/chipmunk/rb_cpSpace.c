@@ -145,6 +145,20 @@ doNothingCallback(cpArbiter *arb, cpSpace *space, void *data) {
   return 0;
 }
 
+// We need this as rb_obj_method_arity is not in 1.8.7
+int
+rb_obj_method_arity(VALUE self, ID id) {
+  VALUE metho;
+  VALUE arity;
+  if(id == id_call) {
+    metho = self;
+  } else {
+    metho = rb_funcall(self, rb_intern("method"), 1, ID2SYM(id));
+  }
+  arity = rb_funcall(metho, rb_intern("arity"), 0, 0);
+  return NUM2INT(arity);
+}
+
 // This callback function centralizes all collision callbacks.
 // it also adds flexibility by changing theway the callback is called on the
 // arity of the callback block or method. With arity0, no args are pased,
@@ -159,7 +173,7 @@ do_callback(void * data, ID method, cpArbiter *arb) {
   VALUE va     = (VALUE)a->data;
   VALUE vb     = (VALUE)b->data;
   VALUE varb   = ARBWRAP(arb);
-  int arity    = cp_rb_obj_method_arity(object, method);
+  int arity    = rb_obj_method_arity(object, method);
   switch(arity) {
   case 0:
     return CP_BOOL_INT(rb_funcall(object, method, 0));

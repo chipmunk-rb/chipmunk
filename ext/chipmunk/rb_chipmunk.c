@@ -166,15 +166,6 @@ rb_cpRecenterPoly(VALUE self,  VALUE arr) {
   return arr;
 }
 
-// We need this as rb_obj_method_arity is not in 1.8.7
-int
-cp_rb_obj_method_arity(VALUE self, ID id) {
-  VALUE metho = rb_funcall(self, rb_intern("method"), 1, ID2SYM(id));
-  VALUE arity = rb_funcall(metho, rb_intern("arity"), 0, 0);
-  return NUM2INT(arity);
-}
-
-
 
 
 
@@ -221,6 +212,7 @@ Init_chipmunk(void) {
 
   rb_define_const(m_Chipmunk, "ALL_LAYERS", UINT2NUM((unsigned int)CP_ALL_LAYERS));
   rb_define_const(m_Chipmunk, "NO_GROUP", UINT2NUM(CP_NO_GROUP));
+  CP_OBJ2INT(UINT2NUM(CP_NO_GROUP));
 
   rb_eval_string("Float::INFINITY = 1.0/0.0 unless Float.const_defined? :INFINITY");
   rb_eval_string("CP::INFINITY = 1.0/0.0 unless CP.const_defined? :INFINITY");
