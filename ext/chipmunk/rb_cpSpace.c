@@ -416,16 +416,14 @@ rb_cpSpaceResizeActiveHash(VALUE self, VALUE dim, VALUE count) {
 }
 
 static VALUE
-rb_cpSpaceRehashStatic(VALUE self) {
-  rb_raise(rb_eArgError, "rehash_static is obsolete");
-  /* cpSpaceRehashStatic(SPACE(self)); */
+rb_cpSpaceReindexStatic(VALUE self) {
+  cpSpaceReindexStatic(SPACE(self));
   return Qnil;
 }
 
 static VALUE
-rb_cpSpaceRehashShape(VALUE self, VALUE shape) {
-  rb_raise(rb_eArgError, "rehash_shape is obsolete");
-  /* cpSpaceRehashShape(SPACE(self), SHAPE(shape)); */
+rb_cpSpaceReindexShape(VALUE self, VALUE shape) {
+  cpSpaceReindexShape(SPACE(self), SHAPE(shape));
   return Qnil;
 }
 
@@ -644,8 +642,9 @@ Init_cpSpace(void) {
 
   rb_define_method(c_cpSpace, "resize_static_hash", rb_cpSpaceResizeStaticHash, 2);
   rb_define_method(c_cpSpace, "resize_active_hash", rb_cpSpaceResizeActiveHash, 2);
-  rb_define_method(c_cpSpace, "rehash_static", rb_cpSpaceRehashStatic, 0);
-  rb_define_method(c_cpSpace, "rehash_shape", rb_cpSpaceRehashShape, 1);
+
+  rb_define_method(c_cpSpace, "reindex_static", rb_cpSpaceReindexStatic, 0);
+  rb_define_method(c_cpSpace, "reindex_shape", rb_cpSpaceReindexShape, 1);
 
   rb_define_method(c_cpSpace, "point_query", rb_cpSpacePointQuery, -1);
   rb_define_method(c_cpSpace, "point_query_first", rb_cpSpacePointQueryFirst, -1);

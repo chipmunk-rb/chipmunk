@@ -51,7 +51,7 @@ describe 'Space in chipmunk' do
     shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2    
     lambda { s.add_static_shape shapy }.should_not raise_error
   end
-  
+
   it 'can have a static shape removed from it' do
     s     = CP::Space.new
     bod   = CP::StaticBody.new
@@ -68,7 +68,18 @@ describe 'Space in chipmunk' do
     lambda { s.remove_static_shape shapy }.should_not raise_error
     lambda { s.remove_static_shape shapy }.should_not raise_error
   end
-  
+
+  it 'can reindex all static objects' do
+    s     = CP::Space.new
+    lambda { s.reindex_static }.should_not raise_error
+  end
+
+  it 'can reindex a shape' do
+    s     = CP::Space.new
+    bod   = CP::StaticBody.new
+    shapy = CP::Shape::Circle.new bod, 40, CP::ZERO_VEC_2    
+    lambda { s.reindex_shape shapy }.should_not raise_error
+  end
   
   it 'can have constraints added' do
     space = CP::Space.new
