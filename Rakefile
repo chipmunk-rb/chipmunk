@@ -75,7 +75,8 @@ namespace :win do
 	 WINDOWS_SPEC = Gem::Specification.new do |s|
 		apply_gemspec_defaults(s)
 		s.platform = 'i386-mingw32'
-		s.files += FileList["lib/**/*.so"]
+        s.files = ["Rakefile", "README", "LICENSE", "lib/chipmunk.rb"] +
+			FileList["lib/**/*.so"]
 	end
 	Gem::PackageTask.new(WINDOWS_SPEC) do |t|
 		t.need_zip = false
@@ -87,7 +88,8 @@ namespace :mac do
 	 MAC_SPEC = Gem::Specification.new do |s|
 		apply_gemspec_defaults(s)
 		s.platform = 'universal-darwin'
-		s.files += FileList["ext/**/*.h", "ext/**/*.c", "ext/chipmunk/extconf.rb"]
+        s.files = ["Rakefile", "README", "LICENSE", "lib/chipmunk.rb"] +
+			FileList["ext/**/*.h", "ext/**/*.c", "ext/chipmunk/extconf.rb"]
 		s.extensions = ["ext/chipmunk/extconf.rb"]
 	end
 	Gem::PackageTask.new(MAC_SPEC) do |t|
@@ -100,7 +102,8 @@ namespace :linux do
 	 LINUX_SPEC = Gem::Specification.new do |s|
 		apply_gemspec_defaults(s)
 		s.platform = 'ruby'
-		s.files += FileList["ext/**/*.h", "ext/**/*.c", "ext/chipmunk/extconf.rb"]
+        s.files = ["Rakefile", "README", "LICENSE", "lib/chipmunk.rb"] +
+			FileList["ext/**/*.h", "ext/**/*.c", "ext/chipmunk/extconf.rb"]
 		s.extensions = ["ext/chipmunk/extconf.rb"]
 		s.require_path = 'lib'
 	end
