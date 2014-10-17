@@ -11,7 +11,7 @@ rescue LoadError
     puts "rake-compiler not found! Please install the rake-compiler gem!"
 end
 
-CHIPMUNK_VERSION = "6.1.3.1"
+CHIPMUNK_VERSION = "6.1.3.2"
 dlext = RbConfig::CONFIG['DLEXT']
 
 CLEAN.include("ext/**/*.#{dlext}", "ext/**/.log", "ext/**/.o", "ext/**/*~", "ext/**/*#*", "ext/**/.obj", "ext/**/.def", "ext/**/.pdb")
