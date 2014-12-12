@@ -5,7 +5,8 @@ require 'rbconfig'
 direc = File.dirname(__FILE__)
 dlext = RbConfig::CONFIG['DLEXT']
 begin
-    require "#{RUBY_VERSION[0..2]}/chipmunk.#{dlext}"
+    require "chipmunk.#{dlext}"
+    # require "#{RUBY_VERSION[0..2]}/chipmunk.#{dlext}"
 rescue LoadError => e
     puts e.inspect
     require "#{direc}/chipmunk.#{dlext}"
