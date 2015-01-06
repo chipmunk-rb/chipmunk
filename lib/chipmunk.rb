@@ -1,21 +1,4 @@
-# this redirection script by John Mair (banisterfiend)
-
-require 'rbconfig'
-
-direc = File.dirname(__FILE__)
-dlext = RbConfig::CONFIG['DLEXT']
-begin
-    require "chipmunk.#{dlext}"
-    # require "#{RUBY_VERSION[0..2]}/chipmunk.#{dlext}"
-rescue LoadError => e
-    puts e.inspect
-    require "#{direc}/chipmunk.#{dlext}"
-end
-
-
-# Add some constants to CP here, so we don't need 
-# to do it in the C code.
-# Let's cheat a bit here.. :p
+require 'chipmunk/chipmunk'
 
 module CP
   VERSION    = '6.1.3.2' 
