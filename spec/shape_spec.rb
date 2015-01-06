@@ -285,6 +285,11 @@ describe 'Shapes in chipmunk' do
       s.r.should == 7
     end
 
+    it 'can unsafely modify its neighbors' do
+      bod = CP::Body.new 90, 76
+      s = CP::Shape::Segment.new bod, vec2(1,2), vec2(3,4), 5
+      s.set_neighbors! vec2(5,6), vec2(7,8)
+    end
     
   end
   

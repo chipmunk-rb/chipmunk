@@ -2,6 +2,6 @@
 
 source 'https://rubygems.org'
 
-gem 'rake-compiler'
-gem 'rspec'
+gem 'rspec', '2.14.1'
 gem 'pry'
+gem 'chipmunk'

@@ -412,6 +412,11 @@ rb_cpSegmentShapeSetRadius(VALUE self, VALUE radius) {
   return self;
 }
 
+static VALUE
+rb_cpSegmentShapeSetNeighbors(VALUE self, VALUE prev, VALUE next) {
+  cpSegmentShapeSetNeighbors(SHAPE(self), *VGET(prev), *VGET(next));
+  return self;
+}
 
 static VALUE
 rb_cpPolyShapeSetVerts(VALUE self, VALUE arr, VALUE offset) {
@@ -530,6 +535,7 @@ Init_cpShape(void) {
   rb_define_method(c_cpCircleShape, "set_offset!", rb_cpCircleShapeSetOffset, 1);
   rb_define_method(c_cpSegmentShape, "set_endpoints!", rb_cpSegmentShapeSetEndpoints, 2);
   rb_define_method(c_cpSegmentShape, "set_radius!", rb_cpSegmentShapeSetRadius, 1);
+  rb_define_method(c_cpSegmentShape, "set_neighbors!", rb_cpSegmentShapeSetNeighbors, 2);
 
   rb_define_method(c_cpPolyShape, "set_verts!", rb_cpPolyShapeSetVerts, 2);
 
