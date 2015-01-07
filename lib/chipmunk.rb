@@ -1,7 +1,7 @@
 require 'chipmunk/chipmunk'
 
 module CP
-  VERSION    = '6.1.3.2' 
+  VERSION    = '6.1.3.3' 
   ZERO_VEC_2 = Vec2.new(0,0).freeze
   ALL_ONES   = Vec2.new(1,1).freeze
 end  

@@ -1,4 +1,4 @@
-CHIPMUNK_VERSION = "6.1.3.2"
+CHIPMUNK_VERSION = "6.1.3.3"
 
 Gem::Specification.new do |s|
   s.name = "chipmunk"
