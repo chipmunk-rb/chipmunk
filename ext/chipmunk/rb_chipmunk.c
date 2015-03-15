@@ -37,9 +37,7 @@ CP_OBJ2INT(VALUE object) {
   int nextInt = 0;
 
   if(NIL_P(intValue)) {
-    if (RHASH(cpObjectToIntHash)->ntbl) {
-      nextInt = RHASH(cpObjectToIntHash)->ntbl->num_entries;
-    }
+    nextInt = RHASH_SIZE(cpObjectToIntHash);
     rb_hash_aset(cpObjectToIntHash, object, INT2NUM(nextInt));
   } else {
     nextInt = NUM2INT(intValue);
