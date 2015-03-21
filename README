@@ -111,3 +111,5 @@ INFO FOR MAINTAINERS:
     * Type: rake cross native gem RUBY_CC_VERSION=1.9.1
     * Upload new gems to rubygems
     
+
+Join the chat at https://gitter.im/beoran/chipmunk
