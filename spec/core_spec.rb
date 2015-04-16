@@ -2,8 +2,7 @@ require File.dirname(__FILE__)+'/spec_helper'
 describe 'CP module' do
   it 'can give a version' do
     v = CP::VERSION
-    # 6.1.3.2
-    v.split(".").should == %w(6 1 3 3)
+    v.split(".").should == %w(6 1 3 4)
   end
   
   it 'has the ALL_LAYERS constant' do

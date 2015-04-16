@@ -236,7 +236,7 @@ rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self) {
     rb_raise(rb_eArgError, "Cannot specify both a handler object and a block.");
   } else if(RTEST(block)) {
     cpSpaceAddCollisionHandler(
-      SPACE(self), NUM2UINT(id_a), NUM2UINT(id_b),
+      SPACE(self), NUM2ULONG(id_a), NUM2ULONG(id_b),
       NULL,
       compatibilityCallback,
       NULL,
@@ -247,7 +247,7 @@ rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self) {
     rb_hash_aset(blocks, rb_ary_new3(2, id_a, id_b), block);
   } else if(RTEST(obj)) {
     cpSpaceAddCollisionHandler(
-      SPACE(self), NUM2UINT(id_a), NUM2UINT(id_b),
+      SPACE(self), NUM2ULONG(id_a), NUM2ULONG(id_b),
       (respondsTo(obj, id_begin)      ? beginCallback     : NULL),
       (respondsTo(obj, id_pre_solve)  ? preSolveCallback  : NULL),
       (respondsTo(obj, id_post_solve) ? postSolveCallback : NULL),
@@ -258,7 +258,7 @@ rb_cpSpaceAddCollisionHandler(int argc, VALUE *argv, VALUE self) {
     rb_hash_aset(blocks, rb_ary_new3(2, id_a, id_b), obj);
   } else {
     cpSpaceAddCollisionHandler(
-      SPACE(self), NUM2UINT(id_a), NUM2UINT(id_b),
+      SPACE(self), NUM2ULONG(id_a), NUM2ULONG(id_b),
       NULL, doNothingCallback, NULL, NULL, NULL
       );
   }
@@ -270,7 +270,7 @@ static VALUE
 rb_cpSpaceRemoveCollisionHandler(VALUE self, VALUE a, VALUE b) {
   VALUE id_a   = rb_obj_id(a);
   VALUE id_b   = rb_obj_id(b);
-  cpSpaceRemoveCollisionHandler(SPACE(self), NUM2UINT(id_a), NUM2UINT(id_b));
+  cpSpaceRemoveCollisionHandler(SPACE(self), NUM2ULONG(id_a), NUM2ULONG(id_b));
 
   VALUE blocks = rb_iv_get(self, "@blocks");
   rb_hash_delete(blocks, rb_ary_new3(2, id_a, id_b));
@@ -431,13 +431,13 @@ rb_cpSpaceReindexShape(VALUE self, VALUE shape) {
 static unsigned int
 get_layers(VALUE layers) {
   if (NIL_P(layers)) return ~0;
-  return NUM2UINT(layers);
+  return NUM2ULONG(layers);
 }
 
 static unsigned int
 get_group(VALUE group) {
   if (NIL_P(group)) return 0;
-  return NUM2UINT(group);
+  return NUM2ULONG(group);
 }
 
 static void
@@ -522,8 +522,8 @@ rb_cpSpaceBBQuery(int argc, VALUE *argv, VALUE self) {
   unsigned int g =  0;
   rb_scan_args(argc, argv, "12&", &bb, &layers, &group, &block);
 
-  if (!NIL_P(layers)) l = NUM2UINT(layers);
-  if (!NIL_P(group)) g = NUM2UINT(group);
+  if (!NIL_P(layers)) l = NUM2ULONG(layers);
+  if (!NIL_P(group)) g = NUM2ULONG(group);
 
   cpSpaceBBQuery(
     SPACE(self), *BBGET(bb), l, g,

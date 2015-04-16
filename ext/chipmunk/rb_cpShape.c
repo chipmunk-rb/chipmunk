@@ -85,7 +85,7 @@ static VALUE
 rb_cpShapeSetCollType(VALUE self, VALUE val) {
   VALUE col_type = rb_obj_id(val);
   rb_iv_set(self, "collType", val);
-  SHAPE(self)->collision_type = NUM2UINT(col_type);
+  SHAPE(self)->collision_type = NUM2ULONG(col_type);
 
   return val;
 }
@@ -127,7 +127,7 @@ rb_cpShapeGetLayers(VALUE self) {
 
 static VALUE
 rb_cpShapeSetLayers(VALUE self, VALUE layers) {
-  SHAPE(self)->layers = NUM2UINT(layers);
+  SHAPE(self)->layers = NUM2ULONG(layers);
 
   return layers;
 }

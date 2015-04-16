@@ -15,3 +15,5 @@ ctags
 *.bundle
 *.lock
 Makefile
+.ruby-version
+*.gem

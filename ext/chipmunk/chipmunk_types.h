@@ -164,7 +164,7 @@ typedef uintptr_t cpHashValue;
 	typedef CP_COLLISION_TYPE_TYPE cpCollisionType;
 #else
 /// Type used for cpSpace.collision_type.
-	typedef uintptr_t cpCollisionType;
+	typedef unsigned long cpCollisionType;
 #endif
 
 #ifdef CP_GROUP_TYPE
@@ -178,7 +178,7 @@ typedef uintptr_t cpHashValue;
 	typedef CP_LAYERS_TYPE cpLayers;
 #else
 /// Type used for cpShape.layers.
-	typedef unsigned int cpLayers;
+	typedef unsigned long cpLayers;
 #endif
 
 #ifdef CP_TIMESTAMP_TYPE
