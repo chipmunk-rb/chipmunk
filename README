@@ -36,8 +36,8 @@ ABOUT THESE RUBY BINDINGS:
   added yet. All this is documented by specs and by the html documentation.
 
   If you have any problems with these bindings, please contact the maintainer at
-  beoran@rubyforge.org, or report the issue on the issue tracker:
-  https://github.com/beoran/chipmunk/issues
+  shawn42@gmail.com, or report the issue on the issue tracker:
+  https://github.com/chipmunk-rb/chipmunk/issues
 
 REQUIREMENTS
   * 1.9.x.
@@ -65,7 +65,7 @@ INSTALLATION
 
 DOCUMENTATION:
   Full handcrafted documentation based on the C documentation is available at:
-  http://beoran.github.com/chipmunk/
+  http://chipmunk-rb.github.com/chipmunk/
 
 CHANGES:
   * Bumped to Chipmunk version 6.1.3; dropped 1.8 support
