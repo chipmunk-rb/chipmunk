@@ -410,7 +410,7 @@ static VALUE
 rb_cpSpaceResizeActiveHash(VALUE self, VALUE dim, VALUE count) {
   rb_raise(rb_eArgError, "resize_active_hash is obsolete");
   return Qnil;
-  /* cpSpaceResizeActiveHash(SPACE(self), NUM2DBL(dim), NUM2INT(count));  
+  /* cpSpaceResizeActiveHash(SPACE(self), NUM2DBL(dim), NUM2INT(count));
   return Qnil;
   */
 }
@@ -473,7 +473,7 @@ rb_cpSpacePointQueryFirst(int argc, VALUE *argv, VALUE self) {
 
 static void
 segmentQueryCallback(cpShape *shape, cpFloat t, cpVect n, VALUE block) {
-  rb_funcall(block, id_call, 1, (VALUE)shape->data, rb_float_new(t), VNEW(n));
+  rb_funcall(block, id_call, 3, (VALUE)shape->data, rb_float_new(t), VNEW(n));
 }
 
 static VALUE
@@ -629,7 +629,7 @@ Init_cpSpace(void) {
   rb_define_method(c_cpSpace, "collision_slop=", rb_cpSpace_set_collisionSlop, 1);
   rb_define_method(c_cpSpace, "collision_persistence", rb_cpSpace_get_collisionPersistence, 0);
   rb_define_method(c_cpSpace, "collision_persistence=", rb_cpSpace_set_collisionPersistence, 1);
-  
+
   rb_define_method(c_cpSpace, "add_shape", rb_cpSpaceAddShape, 1);
   rb_define_method(c_cpSpace, "add_static_shape", rb_cpSpaceAddStaticShape, 1);
   rb_define_method(c_cpSpace, "add_body", rb_cpSpaceAddBody, 1);
